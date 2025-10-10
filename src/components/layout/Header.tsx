@@ -1,43 +1,36 @@
 'use client'
 
-import Link from 'next/link'
-import { Button } from '@/components/ui/Button'
+import React from 'react'
+import UserProfile from '@/components/auth/UserProfile'
 
-export function Header() {
+const Header: React.FC = () => {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-white/80 backdrop-blur-md">
-      <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center space-x-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-primary-400 to-secondary-500">
-            <span className="text-lg font-bold text-white">O</span>
+    <header className="bg-white/80 backdrop-blur-sm border-b border-pink-100 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center">
+            <h1 className="text-2xl font-bold text-pink-600">
+              Omoide
+            </h1>
           </div>
-          <span className="text-xl font-bold text-neutral-900">Omoide</span>
-        </Link>
-        
-        <nav className="hidden md:flex items-center space-x-6">
-          <Link 
-            href="/timeline" 
-            className="text-neutral-600 hover:text-primary-600 transition-colors"
-          >
-            Timeline
-          </Link>
-          <Link 
-            href="/storybooks" 
-            className="text-neutral-600 hover:text-primary-600 transition-colors"
-          >
-            Storybooks
-          </Link>
-        </nav>
-        
-        <div className="flex items-center space-x-3">
-          <Button variant="ghost" size="sm">
-            Sign In
-          </Button>
-          <Button size="sm">
-            Get Started
-          </Button>
+          
+          <nav className="hidden md:flex space-x-8">
+            <span className="text-gray-700 hover:text-pink-600 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer">
+              Home
+            </span>
+            <span className="text-gray-700 hover:text-pink-600 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer">
+              Timeline
+            </span>
+            <span className="text-gray-700 hover:text-pink-600 px-3 py-2 rounded-md text-sm font-medium transition-colors cursor-pointer">
+              Storybooks
+            </span>
+          </nav>
+
+          <UserProfile />
         </div>
       </div>
     </header>
   )
 }
+
+export default Header
