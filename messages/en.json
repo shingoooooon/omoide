@@ -1,0 +1,100 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close"
+  },
+  "navigation": {
+    "home": "Home",
+    "timeline": "Timeline",
+    "storybooks": "Storybooks",
+    "profile": "Profile",
+    "settings": "Settings"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signOut": "Sign Out",
+    "signInWithGoogle": "Sign in with Google",
+    "createAccount": "Create Account",
+    "fullName": "Full Name",
+    "email": "Email Address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "alreadyHaveAccount": "Already have an account? Sign in",
+    "noAccount": "Don't have an account? Sign up",
+    "errors": {
+      "invalidEmail": "Please enter a valid email address",
+      "weakPassword": "Password should be at least 6 characters",
+      "emailInUse": "An account with this email already exists",
+      "userNotFound": "No account found with this email address",
+      "wrongPassword": "Incorrect password",
+      "authFailed": "Authentication failed. Please try again",
+      "googleSignInFailed": "Google sign-in failed. Please try again",
+      "requiredFields": "Please enter your email and password",
+      "requiredName": "Please enter your full name"
+    }
+  },
+  "home": {
+    "title": "Turn Your Child's Growth into Beautiful Stories",
+    "subtitle": "Simply upload photos and let AI automatically generate growth records and comments, then create beautiful storybooks to preserve precious memories.",
+    "uploadPhotos": "Upload Photos",
+    "viewDemo": "View Demo",
+    "features": {
+      "upload": {
+        "title": "Easy Upload",
+        "description": "Simply select photos to start recording your child's growth journey. Drag & drop supported."
+      },
+      "ai": {
+        "title": "AI Generation",
+        "description": "AI analyzes photos and automatically generates heartwarming comments using the latest technology."
+      },
+      "storybook": {
+        "title": "Storybook Creation",
+        "description": "Create original storybooks from monthly growth records with voice narration feature."
+      }
+    },
+    "howItWorks": {
+      "title": "How It Works - Simple Steps",
+      "subtitle": "Transform your child's growth into beautiful stories in just 3 steps",
+      "steps": {
+        "upload": {
+          "title": "Upload Photos",
+          "description": "Select and upload your child's photos"
+        },
+        "analyze": {
+          "title": "AI Analysis",
+          "description": "AI analyzes photos and generates growth comments"
+        },
+        "create": {
+          "title": "Create Storybook",
+          "description": "Beautiful storybooks are automatically created from monthly records"
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to Start Your Journey?",
+      "subtitle": "Get started for free and preserve your child's precious moments as beautiful stories.",
+      "getStarted": "Get Started Free"
+    }
+  },
+  "footer": {
+    "brand": {
+      "title": "Omoide",
+      "description": "AI-powered child growth stories. Precious memories starting from photos."
+    },
+    "quickLinks": "Quick Links",
+    "support": "Support",
+    "help": "Help",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "copyright": "All rights reserved.",
+    "madeWith": "Made with ❤️ for families"
+  }
+}
