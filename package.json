@@ -14,13 +14,15 @@
     "@google-cloud/text-to-speech": "^6.3.0",
     "@google-cloud/vision": "^5.3.3",
     "@headlessui/react": "^2.2.9",
+    "@types/uuid": "^10.0.0",
     "clsx": "^2.1.1",
     "firebase": "^12.4.0",
     "next": "15.5.4",
     "openai": "^6.3.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "tailwind-merge": "^3.3.1"
+    "tailwind-merge": "^3.3.1",
+    "uuid": "^13.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

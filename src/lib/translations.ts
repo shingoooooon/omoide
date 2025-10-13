@@ -14,6 +14,7 @@ export const translations = {
     },
     navigation: {
       home: "ホーム",
+      upload: "アップロード",
       timeline: "タイムライン",
       storybooks: "えほん",
       profile: "プロフィール",
@@ -114,6 +115,7 @@ export const translations = {
     },
     navigation: {
       home: "Home",
+      upload: "Upload",
       timeline: "Timeline",
       storybooks: "Storybooks",
       profile: "Profile",

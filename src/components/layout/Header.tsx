@@ -17,6 +17,7 @@ const Header: React.FC = () => {
 
   const navigation = [
     { name: t('navigation.home'), href: '/', icon: '🏠' },
+    { name: t('navigation.upload'), href: '/upload', icon: '📸' },
     { name: t('navigation.timeline'), href: '/timeline', icon: '📅' },
     { name: t('navigation.storybooks'), href: '/storybooks', icon: '📚' },
   ]
@@ -38,7 +39,7 @@ const Header: React.FC = () => {
               </h1>
             </Link>
           </div>
-          
+
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-1">
             {navigation.map((item) => (

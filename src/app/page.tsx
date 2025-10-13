@@ -1,11 +1,13 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { Layout } from '@/components/layout/Layout'
 import { Button, Card, Badge } from '@/components/ui'
 import { useLocale } from '@/contexts/LocaleContext'
 import { useTranslations } from '@/lib/translations'
 
 export default function Home() {
+  const router = useRouter()
   const { locale } = useLocale()
   const { t } = useTranslations(locale)
 
@@ -24,7 +26,11 @@ export default function Home() {
             {t('home.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="text-lg px-8 py-4 shadow-medium hover:shadow-large">
+            <Button 
+              size="lg" 
+              className="text-lg px-8 py-4 shadow-medium hover:shadow-large"
+              onClick={() => router.push('/upload')}
+            >
               📸 {t('home.uploadPhotos')}
             </Button>
             <Button variant="outline" size="lg" className="text-lg px-8 py-4">
@@ -142,7 +148,11 @@ export default function Home() {
             <p className="text-lg text-neutral-600 mb-8 max-w-md mx-auto leading-relaxed">
               {t('home.cta.subtitle')}
             </p>
-            <Button size="lg" className="text-lg px-10 py-4 shadow-medium hover:shadow-large">
+            <Button 
+              size="lg" 
+              className="text-lg px-10 py-4 shadow-medium hover:shadow-large"
+              onClick={() => router.push('/upload')}
+            >
               {t('home.cta.getStarted')}
             </Button>
           </div>
