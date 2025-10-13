@@ -1,7 +1,6 @@
 'use client'
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
 
 type Locale = 'ja' | 'en'
 
@@ -31,8 +30,6 @@ export const LocaleProvider: React.FC<LocaleProviderProps> = ({
   initialLocale = 'ja' 
 }) => {
   const [locale, setLocaleState] = useState<Locale>(initialLocale)
-  const router = useRouter()
-  const pathname = usePathname()
 
   // Load locale from localStorage on mount
   useEffect(() => {
@@ -45,10 +42,6 @@ export const LocaleProvider: React.FC<LocaleProviderProps> = ({
   const setLocale = (newLocale: Locale) => {
     setLocaleState(newLocale)
     localStorage.setItem('locale', newLocale)
-    
-    // Update URL with new locale
-    const currentPath = pathname.replace(/^\/[a-z]{2}/, '') || '/'
-    router.push(`/${newLocale}${currentPath}`)
   }
 
   const toggleLocale = () => {

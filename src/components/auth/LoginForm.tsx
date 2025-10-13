@@ -2,10 +2,14 @@
 
 import React, { useState } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useLocale } from '@/contexts/LocaleContext'
+import { useTranslations } from '@/lib/translations'
 import { Button, Card, Input } from '@/components/ui'
 
 const LoginForm: React.FC = () => {
   const { signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth()
+  const { locale } = useLocale()
+  const { t } = useTranslations(locale)
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -19,7 +23,7 @@ const LoginForm: React.FC = () => {
       setError('')
       await signInWithGoogle()
     } catch {
-      setError('Googleサインインに失敗しました。もう一度お試しください。')
+      setError(t('auth.errors.googleSignInFailed'))
     } finally {
       setLoading(false)
     }
@@ -29,12 +33,12 @@ const LoginForm: React.FC = () => {
     e.preventDefault()
     
     if (!email || !password) {
-      setError('メールアドレスとパスワードを入力してください。')
+      setError(t('auth.errors.requiredFields'))
       return
     }
 
     if (isSignUp && !displayName) {
-      setError('お名前を入力してください。')
+      setError(t('auth.errors.requiredName'))
       return
     }
 
@@ -50,17 +54,17 @@ const LoginForm: React.FC = () => {
     } catch (err) {
       const error = err as { code?: string }
       if (error.code === 'auth/user-not-found') {
-        setError('このメールアドレスのアカウントが見つかりません。')
+        setError(t('auth.errors.userNotFound'))
       } else if (error.code === 'auth/wrong-password') {
-        setError('パスワードが正しくありません。')
+        setError(t('auth.errors.wrongPassword'))
       } else if (error.code === 'auth/email-already-in-use') {
-        setError('このメールアドレスは既に使用されています。')
+        setError(t('auth.errors.emailInUse'))
       } else if (error.code === 'auth/weak-password') {
-        setError('パスワードは6文字以上で入力してください。')
+        setError(t('auth.errors.weakPassword'))
       } else if (error.code === 'auth/invalid-email') {
-        setError('有効なメールアドレスを入力してください。')
+        setError(t('auth.errors.invalidEmail'))
       } else {
-        setError('認証に失敗しました。もう一度お試しください。')
+        setError(t('auth.errors.authFailed'))
       }
     } finally {
       setLoading(false)
@@ -79,7 +83,7 @@ const LoginForm: React.FC = () => {
           </h1>
         </div>
         <p className="text-neutral-600 leading-relaxed">
-          子どもの成長を記録し、美しい絵本を作成しましょう
+          {locale === 'ja' ? '子どもの成長を記録し、美しい絵本を作成しましょう' : 'Record your child\'s growth and create beautiful storybooks'}
         </p>
       </div>
 
@@ -96,10 +100,10 @@ const LoginForm: React.FC = () => {
         {isSignUp && (
           <Input
             type="text"
-            label="お名前"
+            label={t('auth.fullName')}
             value={displayName}
             onChange={(e) => setDisplayName(e.target.value)}
-            placeholder="山田 太郎"
+            placeholder={locale === 'ja' ? '山田 太郎' : 'John Doe'}
             disabled={loading}
             leftIcon={
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +115,7 @@ const LoginForm: React.FC = () => {
         
         <Input
           type="email"
-          label="メールアドレス"
+          label={t('auth.email')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           placeholder="example@email.com"
@@ -125,12 +129,12 @@ const LoginForm: React.FC = () => {
         
         <Input
           type="password"
-          label="パスワード"
+          label={t('auth.password')}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          placeholder="6文字以上"
+          placeholder={locale === 'ja' ? '6文字以上' : '6+ characters'}
           disabled={loading}
-          helperText={isSignUp ? "6文字以上で入力してください" : undefined}
+          helperText={isSignUp ? (locale === 'ja' ? '6文字以上で入力してください' : 'Please enter at least 6 characters') : undefined}
           leftIcon={
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -145,7 +149,7 @@ const LoginForm: React.FC = () => {
           disabled={loading}
           isLoading={loading}
         >
-          {isSignUp ? 'アカウント作成' : 'サインイン'}
+          {isSignUp ? t('auth.createAccount') : t('auth.signIn')}
         </Button>
       </form>
 
@@ -154,7 +158,9 @@ const LoginForm: React.FC = () => {
           <div className="w-full border-t border-neutral-200" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-3 bg-white text-neutral-500">または</span>
+          <span className="px-3 bg-white text-neutral-500">
+            {locale === 'ja' ? 'または' : 'or'}
+          </span>
         </div>
       </div>
 
@@ -183,7 +189,7 @@ const LoginForm: React.FC = () => {
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
           />
         </svg>
-        <span>Googleでサインイン</span>
+        <span>{t('auth.signInWithGoogle')}</span>
       </Button>
 
       <div className="mt-6 text-center">
@@ -193,7 +199,7 @@ const LoginForm: React.FC = () => {
           className="text-sm text-primary-600 hover:text-primary-700 transition-colors duration-200 font-medium"
           disabled={loading}
         >
-          {isSignUp ? 'すでにアカウントをお持ちですか？ サインイン' : 'アカウントをお持ちでない方は こちら'}
+          {isSignUp ? t('auth.alreadyHaveAccount') : t('auth.noAccount')}
         </button>
       </div>
     </Card>

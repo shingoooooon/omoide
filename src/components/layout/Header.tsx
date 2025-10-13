@@ -3,20 +3,22 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useTranslations } from 'next-intl'
 import UserProfile from '@/components/auth/UserProfile'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
+import { useLocale } from '@/contexts/LocaleContext'
+import { useTranslations } from '@/lib/translations'
 import { cn } from '@/lib/utils'
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
-  const t = useTranslations('navigation')
+  const { locale } = useLocale()
+  const { t } = useTranslations(locale)
 
   const navigation = [
-    { name: t('home'), href: '/', icon: '🏠' },
-    { name: t('timeline'), href: '/timeline', icon: '📅' },
-    { name: t('storybooks'), href: '/storybooks', icon: '📚' },
+    { name: t('navigation.home'), href: '/', icon: '🏠' },
+    { name: t('navigation.timeline'), href: '/timeline', icon: '📅' },
+    { name: t('navigation.storybooks'), href: '/storybooks', icon: '📚' },
   ]
 
   const isActive = (href: string) => pathname === href
