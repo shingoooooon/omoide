@@ -1,5 +1,5 @@
 import { storage } from './firebase'
-import { ref, uploadBytesResumable, getDownloadURL, deleteObject, getMetadata } from 'firebase/storage'
+import { ref, uploadBytesResumable, uploadBytes, getDownloadURL, deleteObject, getMetadata } from 'firebase/storage'
 import { v4 as uuidv4 } from 'uuid'
 
 export interface UploadProgress {
@@ -37,10 +37,20 @@ export async function uploadPhoto(
 ): Promise<UploadResult> {
   return new Promise((resolve, reject) => {
     try {
+      // Debug: Log upload attempt
+      console.log('🔄 Starting photo upload:', {
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        userId: userId
+      })
+
       // Generate unique filename to avoid conflicts
       const fileExtension = file.name.split('.').pop()
       const uniqueFileName = `${uuidv4()}.${fileExtension}`
       const filePath = `photos/${userId}/${uniqueFileName}`
+      
+      console.log('📁 Upload path:', filePath)
       
       // Create storage reference
       const storageRef = ref(storage, filePath)
@@ -68,8 +78,49 @@ export async function uploadPhoto(
           options?.onProgress?.(progress)
         },
         (error) => {
-          console.error('Upload error:', error)
-          const uploadError = new Error(`アップロードに失敗しました: ${error.message}`)
+          console.error('❌ Upload error details:', {
+            code: error.code,
+            message: error.message,
+            serverResponse: error.serverResponse,
+            customData: error.customData
+          })
+          
+          let userFriendlyMessage = 'アップロードに失敗しました'
+          
+          // Provide specific error messages based on error code
+          switch (error.code) {
+            case 'storage/unauthorized':
+              userFriendlyMessage = 'アップロード権限がありません。ログインしてください。'
+              break
+            case 'storage/canceled':
+              userFriendlyMessage = 'アップロードがキャンセルされました。'
+              break
+            case 'storage/unknown':
+              userFriendlyMessage = 'サーバーエラーが発生しました。しばらく待ってから再試行してください。'
+              break
+            case 'storage/object-not-found':
+              userFriendlyMessage = 'ファイルが見つかりません。'
+              break
+            case 'storage/bucket-not-found':
+              userFriendlyMessage = 'ストレージの設定に問題があります。'
+              break
+            case 'storage/project-not-found':
+              userFriendlyMessage = 'プロジェクトの設定に問題があります。'
+              break
+            case 'storage/quota-exceeded':
+              userFriendlyMessage = 'ストレージの容量制限に達しました。'
+              break
+            case 'storage/unauthenticated':
+              userFriendlyMessage = '認証が必要です。ログインしてください。'
+              break
+            case 'storage/retry-limit-exceeded':
+              userFriendlyMessage = 'アップロードの再試行回数が上限に達しました。'
+              break
+            default:
+              userFriendlyMessage = `アップロードに失敗しました: ${error.message}`
+          }
+          
+          const uploadError = new Error(userFriendlyMessage)
           options?.onError?.(uploadError)
           reject(uploadError)
         },
@@ -167,6 +218,69 @@ export async function getPhotoMetadata(filePath: string) {
   } catch (error) {
     console.error('Metadata error:', error)
     throw new Error('ファイル情報の取得に失敗しました')
+  }
+}
+
+/**
+ * Simple upload function using uploadBytes (no progress tracking)
+ * @param file - The file to upload
+ * @param userId - The user ID for organizing files
+ * @returns Promise<UploadResult>
+ */
+export async function uploadPhotoSimple(
+  file: File,
+  userId: string
+): Promise<UploadResult> {
+  try {
+    console.log('🔄 Starting simple photo upload:', {
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type,
+      userId: userId
+    })
+
+    // Generate unique filename
+    const fileExtension = file.name.split('.').pop()
+    const uniqueFileName = `${uuidv4()}.${fileExtension}`
+    const filePath = `photos/${userId}/${uniqueFileName}`
+    
+    console.log('📁 Upload path:', filePath)
+    
+    // Create storage reference
+    const storageRef = ref(storage, filePath)
+    
+    // Upload file using simple uploadBytes
+    console.log('⬆️ Uploading with uploadBytes...')
+    const uploadResult = await uploadBytes(storageRef, file, {
+      contentType: file.type,
+      customMetadata: {
+        originalName: file.name,
+        uploadedAt: new Date().toISOString(),
+        userId: userId
+      }
+    })
+    
+    console.log('✅ Upload successful:', uploadResult)
+    
+    // Get download URL
+    console.log('🔗 Getting download URL...')
+    const downloadURL = await getDownloadURL(uploadResult.ref)
+    
+    console.log('✅ Download URL obtained:', downloadURL)
+    
+    const result: UploadResult = {
+      url: downloadURL,
+      path: filePath,
+      fileName: uniqueFileName,
+      size: uploadResult.metadata.size,
+      contentType: uploadResult.metadata.contentType || file.type,
+      uploadedAt: new Date()
+    }
+    
+    return result
+  } catch (error) {
+    console.error('❌ Simple upload error:', error)
+    throw error
   }
 }
 

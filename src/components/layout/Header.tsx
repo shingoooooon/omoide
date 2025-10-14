@@ -20,6 +20,10 @@ const Header: React.FC = () => {
     { name: t('navigation.upload'), href: '/upload', icon: '📸' },
     { name: t('navigation.timeline'), href: '/timeline', icon: '📅' },
     { name: t('navigation.storybooks'), href: '/storybooks', icon: '📚' },
+    // Development test page
+    ...(process.env.NODE_ENV === 'development' ? [
+      { name: '顔解析テスト', href: '/test-face-analysis', icon: '🔍' }
+    ] : []),
   ]
 
   const isActive = (href: string) => pathname === href

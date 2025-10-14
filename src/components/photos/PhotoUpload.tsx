@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef } from 'react'
 import { Button, Card } from '@/components/ui'
 import { cn } from '@/lib/utils'
-import { uploadPhoto, UploadResult, UploadProgress } from '@/lib/storage'
+import { uploadPhoto, uploadPhotoSimple, UploadResult, UploadProgress } from '@/lib/storage'
 import { validatePhotoFiles, formatValidationErrors, ValidationOptions } from '@/lib/photoValidation'
 import { useAuth } from '@/contexts/AuthContext'
 
@@ -94,7 +94,8 @@ export function PhotoUpload({
       if (autoUpload && user) {
         uploadPhotosToStorage(newPhotos)
       } else {
-        onPhotosUploaded(updatedPhotos)
+        // Use setTimeout to avoid setState during render
+        setTimeout(() => onPhotosUploaded(updatedPhotos), 0)
       }
     } catch (error) {
       console.error('Validation error:', error)
@@ -143,7 +144,8 @@ export function PhotoUpload({
       return true
     })
     setPhotos(updatedPhotos)
-    onPhotosUploaded(updatedPhotos)
+    // Use setTimeout to avoid setState during render
+    setTimeout(() => onPhotosUploaded(updatedPhotos), 0)
   }
 
   const uploadPhotosToStorage = async (photosToUpload: Photo[]) => {
@@ -152,45 +154,61 @@ export function PhotoUpload({
       return
     }
 
+    console.log('🔐 User authentication status:', {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName,
+      emailVerified: user.emailVerified
+    })
+
     setIsUploading(true)
 
     try {
       const uploadPromises = photosToUpload.map(async (photo) => {
-        return new Promise<void>((resolve, reject) => {
-          uploadPhoto(photo.file, user.uid, {
-            onProgress: (progress: UploadProgress) => {
-              setPhotos(prevPhotos =>
-                prevPhotos.map(p =>
-                  p.id === photo.id
-                    ? { ...p, uploadProgress: progress.percentage }
-                    : p
-                )
-              )
-            },
-            onComplete: (result: UploadResult) => {
-              setPhotos(prevPhotos => {
-                const updatedPhotos = prevPhotos.map(p =>
-                  p.id === photo.id
-                    ? {
-                      ...p,
-                      uploadProgress: 100,
-                      storageUrl: result.url,
-                      storagePath: result.path,
-                      isUploaded: true
-                    }
-                    : p
-                )
-                onPhotosUploaded(updatedPhotos)
-                return updatedPhotos
-              })
-              resolve()
-            },
-            onError: (error: Error) => {
-              setErrors(prev => [...prev, `${photo.fileName}: ${error.message}`])
-              reject(error)
-            }
+        try {
+          // Update progress to show upload starting
+          setPhotos(prevPhotos =>
+            prevPhotos.map(p =>
+              p.id === photo.id
+                ? { ...p, uploadProgress: 10 }
+                : p
+            )
+          )
+
+          // Use the working simple upload function
+          const result = await uploadPhotoSimple(photo.file, user.uid)
+          
+          // Update photo with successful upload result
+          setPhotos(prevPhotos => {
+            const updatedPhotos = prevPhotos.map(p =>
+              p.id === photo.id
+                ? {
+                  ...p,
+                  uploadProgress: 100,
+                  storageUrl: result.url,
+                  storagePath: result.path,
+                  isUploaded: true
+                }
+                : p
+            )
+            // Use setTimeout to avoid setState during render
+            setTimeout(() => onPhotosUploaded(updatedPhotos), 0)
+            return updatedPhotos
           })
-        })
+
+        } catch (error) {
+          console.error(`Upload error for ${photo.fileName}:`, error)
+          setErrors(prev => [...prev, `${photo.fileName}: ${error instanceof Error ? error.message : 'アップロードに失敗しました'}`])
+          
+          // Update photo to show error state
+          setPhotos(prevPhotos =>
+            prevPhotos.map(p =>
+              p.id === photo.id
+                ? { ...p, uploadProgress: undefined, isUploaded: false }
+                : p
+            )
+          )
+        }
       })
 
       await Promise.all(uploadPromises)
