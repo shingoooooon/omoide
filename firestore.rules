@@ -1,0 +1,106 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isValidUser() {
+      return isAuthenticated() && 
+             request.auth.token.email_verified == true;
+    }
+    
+    // Users collection
+    match /users/{userId} {
+      // Users can read and write their own profile
+      allow read, write: if isOwner(userId);
+      
+      // Validate user data structure
+      allow create, update: if isOwner(userId) && 
+        request.resource.data.keys().hasAll(['email', 'displayName', 'createdAt', 'lastLoginAt']) &&
+        request.resource.data.email is string &&
+        request.resource.data.displayName is string &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.lastLoginAt is timestamp;
+    }
+    
+    // Growth records collection
+    match /records/{recordId} {
+      // Users can read and write their own records
+      allow read, write: if isAuthenticated() && 
+        (resource == null || isOwner(resource.data.userId));
+      
+      // Allow reading shared records
+      allow read: if resource.data.isShared == true;
+      
+      // Validate record data structure
+      allow create: if isValidUser() && 
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.keys().hasAll(['userId', 'photos', 'comments', 'createdAt', 'updatedAt', 'isShared']) &&
+        request.resource.data.photos is list &&
+        request.resource.data.comments is list &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.updatedAt is timestamp &&
+        request.resource.data.isShared is bool;
+      
+      allow update: if isOwner(resource.data.userId) &&
+        request.resource.data.userId == resource.data.userId &&
+        request.resource.data.createdAt == resource.data.createdAt;
+    }
+    
+    // Storybooks collection
+    match /storybooks/{storybookId} {
+      // Users can read and write their own storybooks
+      allow read, write: if isAuthenticated() && 
+        (resource == null || isOwner(resource.data.userId));
+      
+      // Allow reading shared storybooks
+      allow read: if resource.data.isShared == true;
+      
+      // Validate storybook data structure
+      allow create: if isValidUser() && 
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.keys().hasAll(['userId', 'title', 'month', 'pages', 'createdAt', 'isShared']) &&
+        request.resource.data.title is string &&
+        request.resource.data.month is string &&
+        request.resource.data.pages is list &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.isShared is bool &&
+        request.resource.data.pages.size() > 0 &&
+        request.resource.data.pages.size() <= 20;
+      
+      allow update: if isOwner(resource.data.userId) &&
+        request.resource.data.userId == resource.data.userId &&
+        request.resource.data.createdAt == resource.data.createdAt;
+    }
+    
+    // Share links collection
+    match /shares/{shareId} {
+      // Anyone can read active share links (for public sharing)
+      allow read: if resource.data.isActive == true;
+      
+      // Only the creator can manage share links
+      allow create: if isValidUser() && 
+        request.resource.data.createdBy == request.auth.uid &&
+        request.resource.data.keys().hasAll(['contentId', 'contentType', 'createdBy', 'createdAt', 'isActive']) &&
+        request.resource.data.contentId is string &&
+        request.resource.data.contentType in ['record', 'storybook'] &&
+        request.resource.data.createdBy is string &&
+        request.resource.data.createdAt is timestamp &&
+        request.resource.data.isActive is bool;
+      
+      allow update, delete: if isAuthenticated() && 
+        isOwner(resource.data.createdBy);
+    }
+    
+    // Deny all other access
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
