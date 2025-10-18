@@ -1,5 +1,6 @@
 // Utility functions for converting between Firestore documents and application models
 
+import { Timestamp } from 'firebase/firestore';
 import { 
   User, 
   Photo, 
@@ -18,13 +19,13 @@ import {
 } from '@/types/models';
 
 // Convert Firestore Timestamp to Date
-function timestampToDate(timestamp: FirebaseFirestore.Timestamp): Date {
+function timestampToDate(timestamp: Timestamp): Date {
   return timestamp.toDate();
 }
 
 // Convert Date to Firestore Timestamp
-function dateToTimestamp(date: Date): FirebaseFirestore.Timestamp {
-  return FirebaseFirestore.Timestamp.fromDate(date);
+function dateToTimestamp(date: Date): Timestamp {
+  return Timestamp.fromDate(date);
 }
 
 // User converters
@@ -62,13 +63,19 @@ export function photoDocToPhoto(id: string, doc: PhotoDoc): Photo {
 }
 
 export function photoToPhotoDoc(photo: Photo): PhotoDoc {
-  return {
+  const doc: PhotoDoc = {
     url: photo.url,
     fileName: photo.fileName,
     uploadedAt: dateToTimestamp(photo.uploadedAt),
-    faceDetected: photo.faceDetected,
-    storageRef: photo.storageRef
+    faceDetected: photo.faceDetected
   };
+  
+  // Only include storageRef if it's not undefined
+  if (photo.storageRef !== undefined) {
+    doc.storageRef = photo.storageRef;
+  }
+  
+  return doc;
 }
 
 // Growth comment converters
@@ -84,13 +91,19 @@ export function growthCommentDocToGrowthComment(id: string, doc: GrowthCommentDo
 }
 
 export function growthCommentToGrowthCommentDoc(comment: GrowthComment): GrowthCommentDoc {
-  return {
+  const doc: GrowthCommentDoc = {
     photoId: comment.photoId,
     content: comment.content,
     generatedAt: dateToTimestamp(comment.generatedAt),
-    isEdited: comment.isEdited,
-    originalContent: comment.originalContent
+    isEdited: comment.isEdited
   };
+  
+  // Only include originalContent if it's not undefined
+  if (comment.originalContent !== undefined) {
+    doc.originalContent = comment.originalContent;
+  }
+  
+  return doc;
 }
 
 // Growth record converters
@@ -112,15 +125,21 @@ export function growthRecordDocToGrowthRecord(id: string, doc: GrowthRecordDoc):
 }
 
 export function growthRecordToGrowthRecordDoc(record: GrowthRecord): GrowthRecordDoc {
-  return {
+  const doc: GrowthRecordDoc = {
     userId: record.userId,
     photos: record.photos.map(photo => photoToPhotoDoc(photo)),
     comments: record.comments.map(comment => growthCommentToGrowthCommentDoc(comment)),
     createdAt: dateToTimestamp(record.createdAt),
     updatedAt: dateToTimestamp(record.updatedAt),
-    sharedLink: record.sharedLink,
     isShared: record.isShared
   };
+  
+  // Only include sharedLink if it's not undefined
+  if (record.sharedLink !== undefined) {
+    doc.sharedLink = record.sharedLink;
+  }
+  
+  return doc;
 }
 
 // Storybook page converters

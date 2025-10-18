@@ -21,6 +21,8 @@ export function LoadingSpinner({
   return (
     <div
       className={cn('flex flex-col items-center justify-center space-y-2', className)}
+      role="status"
+      aria-label="読み込み中"
       {...props}
     >
       <svg

@@ -1,15 +1,37 @@
 // Export all services for easy importing
 
 export * from './userService';
-export * from './growthRecordService';
-export * from './storybookService';
 export * from './shareLinkService';
 
-// Re-export types for convenience
+// Export growth record service with renamed types
+export {
+  createGrowthRecord,
+  getGrowthRecord,
+  getUserGrowthRecords,
+  getMonthlyGrowthRecords,
+  updateGrowthRecord,
+  deleteGrowthRecord,
+  updateGrowthRecordSharing,
+  getSharedGrowthRecord
+} from './growthRecordService';
+
 export type {
   PaginationOptions as GrowthRecordPaginationOptions,
   GrowthRecordListResult
 } from './growthRecordService';
+
+// Export storybook service with renamed types
+export {
+  createStorybook,
+  getStorybook,
+  getUserStorybooks,
+  getMonthlyStorybook,
+  updateStorybook,
+  deleteStorybook,
+  updateStorybookSharing,
+  getSharedStorybook,
+  updateStorybookPageAudio
+} from './storybookService';
 
 export type {
   PaginationOptions as StorybookPaginationOptions,

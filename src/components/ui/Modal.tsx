@@ -9,7 +9,7 @@ interface ModalProps {
   onClose: () => void
   title?: string
   children: ReactNode
-  size?: 'sm' | 'md' | 'lg' | 'xl'
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
   showCloseButton?: boolean
   className?: string
 }
@@ -27,7 +27,8 @@ export function Modal({
     sm: 'max-w-md',
     md: 'max-w-lg',
     lg: 'max-w-2xl',
-    xl: 'max-w-4xl'
+    xl: 'max-w-4xl',
+    full: 'max-w-full w-full h-full'
   }
 
   return (
@@ -46,7 +47,10 @@ export function Modal({
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
+          <div className={cn(
+            "flex min-h-full items-center justify-center text-center",
+            size === 'full' ? 'p-0' : 'p-4'
+          )}>
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -58,7 +62,10 @@ export function Modal({
             >
               <Dialog.Panel 
                 className={cn(
-                  'w-full transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-large transition-all',
+                  'w-full transform overflow-hidden text-left align-middle transition-all',
+                  size === 'full' 
+                    ? 'h-full bg-transparent p-0' 
+                    : 'rounded-2xl bg-white p-6 shadow-large',
                   sizeClasses[size],
                   className
                 )}

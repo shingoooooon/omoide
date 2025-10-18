@@ -82,7 +82,7 @@ export async function updateUser(
     const docRef = doc(db, COLLECTION_NAME, id);
     const updateData = userToUserDoc(updatedUser);
     
-    await updateDoc(docRef, updateData);
+    await updateDoc(docRef, updateData as any);
   } catch (error) {
     console.error('Error updating user:', error);
     throw new Error('Failed to update user');

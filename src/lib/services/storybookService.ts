@@ -71,7 +71,7 @@ export async function createStorybook(storybook: Omit<Storybook, 'id'>): Promise
     };
 
     // Update the document with proper IDs
-    await updateDoc(docRef, storybookToStorybookDoc(finalStorybook));
+    await updateDoc(docRef, storybookToStorybookDoc(finalStorybook) as any);
     
     return docRef.id;
   } catch (error) {
@@ -193,7 +193,7 @@ export async function updateStorybook(
     const docRef = doc(db, COLLECTION_NAME, id);
     const updateData = storybookToStorybookDoc(updatedStorybook);
     
-    await updateDoc(docRef, updateData);
+    await updateDoc(docRef, updateData as any);
   } catch (error) {
     console.error('Error updating storybook:', error);
     throw new Error('Failed to update storybook');

@@ -1,5 +1,7 @@
 // Core data models for the Omoide application
 
+import { Timestamp } from 'firebase/firestore';
+
 export interface User {
   id: string;
   email: string;
@@ -73,14 +75,14 @@ export interface UserDoc {
   email: string;
   displayName: string;
   photoURL?: string;
-  createdAt: FirebaseFirestore.Timestamp;
-  lastLoginAt: FirebaseFirestore.Timestamp;
+  createdAt: Timestamp;
+  lastLoginAt: Timestamp;
 }
 
 export interface PhotoDoc {
   url: string;
   fileName: string;
-  uploadedAt: FirebaseFirestore.Timestamp;
+  uploadedAt: Timestamp;
   faceDetected: boolean;
   storageRef?: string;
 }
@@ -88,7 +90,7 @@ export interface PhotoDoc {
 export interface GrowthCommentDoc {
   photoId: string;
   content: string;
-  generatedAt: FirebaseFirestore.Timestamp;
+  generatedAt: Timestamp;
   isEdited: boolean;
   originalContent?: string;
 }
@@ -97,8 +99,8 @@ export interface GrowthRecordDoc {
   userId: string;
   photos: PhotoDoc[];
   comments: GrowthCommentDoc[];
-  createdAt: FirebaseFirestore.Timestamp;
-  updatedAt: FirebaseFirestore.Timestamp;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
   sharedLink?: string;
   isShared: boolean;
 }
@@ -116,7 +118,7 @@ export interface StorybookDoc {
   month: string;
   pages: StorybookPageDoc[];
   coverImageUrl?: string;
-  createdAt: FirebaseFirestore.Timestamp;
+  createdAt: Timestamp;
   sharedLink?: string;
   isShared: boolean;
 }
@@ -125,7 +127,7 @@ export interface ShareLinkDoc {
   contentId: string;
   contentType: 'record' | 'storybook';
   createdBy: string;
-  createdAt: FirebaseFirestore.Timestamp;
+  createdAt: Timestamp;
   isActive: boolean;
-  expiresAt?: FirebaseFirestore.Timestamp;
+  expiresAt?: Timestamp;
 }

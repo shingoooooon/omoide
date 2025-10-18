@@ -1,5 +1,48 @@
 // Unit tests for validation functions
 
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { describe } from 'node:test';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { describe } from 'node:test';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { describe } from 'node:test';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { describe } from 'node:test';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { describe } from 'node:test';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { describe } from 'node:test';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { describe } from 'node:test';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { describe } from 'node:test';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { describe } from 'node:test';
+import { describe } from 'node:test';
 import {
   validateUser,
   validatePhoto,
@@ -126,6 +169,16 @@ describe('Validation Functions', () => {
 
     it('should pass validation for valid record', () => {
       expect(() => validateGrowthRecord(validRecord)).not.toThrow();
+    });
+
+    it('should pass validation for record being created (without ID)', () => {
+      const recordWithoutId = { ...validRecord, id: '' };
+      expect(() => validateGrowthRecord(recordWithoutId, true)).not.toThrow();
+    });
+
+    it('should throw error for record without ID when not creating', () => {
+      const recordWithoutId = { ...validRecord, id: '' };
+      expect(() => validateGrowthRecord(recordWithoutId, false)).toThrow(ValidationError);
     });
 
     it('should throw error for empty photos array', () => {

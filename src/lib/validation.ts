@@ -105,8 +105,9 @@ export function validateGrowthComment(comment: Partial<GrowthComment>): void {
 }
 
 // Growth record validation
-export function validateGrowthRecord(record: Partial<GrowthRecord>): void {
-  if (!record.id || typeof record.id !== 'string' || record.id.trim() === '') {
+export function validateGrowthRecord(record: Partial<GrowthRecord>, isCreating: boolean = false): void {
+  // Only validate ID if not creating (ID is auto-generated during creation)
+  if (!isCreating && (!record.id || typeof record.id !== 'string' || record.id.trim() === '')) {
     throw new ValidationError('Record ID is required and must be a non-empty string', 'id');
   }
 

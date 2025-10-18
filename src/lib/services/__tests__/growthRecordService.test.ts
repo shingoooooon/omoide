@@ -7,6 +7,14 @@ import {
   GrowthComment 
 } from '@/types/models';
 import { validateGrowthRecord } from '@/lib/validation';
+import { it } from 'date-fns/locale';
+import { describe } from 'node:test';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { it } from 'date-fns/locale';
+import { describe } from 'node:test';
+import { describe } from 'node:test';
 
 // Mock Firebase functions for unit testing
 jest.mock('@/lib/firebase', () => ({
@@ -58,6 +66,11 @@ describe('Growth Record Service', () => {
   describe('Data Validation', () => {
     it('should validate a complete growth record', () => {
       expect(() => validateGrowthRecord(mockRecord)).not.toThrow();
+    });
+
+    it('should validate record during creation (without ID)', () => {
+      const recordForCreation = { ...mockRecord, id: '' };
+      expect(() => validateGrowthRecord(recordForCreation, true)).not.toThrow();
     });
 
     it('should handle records with multiple photos and comments', () => {

@@ -5,14 +5,64 @@ import { Layout } from '@/components/layout/Layout'
 import { PhotoUpload, Photo } from '@/components/photos'
 import { Card, Button } from '@/components/ui'
 import { useAuth } from '@/contexts/AuthContext'
+import { createGrowthRecord } from '@/lib/services/growthRecordService'
+import { useRouter } from 'next/navigation'
 
 export default function UploadPage() {
   const [uploadedPhotos, setUploadedPhotos] = useState<Photo[]>([])
+  const [isSaving, setIsSaving] = useState(false)
   const { user, loading } = useAuth()
+  const router = useRouter()
 
   const handlePhotosUploaded = (photos: Photo[]) => {
     setUploadedPhotos(photos)
     console.log('Photos uploaded:', photos)
+  }
+
+  const handleSaveRecord = async () => {
+    if (!user || uploadedPhotos.length === 0) return
+
+    setIsSaving(true)
+    try {
+      // Filter only successfully uploaded photos
+      const uploadedPhotoData = uploadedPhotos
+        .filter(photo => photo.isUploaded && photo.storageUrl)
+        .map(photo => ({
+          id: photo.id,
+          url: photo.storageUrl!,
+          fileName: photo.fileName,
+          uploadedAt: photo.uploadedAt,
+          faceDetected: false, // Will be updated by face detection service
+          storageRef: photo.storagePath || null // Use storagePath or null instead of undefined
+        }))
+
+      if (uploadedPhotoData.length === 0) {
+        alert('アップロード完了した写真がありません')
+        return
+      }
+
+      // Create growth record
+      const recordId = await createGrowthRecord({
+        userId: user.uid,
+        photos: uploadedPhotoData,
+        comments: [], // Comments will be generated later
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        isShared: false
+        // sharedLink is intentionally omitted (undefined) and will be handled by converter
+      })
+
+      console.log('Growth record created:', recordId)
+      alert('成長記録を保存しました！')
+      
+      // Redirect to timeline
+      router.push('/timeline')
+    } catch (error) {
+      console.error('Error saving record:', error)
+      alert('記録の保存に失敗しました。もう一度お試しください。')
+    } finally {
+      setIsSaving(false)
+    }
   }
 
   if (loading) {
@@ -69,7 +119,7 @@ export default function UploadPage() {
             <h3 className="text-xl font-semibold text-neutral-900 mb-4">
               アップロード結果
             </h3>
-            <div className="space-y-2">
+            <div className="space-y-2 mb-6">
               {uploadedPhotos.map((photo) => (
                 <div key={photo.id} className="flex items-center justify-between p-3 bg-neutral-50 rounded-lg">
                   <div className="flex items-center space-x-3">
@@ -97,6 +147,23 @@ export default function UploadPage() {
                 </div>
               ))}
             </div>
+            
+            {/* Save Record Button */}
+            {uploadedPhotos.some(photo => photo.isUploaded) && user && (
+              <div className="border-t pt-4">
+                <Button
+                  onClick={handleSaveRecord}
+                  disabled={isSaving}
+                  className="w-full"
+                  size="lg"
+                >
+                  {isSaving ? '保存中...' : '成長記録として保存'}
+                </Button>
+                <p className="text-sm text-neutral-600 mt-2 text-center">
+                  写真をタイムラインに表示するには、記録として保存してください
+                </p>
+              </div>
+            )}
           </Card>
         )}
       </div>

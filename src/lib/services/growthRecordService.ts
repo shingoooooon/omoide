@@ -58,8 +58,8 @@ export async function createGrowthRecord(record: Omit<GrowthRecord, 'id'>): Prom
     }))
   };
 
-  // Validate the record
-  validateGrowthRecord(recordWithIds);
+  // Validate the record (skip ID validation since it's being created)
+  validateGrowthRecord(recordWithIds, true);
 
   try {
     const docData = growthRecordToGrowthRecordDoc(recordWithIds);
@@ -80,7 +80,7 @@ export async function createGrowthRecord(record: Omit<GrowthRecord, 'id'>): Prom
     };
 
     // Update the document with proper IDs
-    await updateDoc(docRef, growthRecordToGrowthRecordDoc(finalRecord));
+    await updateDoc(docRef, growthRecordToGrowthRecordDoc(finalRecord) as any);
     
     return docRef.id;
   } catch (error) {
@@ -206,7 +206,7 @@ export async function updateGrowthRecord(
     const docRef = doc(db, COLLECTION_NAME, id);
     const updateData = growthRecordToGrowthRecordDoc(updatedRecord);
     
-    await updateDoc(docRef, updateData);
+    await updateDoc(docRef, updateData as any);
   } catch (error) {
     console.error('Error updating growth record:', error);
     throw new Error('Failed to update growth record');

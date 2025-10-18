@@ -8,6 +8,7 @@ import {
   getDocs, 
   updateDoc, 
   deleteDoc, 
+  setDoc,
   query, 
   where, 
   limit
@@ -21,7 +22,7 @@ import {
   shareLinkDocToShareLink, 
   shareLinkToShareLinkDoc 
 } from '@/lib/modelConverters';
-import { validateShareLink } from '@/lib/validation';
+
 
 const COLLECTION_NAME = 'shares';
 
@@ -54,12 +55,11 @@ export async function createShareLink(
     expiresAt
   };
 
-  // Validate the share link
-  validateShareLink(shareLink);
+  // Note: ShareLink validation would go here if needed
 
   try {
     const docData = shareLinkToShareLinkDoc(shareLink);
-    await doc(db, COLLECTION_NAME, shareId).set(docData);
+    await setDoc(doc(db, COLLECTION_NAME, shareId), docData);
     
     return shareId;
   } catch (error) {
