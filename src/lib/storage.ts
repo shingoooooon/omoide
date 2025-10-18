@@ -297,6 +297,52 @@ export function generatePhotoPath(userId: string, originalFileName: string): str
 }
 
 /**
+ * Upload an image from URL to Firebase Storage
+ * @param imageUrl - The URL of the image to upload
+ * @param fileName - The desired file name/path in storage
+ * @returns Promise<string> - The download URL of the uploaded image
+ */
+export async function uploadImageFromUrl(
+  imageUrl: string,
+  fileName: string
+): Promise<string> {
+  try {
+    console.log('🔄 Starting image upload from URL:', { imageUrl, fileName });
+
+    // Fetch the image from the URL
+    const response = await fetch(imageUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.statusText}`);
+    }
+
+    // Get the image data as a blob
+    const imageBlob = await response.blob();
+    
+    // Create storage reference
+    const storageRef = ref(storage, fileName);
+    
+    // Upload the blob to Firebase Storage
+    const uploadResult = await uploadBytes(storageRef, imageBlob, {
+      contentType: imageBlob.type || 'image/png',
+      customMetadata: {
+        source: 'generated-illustration',
+        uploadedAt: new Date().toISOString(),
+      }
+    });
+    
+    // Get download URL
+    const downloadURL = await getDownloadURL(uploadResult.ref);
+    
+    console.log('✅ Image uploaded successfully:', downloadURL);
+    return downloadURL;
+
+  } catch (error) {
+    console.error('❌ Image upload from URL error:', error);
+    throw new Error('画像のアップロードに失敗しました');
+  }
+}
+
+/**
  * Validate file before upload
  * @param file - The file to validate
  * @param maxSizeMB - Maximum file size in MB
