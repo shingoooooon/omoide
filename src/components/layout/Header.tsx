@@ -19,6 +19,7 @@ const Header: React.FC = () => {
     { name: t('navigation.home'), href: '/', icon: '🏠' },
     { name: t('navigation.upload'), href: '/upload', icon: '📸' },
     { name: t('navigation.timeline'), href: '/timeline', icon: '📅' },
+    { name: t('navigation.albums'), href: '/albums', icon: '📖' },
     { name: t('navigation.storybooks'), href: '/storybooks', icon: '📚' },
   ]
 

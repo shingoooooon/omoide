@@ -104,6 +104,7 @@ const config: Config = {
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
         display: ['Poppins', 'Inter', 'sans-serif'],
+        handwriting: ['Kalam', 'cursive'],
       },
       fontSize: {
         'xs': ['0.75rem', { lineHeight: '1rem' }],

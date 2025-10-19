@@ -317,6 +317,26 @@ export async function updateGrowthRecordSharing(
   }
 }
 
+// Get all growth records (for albums page)
+export async function getAllGrowthRecords(): Promise<GrowthRecord[]> {
+  try {
+    const q = query(
+      collection(db, COLLECTION_NAME),
+      orderBy('createdAt', 'desc')
+    );
+    
+    const querySnapshot = await getDocs(q);
+    
+    return querySnapshot.docs.map(doc => {
+      const data = doc.data() as GrowthRecordDoc;
+      return growthRecordDocToGrowthRecord(doc.id, data);
+    });
+  } catch (error) {
+    console.error('Error getting all growth records:', error);
+    throw new Error('Failed to get all growth records');
+  }
+}
+
 // Get shared growth record (for public access)
 export async function getSharedGrowthRecord(shareId: string): Promise<GrowthRecord | null> {
   try {

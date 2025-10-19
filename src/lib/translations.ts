@@ -16,6 +16,7 @@ export const translations = {
       home: "ホーム",
       upload: "アップロード",
       timeline: "タイムライン",
+      albums: "アルバム",
       storybooks: "えほん",
       profile: "プロフィール",
       settings: "設定"
@@ -168,6 +169,7 @@ export const translations = {
       home: "Home",
       upload: "Upload",
       timeline: "Timeline",
+      albums: "Albums",
       storybooks: "Storybooks",
       profile: "Profile",
       settings: "Settings"
