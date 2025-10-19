@@ -31,6 +31,10 @@ export default function TimelinePage() {
               record={selectedRecord}
               isOpen={isDetailOpen}
               onClose={handleCloseDetail}
+              onRecordUpdate={(updatedRecord) => {
+                setSelectedRecord(updatedRecord);
+                // Optionally trigger a refresh of the timeline
+              }}
             />
           )}
         </div>

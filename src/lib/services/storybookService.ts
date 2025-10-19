@@ -43,32 +43,30 @@ export interface StorybookListResult {
 
 // Create a new storybook
 export async function createStorybook(storybook: Omit<Storybook, 'id'>): Promise<string> {
-  // Generate IDs for pages
-  const storybookWithIds: Storybook = {
-    ...storybook,
-    id: '', // Will be set by Firestore
-    pages: storybook.pages.map((page, index) => ({
-      ...page,
-      id: generatePageId('temp', page.pageNumber)
-    }))
-  };
-
-  // Validate the storybook
-  validateStorybook(storybookWithIds);
-
   try {
-    const docData = storybookToStorybookDoc(storybookWithIds);
-    const docRef = await addDoc(collection(db, COLLECTION_NAME), docData);
+    // First create the document to get an ID
+    const tempDocData = storybookToStorybookDoc({
+      ...storybook,
+      id: 'temp',
+      pages: storybook.pages.map((page, index) => ({
+        ...page,
+        id: generatePageId('temp', page.pageNumber)
+      }))
+    });
     
-    // Update the storybook with proper IDs
+    const docRef = await addDoc(collection(db, COLLECTION_NAME), tempDocData);
+    // Generate final storybook with proper IDs
     const finalStorybook: Storybook = {
-      ...storybookWithIds,
+      ...storybook,
       id: docRef.id,
-      pages: storybookWithIds.pages.map((page) => ({
+      pages: storybook.pages.map((page) => ({
         ...page,
         id: generatePageId(docRef.id, page.pageNumber)
       }))
     };
+
+    // Validate the final storybook
+    validateStorybook(finalStorybook);
 
     // Update the document with proper IDs
     await updateDoc(docRef, storybookToStorybookDoc(finalStorybook) as any);

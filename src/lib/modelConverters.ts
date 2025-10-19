@@ -154,12 +154,18 @@ export function storybookPageDocToStorybookPage(id: string, doc: StorybookPageDo
 }
 
 export function storybookPageToStorybookPageDoc(page: StorybookPage): StorybookPageDoc {
-  return {
+  const doc: any = {
     text: page.text,
     imageUrl: page.imageUrl,
-    audioUrl: page.audioUrl,
     pageNumber: page.pageNumber
   };
+  
+  // Only include audioUrl if it's defined and not null
+  if (page.audioUrl !== undefined && page.audioUrl !== null) {
+    doc.audioUrl = page.audioUrl;
+  }
+  
+  return doc as StorybookPageDoc;
 }
 
 // Storybook converters
@@ -180,16 +186,25 @@ export function storybookDocToStorybook(id: string, doc: StorybookDoc): Storyboo
 }
 
 export function storybookToStorybookDoc(storybook: Storybook): StorybookDoc {
-  return {
+  const doc: any = {
     userId: storybook.userId,
     title: storybook.title,
     month: storybook.month,
     pages: storybook.pages.map(page => storybookPageToStorybookPageDoc(page)),
-    coverImageUrl: storybook.coverImageUrl,
     createdAt: dateToTimestamp(storybook.createdAt),
-    sharedLink: storybook.sharedLink,
     isShared: storybook.isShared
   };
+  
+  // Only include optional fields if they're defined and not null
+  if (storybook.coverImageUrl !== undefined && storybook.coverImageUrl !== null) {
+    doc.coverImageUrl = storybook.coverImageUrl;
+  }
+  
+  if (storybook.sharedLink !== undefined && storybook.sharedLink !== null) {
+    doc.sharedLink = storybook.sharedLink;
+  }
+  
+  return doc as StorybookDoc;
 }
 
 // Share link converters

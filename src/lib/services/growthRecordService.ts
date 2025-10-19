@@ -163,9 +163,7 @@ export async function getMonthlyGrowthRecords(
     const q = query(
       collection(db, COLLECTION_NAME),
       where('userId', '==', userId),
-      where('createdAt', '>=', startDate),
-      where('createdAt', '<=', endDate),
-      orderBy('createdAt', 'asc')
+      where('createdAt', '>=', startDate)
     );
     
     const querySnapshot = await getDocs(q);
@@ -173,7 +171,9 @@ export async function getMonthlyGrowthRecords(
     return querySnapshot.docs.map(doc => {
       const data = doc.data() as GrowthRecordDoc;
       return growthRecordDocToGrowthRecord(doc.id, data);
-    });
+    })
+    .filter(record => record.createdAt <= endDate) // Client-side filtering for end date
+    .sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
   } catch (error) {
     console.error('Error getting monthly growth records:', error);
     throw new Error('Failed to get monthly growth records');
@@ -221,6 +221,41 @@ export async function deleteGrowthRecord(id: string): Promise<void> {
   } catch (error) {
     console.error('Error deleting growth record:', error);
     throw new Error('Failed to delete growth record');
+  }
+}
+
+// Add comments to a growth record
+export async function addCommentsToGrowthRecord(
+  recordId: string,
+  comments: string[]
+): Promise<void> {
+  try {
+    // Get the existing record
+    const existingRecord = await getGrowthRecord(recordId);
+    if (!existingRecord) {
+      throw new Error('Growth record not found');
+    }
+
+    // Create new comment objects
+    const newComments = comments.map((content, index) => ({
+      id: `${recordId}_comment_${Date.now()}_${index}`,
+      photoId: existingRecord.photos[index]?.id || `photo_${index}`,
+      content,
+      generatedAt: new Date(),
+      isEdited: false
+    }));
+
+    // Update the record with new comments
+    const updatedRecord = {
+      ...existingRecord,
+      comments: [...existingRecord.comments, ...newComments],
+      updatedAt: new Date()
+    };
+
+    await updateGrowthRecord(recordId, updatedRecord);
+  } catch (error) {
+    console.error('Error adding comments to growth record:', error);
+    throw new Error('Failed to add comments to growth record');
   }
 }
 

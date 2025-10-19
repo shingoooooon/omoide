@@ -55,7 +55,14 @@ export async function generateIllustration(
 
   } catch (error) {
     console.error(`Error generating illustration for page ${request.pageNumber}:`, error);
-    throw new Error(`ページ${request.pageNumber}の挿絵生成中にエラーが発生しました`);
+    
+    // Return placeholder instead of throwing error
+    console.log(`Using placeholder for page ${request.pageNumber}`);
+    return {
+      pageNumber: request.pageNumber,
+      imageUrl: 'https://via.placeholder.com/400x300/E2E8F0/64748B?text=挿絵を生成中',
+      prompt: request.prompt
+    };
   }
 }
 

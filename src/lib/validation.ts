@@ -178,8 +178,14 @@ export function validateStorybookPage(page: Partial<StorybookPage>): void {
     throw new ValidationError('Page text must be 500 characters or less', 'text');
   }
 
-  if (!page.imageUrl || typeof page.imageUrl !== 'string' || !URL_REGEX.test(page.imageUrl)) {
-    throw new ValidationError('Page image URL is required and must be a valid URL', 'imageUrl');
+  if (!page.imageUrl || typeof page.imageUrl !== 'string') {
+    throw new ValidationError('Page image URL is required and must be a non-empty string', 'imageUrl');
+  }
+  
+  // Allow both absolute URLs and relative paths
+  const isValidUrl = URL_REGEX.test(page.imageUrl) || page.imageUrl.startsWith('/');
+  if (!isValidUrl) {
+    throw new ValidationError('Page image URL must be a valid URL or relative path', 'imageUrl');
   }
 
   if (page.audioUrl && (typeof page.audioUrl !== 'string' || !URL_REGEX.test(page.audioUrl))) {

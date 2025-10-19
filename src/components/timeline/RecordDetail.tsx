@@ -5,6 +5,8 @@ import { GrowthRecord } from '@/types/models';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { useCommentGeneration } from '@/hooks/useCommentGeneration';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
@@ -13,16 +15,34 @@ interface RecordDetailProps {
   record: GrowthRecord;
   isOpen: boolean;
   onClose: () => void;
+  onRecordUpdate?: (updatedRecord: GrowthRecord) => void;
 }
 
-export function RecordDetail({ record, isOpen, onClose }: RecordDetailProps) {
+export function RecordDetail({ record, isOpen, onClose, onRecordUpdate }: RecordDetailProps) {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [currentRecord, setCurrentRecord] = useState(record);
+  
+  const { isGenerating, error, success, generateComments, reset } = useCommentGeneration();
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    setCurrentRecord(record);
+  }, [record]);
+
+  const handleGenerateComments = async () => {
+    reset(); // Reset any previous state
+    const updatedRecord = await generateComments(currentRecord);
+    
+    if (updatedRecord) {
+      setCurrentRecord(updatedRecord);
+      onRecordUpdate?.(updatedRecord);
+    }
+  };
 
   const formatDate = (date: Date) => {
     if (!isClient) {
@@ -45,13 +65,13 @@ export function RecordDetail({ record, isOpen, onClose }: RecordDetailProps) {
 
   const handlePrevPhoto = () => {
     setSelectedPhotoIndex((prev) => 
-      prev > 0 ? prev - 1 : record.photos.length - 1
+      prev > 0 ? prev - 1 : currentRecord.photos.length - 1
     );
   };
 
   const handleNextPhoto = () => {
     setSelectedPhotoIndex((prev) => 
-      prev < record.photos.length - 1 ? prev + 1 : 0
+      prev < currentRecord.photos.length - 1 ? prev + 1 : 0
     );
   };
 
@@ -64,10 +84,10 @@ export function RecordDetail({ record, isOpen, onClose }: RecordDetailProps) {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-bold text-neutral-800">
-                  {formatDate(record.createdAt)}
+                  {formatDate(currentRecord.createdAt)}
                 </h2>
                 <p className="text-sm text-neutral-600">
-                  {formatTime(record.createdAt)} に記録
+                  {formatTime(currentRecord.createdAt)} に記録
                 </p>
               </div>
               <Button variant="ghost" onClick={onClose} size="sm">
@@ -78,16 +98,16 @@ export function RecordDetail({ record, isOpen, onClose }: RecordDetailProps) {
 
           <div className="p-6 space-y-6">
             {/* Photos Section */}
-            {record.photos.length > 0 && (
+            {currentRecord.photos.length > 0 && (
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    📸 写真 ({record.photos.length}枚)
+                    📸 写真 ({currentRecord.photos.length}枚)
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                    {record.photos.map((photo, index) => (
+                    {currentRecord.photos.map((photo, index) => (
                       <div
                         key={photo.id}
                         className="relative aspect-square cursor-pointer rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
@@ -109,16 +129,75 @@ export function RecordDetail({ record, isOpen, onClose }: RecordDetailProps) {
             )}
 
             {/* Comments Section */}
-            {record.comments.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    💭 コメント ({record.comments.length}件)
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    💭 コメント ({currentRecord.comments.length}件)
+                  </span>
+                  {currentRecord.comments.length === 0 && !isGenerating && (
+                    <Button
+                      onClick={handleGenerateComments}
+                      size="sm"
+                      className="bg-primary-600 hover:bg-primary-700"
+                      disabled={isGenerating}
+                    >
+                      コメント生成
+                    </Button>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {/* Error Message */}
+                {error && (
+                  <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+                    <div className="flex items-center gap-2 text-red-700">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                      <span className="font-medium">エラー</span>
+                    </div>
+                    <p className="text-red-600 text-sm mt-1">{error}</p>
+                    <Button
+                      onClick={handleGenerateComments}
+                      size="sm"
+                      variant="outline"
+                      className="mt-2 border-red-300 text-red-700 hover:bg-red-50"
+                    >
+                      再試行
+                    </Button>
+                  </div>
+                )}
+
+                {/* Success Message */}
+                {success && (
+                  <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <div className="flex items-center gap-2 text-green-700">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      <span className="font-medium">コメントを生成しました！</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Loading State */}
+                {isGenerating && (
+                  <div className="text-center py-8">
+                    <LoadingSpinner size="lg" className="mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-neutral-800 mb-2">
+                      コメントを生成中...
+                    </h3>
+                    <p className="text-neutral-600 text-sm">
+                      AIが写真を分析してコメントを作成しています
+                    </p>
+                  </div>
+                )}
+
+                {/* Comments Display */}
+                {!isGenerating && currentRecord.comments.length > 0 && (
                   <div className="space-y-4">
-                    {record.comments.map((comment, index) => (
+                    {currentRecord.comments.map((comment, index) => (
                       <div
                         key={comment.id}
                         className="bg-primary-50 rounded-lg p-4 border-l-4 border-primary-300"
@@ -147,12 +226,31 @@ export function RecordDetail({ record, isOpen, onClose }: RecordDetailProps) {
                       </div>
                     ))}
                   </div>
-                </CardContent>
-              </Card>
-            )}
+                )}
+
+                {/* Empty State */}
+                {!isGenerating && currentRecord.comments.length === 0 && !error && (
+                  <div className="text-center py-8">
+                    <div className="text-4xl mb-4">💭</div>
+                    <h3 className="text-lg font-semibold text-neutral-800 mb-2">
+                      まだコメントがありません
+                    </h3>
+                    <p className="text-neutral-600 text-sm mb-4">
+                      写真にAIコメントを生成して、成長記録を豊かにしましょう
+                    </p>
+                    <Button
+                      onClick={handleGenerateComments}
+                      className="bg-primary-600 hover:bg-primary-700"
+                    >
+                      コメント生成
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
 
             {/* Sharing Info */}
-            {record.isShared && (
+            {currentRecord.isShared && (
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-2 text-sm text-primary-600">
@@ -164,7 +262,7 @@ export function RecordDetail({ record, isOpen, onClose }: RecordDetailProps) {
             )}
 
             {/* Empty State */}
-            {record.photos.length === 0 && record.comments.length === 0 && (
+            {currentRecord.photos.length === 0 && currentRecord.comments.length === 0 && (
               <div className="text-center py-12">
                 <div className="text-6xl mb-4">📝</div>
                 <h3 className="text-lg font-semibold text-neutral-800 mb-2">
@@ -196,7 +294,7 @@ export function RecordDetail({ record, isOpen, onClose }: RecordDetailProps) {
           </Button>
 
           {/* Navigation Buttons */}
-          {record.photos.length > 1 && (
+          {currentRecord.photos.length > 1 && (
             <>
               <Button
                 variant="ghost"
@@ -218,7 +316,7 @@ export function RecordDetail({ record, isOpen, onClose }: RecordDetailProps) {
           {/* Photo */}
           <div className="relative max-w-full max-h-full">
             <Image
-              src={record.photos[selectedPhotoIndex]?.url || ''}
+              src={currentRecord.photos[selectedPhotoIndex]?.url || ''}
               alt={`写真 ${selectedPhotoIndex + 1}`}
               width={800}
               height={600}
@@ -228,9 +326,9 @@ export function RecordDetail({ record, isOpen, onClose }: RecordDetailProps) {
           </div>
 
           {/* Photo Counter */}
-          {record.photos.length > 1 && (
+          {currentRecord.photos.length > 1 && (
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-              {selectedPhotoIndex + 1} / {record.photos.length}
+              {selectedPhotoIndex + 1} / {currentRecord.photos.length}
             </div>
           )}
         </div>
