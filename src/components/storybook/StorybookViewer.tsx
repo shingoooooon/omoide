@@ -4,6 +4,9 @@ import React, { useState, useEffect } from 'react';
 import { Storybook, StorybookPage } from '@/types/models';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
+import { AudioPlayer } from '@/components/ui/AudioPlayer';
+import { useTextToSpeech } from '@/hooks/useTextToSpeech';
+import { useAudioPlayer } from '@/hooks/useAudioPlayer';
 import Image from 'next/image';
 
 interface StorybookViewerProps {
@@ -14,6 +17,10 @@ interface StorybookViewerProps {
 export function StorybookViewer({ storybook, onClose }: StorybookViewerProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [isImageLoading, setIsImageLoading] = useState(true);
+  const [pageAudioUrls, setPageAudioUrls] = useState<Record<string, string>>({});
+  
+  const { generateAudio, isGenerating, error: ttsError } = useTextToSpeech();
+  const { playAudio, pauseAudio, stopAudio, isPlaying, currentPageId } = useAudioPlayer();
 
   // Reset to first page when storybook changes
   useEffect(() => {
@@ -27,6 +34,8 @@ export function StorybookViewer({ storybook, onClose }: StorybookViewerProps) {
     if (currentPage < totalPages - 1) {
       setCurrentPage(currentPage + 1);
       setIsImageLoading(true);
+      // Stop current audio when changing pages
+      stopAudio();
     }
   };
 
@@ -34,6 +43,8 @@ export function StorybookViewer({ storybook, onClose }: StorybookViewerProps) {
     if (currentPage > 0) {
       setCurrentPage(currentPage - 1);
       setIsImageLoading(true);
+      // Stop current audio when changing pages
+      stopAudio();
     }
   };
 
@@ -41,6 +52,54 @@ export function StorybookViewer({ storybook, onClose }: StorybookViewerProps) {
     if (pageIndex >= 0 && pageIndex < totalPages) {
       setCurrentPage(pageIndex);
       setIsImageLoading(true);
+      // Stop current audio when changing pages
+      stopAudio();
+    }
+  };
+
+  // Generate audio for current page if not already available
+  const handleGenerateAudio = async () => {
+    if (!currentPageData || isGenerating) return;
+
+    const pageId = currentPageData.id;
+    
+    // Check if audio already exists for this page
+    if (currentPageData.audioUrl) {
+      playAudio(currentPageData.audioUrl, pageId);
+      return;
+    }
+
+    // Check if we have a cached audio URL
+    if (pageAudioUrls[pageId]) {
+      playAudio(pageAudioUrls[pageId], pageId);
+      return;
+    }
+
+    try {
+      const result = await generateAudio(
+        currentPageData.text,
+        pageId,
+        storybook.id
+      );
+      
+      // Cache the audio URL
+      setPageAudioUrls(prev => ({
+        ...prev,
+        [pageId]: result.audioUrl,
+      }));
+      
+      // Play the generated audio
+      playAudio(result.audioUrl, pageId);
+    } catch (error) {
+      console.error('Failed to generate audio:', error);
+    }
+  };
+
+  const handleAudioToggle = () => {
+    if (isPlaying && currentPageId === currentPageData?.id) {
+      pauseAudio();
+    } else {
+      handleGenerateAudio();
     }
   };
 
@@ -128,9 +187,57 @@ export function StorybookViewer({ storybook, onClose }: StorybookViewerProps) {
 
             {/* Text Section */}
             <div className="p-8 bg-white">
-              <p className="text-lg leading-relaxed text-gray-800 text-center font-medium">
+              <p className="text-lg leading-relaxed text-gray-800 text-center font-medium mb-6">
                 {currentPageData.text}
               </p>
+              
+              {/* Audio Controls */}
+              <div className="flex justify-center">
+                <div className="flex items-center space-x-4">
+                  <Button
+                    onClick={handleAudioToggle}
+                    disabled={isGenerating}
+                    className="bg-pink-500 hover:bg-pink-600 text-white"
+                  >
+                    {isGenerating ? (
+                      <>
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+                        音声生成中...
+                      </>
+                    ) : isPlaying && currentPageId === currentPageData.id ? (
+                      <>
+                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                        </svg>
+                        音声を停止
+                      </>
+                    ) : (
+                      <>
+                        <svg className="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                        </svg>
+                        音声で聞く
+                      </>
+                    )}
+                  </Button>
+                  
+                  {/* Audio Player for existing audio */}
+                  {(currentPageData.audioUrl || pageAudioUrls[currentPageData.id]) && (
+                    <AudioPlayer
+                      audioUrl={currentPageData.audioUrl || pageAudioUrls[currentPageData.id]}
+                      showProgress={true}
+                      className="flex-1"
+                    />
+                  )}
+                </div>
+              </div>
+              
+              {/* Error Message */}
+              {ttsError && (
+                <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-center">
+                  <p className="text-red-600 text-sm">{ttsError}</p>
+                </div>
+              )}
             </div>
 
             {/* Navigation Arrows */}
