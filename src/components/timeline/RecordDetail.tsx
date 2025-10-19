@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useCommentGeneration } from '@/hooks/useCommentGeneration';
+import { deleteGrowthRecord, removePhotoFromGrowthRecord } from '@/lib/services/growthRecordService';
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
@@ -16,13 +17,18 @@ interface RecordDetailProps {
   isOpen: boolean;
   onClose: () => void;
   onRecordUpdate?: (updatedRecord: GrowthRecord) => void;
+  onRecordDelete?: (recordId: string) => void;
 }
 
-export function RecordDetail({ record, isOpen, onClose, onRecordUpdate }: RecordDetailProps) {
+export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecordDelete }: RecordDetailProps) {
   const [selectedPhotoIndex, setSelectedPhotoIndex] = useState(0);
   const [isPhotoModalOpen, setIsPhotoModalOpen] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [currentRecord, setCurrentRecord] = useState(record);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [photoToDelete, setPhotoToDelete] = useState<string | null>(null);
+  const [isDeletingPhoto, setIsDeletingPhoto] = useState(false);
   
   const { isGenerating, error, success, generateComments, reset } = useCommentGeneration();
 
@@ -41,6 +47,65 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate }: Record
     if (updatedRecord) {
       setCurrentRecord(updatedRecord);
       onRecordUpdate?.(updatedRecord);
+    }
+  };
+
+  const handleDeleteClick = () => {
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    setIsDeleting(true);
+    try {
+      await deleteGrowthRecord(currentRecord.id);
+      onRecordDelete?.(currentRecord.id);
+      onClose();
+    } catch (error) {
+      console.error('Error deleting record:', error);
+      // You might want to show an error message here
+    } finally {
+      setIsDeleting(false);
+      setIsDeleteModalOpen(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setIsDeleteModalOpen(false);
+  };
+
+  const handlePhotoDelete = async (photoId: string) => {
+    setPhotoToDelete(photoId);
+    setIsDeletingPhoto(true);
+    
+    try {
+      await removePhotoFromGrowthRecord(currentRecord.id, photoId);
+      
+      // Update local state
+      const updatedPhotos = currentRecord.photos.filter(photo => photo.id !== photoId);
+      const updatedComments = currentRecord.comments.filter(comment => comment.photoId !== photoId);
+      
+      if (updatedPhotos.length === 0) {
+        // If no photos remain, the record was deleted
+        onRecordDelete?.(currentRecord.id);
+        onClose();
+      } else {
+        // Update the record with remaining photos
+        const updatedRecord = {
+          ...currentRecord,
+          photos: updatedPhotos,
+          comments: updatedComments,
+          updatedAt: new Date()
+        };
+        
+        setCurrentRecord(updatedRecord);
+        onRecordUpdate?.(updatedRecord);
+      }
+    } catch (error) {
+      console.error('Error deleting photo:', error);
+      // You might want to show an error message here
+    } finally {
+      setIsDeletingPhoto(false);
+      setPhotoToDelete(null);
     }
   };
 
@@ -90,9 +155,22 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate }: Record
                   {formatTime(currentRecord.createdAt)} に記録
                 </p>
               </div>
-              <Button variant="ghost" onClick={onClose} size="sm">
-                ✕
-              </Button>
+              <div className="flex items-center gap-2">
+                <Button
+                  onClick={handleDeleteClick}
+                  variant="ghost"
+                  size="sm"
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                  削除
+                </Button>
+                <Button variant="ghost" onClick={onClose} size="sm">
+                  ✕
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -110,17 +188,40 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate }: Record
                     {currentRecord.photos.map((photo, index) => (
                       <div
                         key={photo.id}
-                        className="relative aspect-square cursor-pointer rounded-lg overflow-hidden hover:opacity-80 transition-opacity"
-                        onClick={() => handlePhotoClick(index)}
+                        className="relative aspect-square rounded-lg overflow-hidden group"
                       >
-                        <Image
-                          src={photo.url}
-                          alt={`写真 ${index + 1}`}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 50vw, 33vw"
-                        />
-                        <div className="absolute inset-0 bg-black/0 hover:bg-black/10 transition-colors" />
+                        <div
+                          className="cursor-pointer w-full h-full"
+                          onClick={() => handlePhotoClick(index)}
+                        >
+                          <Image
+                            src={photo.url}
+                            alt={`写真 ${index + 1}`}
+                            fill
+                            className="object-cover group-hover:opacity-80 transition-opacity"
+                            sizes="(max-width: 768px) 50vw, 33vw"
+                          />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                        </div>
+                        
+                        {/* Delete button */}
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handlePhotoDelete(photo.id);
+                          }}
+                          disabled={isDeletingPhoto && photoToDelete === photo.id}
+                          className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity disabled:opacity-50"
+                          title="写真を削除"
+                        >
+                          {isDeletingPhoto && photoToDelete === photo.id ? (
+                            <LoadingSpinner size="sm" />
+                          ) : (
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          )}
+                        </button>
                       </div>
                     ))}
                   </div>
@@ -331,6 +432,56 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate }: Record
               {selectedPhotoIndex + 1} / {currentRecord.photos.length}
             </div>
           )}
+        </div>
+      </Modal>
+
+      {/* Delete Confirmation Modal */}
+      <Modal
+        isOpen={isDeleteModalOpen}
+        onClose={handleDeleteCancel}
+        title="記録を削除"
+      >
+        <div className="p-6">
+          <div className="text-center mb-6">
+            <div className="text-red-600 mb-4">
+              <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-neutral-800 mb-2">
+              本当に削除しますか？
+            </h3>
+            <p className="text-neutral-600 mb-2">
+              {formatDate(currentRecord.createdAt)}の記録を削除します
+            </p>
+            <p className="text-sm text-red-600">
+              この操作は取り消せません
+            </p>
+          </div>
+
+          <div className="flex gap-3 justify-center">
+            <Button
+              onClick={handleDeleteCancel}
+              variant="outline"
+              disabled={isDeleting}
+            >
+              キャンセル
+            </Button>
+            <Button
+              onClick={handleDeleteConfirm}
+              disabled={isDeleting}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              {isDeleting ? (
+                <>
+                  <LoadingSpinner size="sm" className="mr-2" />
+                  削除中...
+                </>
+              ) : (
+                '削除する'
+              )}
+            </Button>
+          </div>
         </div>
       </Modal>
     </>

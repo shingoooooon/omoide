@@ -259,6 +259,45 @@ export async function addCommentsToGrowthRecord(
   }
 }
 
+// Remove a photo from a growth record
+export async function removePhotoFromGrowthRecord(
+  recordId: string,
+  photoId: string
+): Promise<void> {
+  try {
+    // Get the existing record
+    const existingRecord = await getGrowthRecord(recordId);
+    if (!existingRecord) {
+      throw new Error('Growth record not found');
+    }
+
+    // Filter out the photo to be removed
+    const updatedPhotos = existingRecord.photos.filter(photo => photo.id !== photoId);
+    
+    // If no photos remain, delete the entire record
+    if (updatedPhotos.length === 0) {
+      await deleteGrowthRecord(recordId);
+      return;
+    }
+
+    // Also remove comments associated with this photo
+    const updatedComments = existingRecord.comments.filter(comment => comment.photoId !== photoId);
+
+    // Update the record with remaining photos and comments
+    const updatedRecord = {
+      ...existingRecord,
+      photos: updatedPhotos,
+      comments: updatedComments,
+      updatedAt: new Date()
+    };
+
+    await updateGrowthRecord(recordId, updatedRecord);
+  } catch (error) {
+    console.error('Error removing photo from growth record:', error);
+    throw new Error('Failed to remove photo from growth record');
+  }
+}
+
 // Update sharing status
 export async function updateGrowthRecordSharing(
   id: string, 
