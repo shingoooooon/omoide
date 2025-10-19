@@ -42,13 +42,21 @@ export async function generateIllustration(
       throw new Error(`ページ${request.pageNumber}の挿絵生成に失敗しました`);
     }
 
-    // Upload the generated image to Firebase Storage
-    const fileName = `storybook-illustrations/page-${request.pageNumber}-${Date.now()}.png`;
-    const uploadedImageUrl = await uploadImageFromUrl(imageUrl, fileName);
+    // Try to upload the generated image to Firebase Storage
+    let finalImageUrl = imageUrl;
+    try {
+      const fileName = `storybook-illustrations/page-${request.pageNumber}-${Date.now()}.png`;
+      finalImageUrl = await uploadImageFromUrl(imageUrl, fileName);
+      console.log('✅ Successfully uploaded illustration to Firebase Storage');
+    } catch (uploadError) {
+      console.warn('⚠️ Failed to upload to Firebase Storage, using original URL:', uploadError);
+      // Keep the original OpenAI URL as fallback
+      finalImageUrl = imageUrl;
+    }
 
     return {
       pageNumber: request.pageNumber,
-      imageUrl: uploadedImageUrl,
+      imageUrl: finalImageUrl,
       originalPrompt: request.prompt,
       generatedAt: new Date(),
     };
@@ -61,7 +69,8 @@ export async function generateIllustration(
     return {
       pageNumber: request.pageNumber,
       imageUrl: 'https://via.placeholder.com/400x300/E2E8F0/64748B?text=挿絵を生成中',
-      prompt: request.prompt
+      originalPrompt: request.prompt,
+      generatedAt: new Date(),
     };
   }
 }

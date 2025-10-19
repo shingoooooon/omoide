@@ -317,9 +317,13 @@ export async function uploadImageFromUrl(
 
     // Get the image data as a blob
     const imageBlob = await response.blob();
+    console.log('📦 Image blob created:', { size: imageBlob.size, type: imageBlob.type });
     
-    // Create storage reference
-    const storageRef = ref(storage, fileName);
+    // Create storage reference - use generated folder for better permissions
+    const generatedFileName = `generated/${fileName}`;
+    const storageRef = ref(storage, generatedFileName);
+    
+    console.log('📁 Storage reference created:', generatedFileName);
     
     // Upload the blob to Firebase Storage
     const uploadResult = await uploadBytes(storageRef, imageBlob, {
@@ -327,8 +331,11 @@ export async function uploadImageFromUrl(
       customMetadata: {
         source: 'generated-illustration',
         uploadedAt: new Date().toISOString(),
+        originalUrl: imageUrl,
       }
     });
+    
+    console.log('⬆️ Upload completed:', uploadResult.metadata);
     
     // Get download URL
     const downloadURL = await getDownloadURL(uploadResult.ref);
@@ -336,9 +343,23 @@ export async function uploadImageFromUrl(
     console.log('✅ Image uploaded successfully:', downloadURL);
     return downloadURL;
 
-  } catch (error) {
-    console.error('❌ Image upload from URL error:', error);
-    throw new Error('画像のアップロードに失敗しました');
+  } catch (error: any) {
+    console.error('❌ Image upload from URL error:', {
+      error: error.message,
+      code: error.code,
+      stack: error.stack
+    });
+    
+    // Provide more specific error messages
+    if (error.code === 'storage/unauthorized') {
+      throw new Error('Firebase Storage権限エラー: アップロード権限がありません');
+    } else if (error.code === 'storage/quota-exceeded') {
+      throw new Error('Firebase Storage容量エラー: ストレージ容量が不足しています');
+    } else if (error.code === 'storage/unauthenticated') {
+      throw new Error('Firebase Storage認証エラー: 認証が必要です');
+    } else {
+      throw new Error(`画像のアップロードに失敗しました: ${error.message}`);
+    }
   }
 }
 
