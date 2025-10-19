@@ -7,6 +7,8 @@ import { Card } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Modal } from '@/components/ui/Modal';
 import { getUserStorybooks, deleteStorybook, StorybookListResult } from '@/lib/services/storybookService';
+import { useLocale } from '@/contexts/LocaleContext';
+import { useTranslations } from '@/lib/translations';
 import Image from 'next/image';
 
 interface StorybookListProps {
@@ -22,16 +24,23 @@ interface StorybookCardProps {
 }
 
 function StorybookCard({ storybook, onView, onDelete }: StorybookCardProps) {
+  const { locale } = useLocale();
+  const { t } = useTranslations(locale);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
 
   const formatMonth = (monthStr: string) => {
     const [year, month] = monthStr.split('-');
-    return `${year}年${parseInt(month)}月`;
+    if (locale === 'ja') {
+      return `${year}年${parseInt(month)}月`;
+    } else {
+      const date = new Date(parseInt(year), parseInt(month) - 1);
+      return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
+    }
   };
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('ja-JP', {
+    return new Intl.DateTimeFormat(locale === 'ja' ? 'ja-JP' : 'en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'
@@ -69,14 +78,14 @@ function StorybookCard({ storybook, onView, onDelete }: StorybookCardProps) {
               <svg className="w-16 h-16 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
               </svg>
-              <p className="text-sm">絵本</p>
+              <p className="text-sm">{t('navigation.storybooks')}</p>
             </div>
           </div>
         )}
         
         {/* Page count badge */}
         <div className="absolute top-2 right-2 bg-white/90 rounded-full px-2 py-1 text-xs font-medium text-purple-700">
-          {storybook.pages.length}ページ
+          {storybook.pages.length} {t('storybooks.pages')}
         </div>
       </div>
 
@@ -92,7 +101,7 @@ function StorybookCard({ storybook, onView, onDelete }: StorybookCardProps) {
         </div>
 
         <p className="text-xs text-gray-500 mb-4">
-          作成日: {formatDate(storybook.createdAt)}
+          {t('storybooks.createdDate')}: {formatDate(storybook.createdAt)}
         </p>
 
         {/* Actions */}
@@ -105,13 +114,13 @@ function StorybookCard({ storybook, onView, onDelete }: StorybookCardProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
             </svg>
-            見る
+            {t('storybooks.view')}
           </Button>
           <Button
             onClick={() => onDelete(storybook)}
             variant="outline"
             className="border-red-300 text-red-600 hover:bg-red-50 text-sm"
-            aria-label="削除"
+            aria-label={t('storybooks.delete')}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -124,6 +133,8 @@ function StorybookCard({ storybook, onView, onDelete }: StorybookCardProps) {
 }
 
 export function StorybookList({ userId, onStorybookSelect, onCreateNew }: StorybookListProps) {
+  const { locale } = useLocale();
+  const { t } = useTranslations(locale);
   const [storybooks, setStorybooks] = useState<Storybook[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -162,7 +173,7 @@ export function StorybookList({ userId, onStorybookSelect, onCreateNew }: Storyb
       setLastDoc(result.lastDoc);
     } catch (err) {
       console.error('Error loading storybooks:', err);
-      setError('絵本の読み込みに失敗しました');
+      setError(t('storybooks.loadError'));
     } finally {
       setIsLoading(false);
       setIsLoadingMore(false);
@@ -185,7 +196,7 @@ export function StorybookList({ userId, onStorybookSelect, onCreateNew }: Storyb
       setStorybookToDelete(null);
     } catch (err) {
       console.error('Error deleting storybook:', err);
-      setError('絵本の削除に失敗しました');
+      setError(t('storybooks.deleteError'));
     } finally {
       setIsDeleting(false);
     }
@@ -205,7 +216,7 @@ export function StorybookList({ userId, onStorybookSelect, onCreateNew }: Storyb
       <div className="flex items-center justify-center py-12">
         <div className="text-center">
           <LoadingSpinner size="lg" className="mx-auto mb-4" />
-          <p className="text-gray-600">絵本を読み込み中...</p>
+          <p className="text-gray-600">{t('storybooks.loadingStorybooks')}</p>
         </div>
       </div>
     );
@@ -221,7 +232,7 @@ export function StorybookList({ userId, onStorybookSelect, onCreateNew }: Storyb
         </div>
         <p className="text-red-600 mb-4">{error}</p>
         <Button onClick={() => loadStorybooks()} variant="outline">
-          再試行
+          {t('timeline.retry')}
         </Button>
       </div>
     );
@@ -236,14 +247,14 @@ export function StorybookList({ userId, onStorybookSelect, onCreateNew }: Storyb
           </svg>
         </div>
         <h3 className="text-lg font-semibold text-gray-800 mb-2">
-          まだ絵本がありません
+          {t('storybooks.noStorybooks')}
         </h3>
         <p className="text-gray-600 mb-6">
-          写真をアップロードして、最初の絵本を作ってみましょう
+          {t('storybooks.noStorybooksDescription')}
         </p>
         {onCreateNew && (
           <Button onClick={onCreateNew} className="bg-purple-600 hover:bg-purple-700">
-            絵本を作る
+            {t('storybooks.createStorybook')}
           </Button>
         )}
       </div>
@@ -255,9 +266,9 @@ export function StorybookList({ userId, onStorybookSelect, onCreateNew }: Storyb
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-bold text-gray-800">作った絵本</h2>
+          <h2 className="text-2xl font-bold text-gray-800">{t('storybooks.title')}</h2>
           <p className="text-gray-600">
-            {storybooks.length}冊の絵本があります
+            {storybooks.length} {t('storybooks.count')}
           </p>
         </div>
         {onCreateNew && (
@@ -265,7 +276,7 @@ export function StorybookList({ userId, onStorybookSelect, onCreateNew }: Storyb
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            新しい絵本を作る
+            {t('storybooks.createNew')}
           </Button>
         )}
       </div>
@@ -294,10 +305,10 @@ export function StorybookList({ userId, onStorybookSelect, onCreateNew }: Storyb
             {isLoadingMore ? (
               <>
                 <LoadingSpinner size="sm" className="mr-2" />
-                読み込み中...
+                {t('timeline.loading')}
               </>
             ) : (
-              'もっと見る'
+              t('timeline.loadMore')
             )}
           </Button>
         </div>
@@ -307,7 +318,7 @@ export function StorybookList({ userId, onStorybookSelect, onCreateNew }: Storyb
       <Modal
         isOpen={deleteModalOpen}
         onClose={handleDeleteCancel}
-        title="絵本を削除"
+        title={t('storybooks.deleteConfirmTitle')}
       >
         <div className="p-6">
           <div className="text-center mb-6">
@@ -317,13 +328,13 @@ export function StorybookList({ userId, onStorybookSelect, onCreateNew }: Storyb
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">
-              本当に削除しますか？
+              {t('storybooks.deleteConfirmMessage')}
             </h3>
             <p className="text-gray-600 mb-2">
-              「{storybookToDelete?.title}」を削除します
+              「{storybookToDelete?.title}」{locale === 'ja' ? 'を削除します' : ' will be deleted'}
             </p>
             <p className="text-sm text-red-600">
-              この操作は取り消せません
+              {t('storybooks.deleteConfirmDescription')}
             </p>
           </div>
 
@@ -333,7 +344,7 @@ export function StorybookList({ userId, onStorybookSelect, onCreateNew }: Storyb
               variant="outline"
               disabled={isDeleting}
             >
-              キャンセル
+              {t('common.cancel')}
             </Button>
             <Button
               onClick={handleDeleteConfirm}
@@ -343,10 +354,10 @@ export function StorybookList({ userId, onStorybookSelect, onCreateNew }: Storyb
               {isDeleting ? (
                 <>
                   <LoadingSpinner size="sm" className="mr-2" />
-                  削除中...
+                  {t('storybooks.deleting')}
                 </>
               ) : (
-                '削除する'
+                t('storybooks.delete')
               )}
             </Button>
           </div>

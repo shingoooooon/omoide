@@ -26,8 +26,8 @@ export default function Home() {
             {t('home.subtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="text-lg px-8 py-4 shadow-medium hover:shadow-large"
               onClick={() => router.push('/upload')}
             >
@@ -88,7 +88,7 @@ export default function Home() {
               {t('home.howItWorks.subtitle')}
             </p>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
@@ -148,15 +148,15 @@ export default function Home() {
             <p className="text-lg text-neutral-600 mb-8 max-w-md mx-auto leading-relaxed">
               {t('home.cta.subtitle')}
             </p>
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="text-lg px-10 py-4 shadow-medium hover:shadow-large"
               onClick={() => router.push('/upload')}
             >
               {t('home.cta.getStarted')}
             </Button>
           </div>
-          
+
           {/* Decorative elements */}
           <div className="absolute top-4 right-4 w-16 h-16 bg-primary-100 rounded-full opacity-50"></div>
           <div className="absolute bottom-4 left-4 w-12 h-12 bg-secondary-100 rounded-full opacity-50"></div>
