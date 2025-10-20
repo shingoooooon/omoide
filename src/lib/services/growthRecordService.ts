@@ -259,6 +259,56 @@ export async function addCommentsToGrowthRecord(
   }
 }
 
+// Replace comment for a specific photo in a growth record
+export async function replaceCommentForPhoto(
+  recordId: string,
+  photoId: string,
+  newComment: {
+    id: string;
+    photoId: string;
+    content: string;
+    generatedAt: Date;
+    isEdited: boolean;
+    originalContent?: string;
+  }
+): Promise<void> {
+  try {
+    // Get the existing record
+    const existingRecord = await getGrowthRecord(recordId);
+    if (!existingRecord) {
+      throw new Error('Growth record not found');
+    }
+
+    // Remove existing comments for this photo and add the new one
+    const updatedComments = [
+      ...existingRecord.comments.filter(comment => comment.photoId !== photoId),
+      newComment
+    ];
+
+    // Update the record with new comments
+    const updatedRecord = {
+      ...existingRecord,
+      comments: updatedComments,
+      updatedAt: new Date()
+    };
+
+    await updateGrowthRecord(recordId, {
+      comments: updatedComments.map(comment => ({
+        id: comment.id,
+        photoId: comment.photoId,
+        content: comment.content,
+        generatedAt: comment.generatedAt,
+        isEdited: comment.isEdited,
+        originalContent: comment.originalContent
+      })),
+      updatedAt: updatedRecord.updatedAt
+    });
+  } catch (error) {
+    console.error('Error replacing comment for photo:', error);
+    throw new Error('Failed to replace comment for photo');
+  }
+}
+
 // Remove a photo from a growth record
 export async function removePhotoFromGrowthRecord(
   recordId: string,

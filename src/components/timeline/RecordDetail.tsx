@@ -29,6 +29,10 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
   const [isDeleting, setIsDeleting] = useState(false);
   const [photoToDelete, setPhotoToDelete] = useState<string | null>(null);
   const [isDeletingPhoto, setIsDeletingPhoto] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
+  const [editingCommentText, setEditingCommentText] = useState('');
+  const [isSavingComment, setIsSavingComment] = useState(false);
+  const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
   
   const { isGenerating, error, success, generateComments, reset } = useCommentGeneration();
 
@@ -41,12 +45,41 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
   }, [record]);
 
   const handleGenerateComments = async () => {
+    // If comments already exist, show confirmation dialog
+    if (currentRecord.comments.length > 0) {
+      setShowRegenerateConfirm(true);
+      return;
+    }
+    
+    // Generate comments directly if no existing comments
+    await executeCommentGeneration();
+  };
+
+  const executeCommentGeneration = async () => {
     reset(); // Reset any previous state
-    const updatedRecord = await generateComments(currentRecord);
+    setShowRegenerateConfirm(false);
+    
+    // Extract original record ID from expanded record ID
+    const originalRecordId = currentRecord.id.includes('_photo_') 
+      ? currentRecord.id.split('_photo_')[0] 
+      : currentRecord.id;
+    
+    // Create a record with the original ID for comment generation
+    const recordForGeneration = {
+      ...currentRecord,
+      id: originalRecordId
+    };
+    
+    const updatedRecord = await generateComments(recordForGeneration);
     
     if (updatedRecord) {
-      setCurrentRecord(updatedRecord);
-      onRecordUpdate?.(updatedRecord);
+      // Restore the expanded record ID for display
+      const displayRecord = {
+        ...updatedRecord,
+        id: currentRecord.id
+      };
+      setCurrentRecord(displayRecord);
+      onRecordUpdate?.(displayRecord);
     }
   };
 
@@ -57,7 +90,12 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
   const handleDeleteConfirm = async () => {
     setIsDeleting(true);
     try {
-      await deleteGrowthRecord(currentRecord.id);
+      // Extract original record ID for database operation
+      const originalRecordId = currentRecord.id.includes('_photo_') 
+        ? currentRecord.id.split('_photo_')[0] 
+        : currentRecord.id;
+        
+      await deleteGrowthRecord(originalRecordId);
       onRecordDelete?.(currentRecord.id);
       onClose();
     } catch (error) {
@@ -73,12 +111,81 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
     setIsDeleteModalOpen(false);
   };
 
+  const handleEditComment = (commentId: string, currentContent: string) => {
+    setEditingCommentId(commentId);
+    setEditingCommentText(currentContent);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCommentId(null);
+    setEditingCommentText('');
+  };
+
+  const handleSaveComment = async () => {
+    if (!editingCommentId || !editingCommentText.trim()) return;
+
+    setIsSavingComment(true);
+    try {
+      // Update comment in the record
+      const updatedComments = currentRecord.comments.map(comment => 
+        comment.id === editingCommentId 
+          ? { 
+              ...comment, 
+              content: editingCommentText.trim(),
+              isEdited: true,
+              generatedAt: new Date() // Update timestamp for edited comment
+            }
+          : comment
+      );
+
+      const updatedRecord = {
+        ...currentRecord,
+        comments: updatedComments,
+        updatedAt: new Date()
+      };
+
+      // Extract original record ID for database update
+      const originalRecordId = currentRecord.id.includes('_photo_') 
+        ? currentRecord.id.split('_photo_')[0] 
+        : currentRecord.id;
+
+      // Update the record using the service
+      const { updateGrowthRecord } = await import('@/lib/services/growthRecordService');
+      await updateGrowthRecord(originalRecordId, {
+        comments: updatedComments.map(comment => ({
+          id: comment.id,
+          photoId: comment.photoId,
+          content: comment.content,
+          generatedAt: comment.generatedAt,
+          isEdited: comment.isEdited,
+          originalContent: comment.originalContent
+        })),
+        updatedAt: updatedRecord.updatedAt
+      });
+
+      setCurrentRecord(updatedRecord);
+      onRecordUpdate?.(updatedRecord);
+      setEditingCommentId(null);
+      setEditingCommentText('');
+    } catch (error) {
+      console.error('Error updating comment:', error);
+      // You might want to show an error message here
+    } finally {
+      setIsSavingComment(false);
+    }
+  };
+
   const handlePhotoDelete = async (photoId: string) => {
     setPhotoToDelete(photoId);
     setIsDeletingPhoto(true);
     
     try {
-      await removePhotoFromGrowthRecord(currentRecord.id, photoId);
+      // Extract original record ID for database operation
+      const originalRecordId = currentRecord.id.includes('_photo_') 
+        ? currentRecord.id.split('_photo_')[0] 
+        : currentRecord.id;
+        
+      await removePhotoFromGrowthRecord(originalRecordId, photoId);
       
       // Update local state
       const updatedPhotos = currentRecord.photos.filter(photo => photo.id !== photoId);
@@ -236,14 +343,14 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
                   <span className="flex items-center gap-2">
                     💭 コメント ({currentRecord.comments.length}件)
                   </span>
-                  {currentRecord.comments.length === 0 && !isGenerating && (
+                  {!isGenerating && (
                     <Button
                       onClick={handleGenerateComments}
                       size="sm"
                       className="bg-primary-600 hover:bg-primary-700"
                       disabled={isGenerating}
                     >
-                      コメント生成
+                      {currentRecord.comments.length > 0 ? 'コメント再生成' : 'コメント生成'}
                     </Button>
                   )}
                 </CardTitle>
@@ -307,23 +414,73 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
                           <span className="text-sm font-medium text-primary-700">
                             コメント {index + 1}
                           </span>
-                          <div className="flex items-center gap-2 text-xs text-neutral-500">
-                            {comment.isEdited && (
-                              <span className="bg-neutral-200 px-2 py-1 rounded">
-                                編集済み
-                              </span>
+                          <div className="flex items-center gap-2">
+                            {editingCommentId !== comment.id && (
+                              <Button
+                                onClick={() => handleEditComment(comment.id, comment.content)}
+                                size="sm"
+                                variant="ghost"
+                                className="text-xs text-neutral-500 hover:text-neutral-700 p-1"
+                              >
+                                編集
+                              </Button>
                             )}
-                            <span>
-                              {isClient 
-                                ? format(comment.generatedAt, 'MM/dd HH:mm', { locale: ja })
-                                : comment.generatedAt.toISOString().substring(5, 16).replace('T', ' ')
-                              }
-                            </span>
+                            <div className="flex items-center gap-2 text-xs text-neutral-500">
+                              {comment.isEdited && (
+                                <span className="bg-neutral-200 px-2 py-1 rounded">
+                                  編集済み
+                                </span>
+                              )}
+                              <span>
+                                {isClient 
+                                  ? format(comment.generatedAt, 'MM/dd HH:mm', { locale: ja })
+                                  : comment.generatedAt.toISOString().substring(5, 16).replace('T', ' ')
+                                }
+                              </span>
+                            </div>
                           </div>
                         </div>
-                        <p className="text-neutral-700 leading-relaxed">
-                          {comment.content}
-                        </p>
+                        
+                        {editingCommentId === comment.id ? (
+                          <div className="space-y-3">
+                            <textarea
+                              value={editingCommentText}
+                              onChange={(e) => setEditingCommentText(e.target.value)}
+                              className="w-full p-3 border border-neutral-300 rounded-lg resize-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                              rows={4}
+                              placeholder="コメントを編集..."
+                            />
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                onClick={handleCancelEdit}
+                                size="sm"
+                                variant="outline"
+                                disabled={isSavingComment}
+                              >
+                                キャンセル
+                              </Button>
+                              <Button
+                                onClick={handleSaveComment}
+                                size="sm"
+                                disabled={isSavingComment || !editingCommentText.trim()}
+                                className="bg-primary-600 hover:bg-primary-700"
+                              >
+                                {isSavingComment ? (
+                                  <>
+                                    <LoadingSpinner size="sm" className="mr-1" />
+                                    保存中...
+                                  </>
+                                ) : (
+                                  '保存'
+                                )}
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <p className="text-neutral-700 leading-relaxed">
+                            {comment.content}
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -432,6 +589,49 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
               {selectedPhotoIndex + 1} / {currentRecord.photos.length}
             </div>
           )}
+        </div>
+      </Modal>
+
+      {/* Regenerate Comments Confirmation Modal */}
+      <Modal
+        isOpen={showRegenerateConfirm}
+        onClose={() => setShowRegenerateConfirm(false)}
+        title="コメントを再生成"
+      >
+        <div className="p-6">
+          <div className="text-center mb-6">
+            <div className="text-amber-600 mb-4">
+              <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-neutral-800 mb-2">
+              既存のコメントを置き換えますか？
+            </h3>
+            <p className="text-neutral-600 mb-2">
+              現在のコメント（{currentRecord.comments.length}件）が新しいAIコメントに置き換わります
+            </p>
+            <p className="text-sm text-amber-600">
+              この操作は取り消せません
+            </p>
+          </div>
+
+          <div className="flex gap-3 justify-center">
+            <Button
+              onClick={() => setShowRegenerateConfirm(false)}
+              variant="outline"
+              disabled={isGenerating}
+            >
+              キャンセル
+            </Button>
+            <Button
+              onClick={executeCommentGeneration}
+              disabled={isGenerating}
+              className="bg-primary-600 hover:bg-primary-700"
+            >
+              再生成する
+            </Button>
+          </div>
         </div>
       </Modal>
 

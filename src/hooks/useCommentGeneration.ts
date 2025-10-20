@@ -25,59 +25,64 @@ export function useCommentGeneration() {
     });
 
     try {
-      // Prepare analysis data for each photo
-      const analysisDataArray = record.photos.map((photo, index) => ({
-        photoId: photo.id,
-        photoUrl: photo.url,
-        fileName: photo.fileName,
-        uploadedAt: photo.uploadedAt,
-        faceDetected: photo.faceDetected,
-        index
-      }));
+      // For single photo records, generate comment for that specific photo
+      if (record.photos.length === 1) {
+        const photo = record.photos[0];
+        
+        // Call the comment generation API for single photo
+        const response = await fetch('/api/generate-comments', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            analysisDataArray: [{
+              photoId: photo.id,
+              photoUrl: photo.url,
+              fileName: photo.fileName,
+              uploadedAt: photo.uploadedAt,
+              faceDetected: photo.faceDetected,
+              index: 0
+            }]
+          }),
+        });
 
-      // Call the comment generation API
-      const response = await fetch('/api/generate-comments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          analysisDataArray
-        }),
-      });
+        const data = await response.json();
 
-      const data = await response.json();
+        if (!data.success) {
+          throw new Error(data.error || 'コメント生成に失敗しました');
+        }
 
-      if (!data.success) {
-        throw new Error(data.error || 'コメント生成に失敗しました');
+        // Create new comment for this photo
+        const newComment = {
+          id: `${record.id}_comment_${Date.now()}`,
+          photoId: photo.id,
+          content: data.comments[0],
+          generatedAt: new Date(),
+          isEdited: false
+        };
+
+        // Replace existing comments for this photo with the new one
+        const { replaceCommentForPhoto } = await import('@/lib/services/growthRecordService');
+        await replaceCommentForPhoto(record.id, photo.id, newComment);
+
+        setState({
+          isGenerating: false,
+          error: null,
+          success: true
+        });
+
+        // Return updated record with replaced comment
+        const updatedRecord: GrowthRecord = {
+          ...record,
+          comments: [newComment],
+          updatedAt: new Date()
+        };
+
+        return updatedRecord;
+      } else {
+        throw new Error('複数写真のレコードはサポートされていません');
       }
-
-      // Add comments to the growth record
-      await addCommentsToGrowthRecord(record.id, data.comments);
-
-      setState({
-        isGenerating: false,
-        error: null,
-        success: true
-      });
-
-      // Return updated record (you might want to refetch from the server)
-      const updatedRecord: GrowthRecord = {
-        ...record,
-        comments: [
-          ...record.comments,
-          ...data.comments.map((content: string, index: number) => ({
-            id: `${record.id}_comment_${Date.now()}_${index}`,
-            photoId: record.photos[index]?.id || `photo_${index}`,
-            content,
-            generatedAt: new Date(),
-            isEdited: false
-          }))
-        ],
-        updatedAt: new Date()
-      };
-
-      return updatedRecord;
 
     } catch (error) {
       console.error('Error generating comments:', error);
