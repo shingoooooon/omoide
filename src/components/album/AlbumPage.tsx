@@ -1,14 +1,15 @@
 'use client';
 
 import React from 'react';
-import { GrowthRecord } from '@/types/models';
+import { GrowthRecord, ChildInfo } from '@/types/models';
 import { AlbumEntry } from './AlbumEntry';
 
 interface AlbumPageProps {
   records: GrowthRecord[];
+  childInfo?: ChildInfo;
 }
 
-export function AlbumPage({ records }: AlbumPageProps) {
+export function AlbumPage({ records, childInfo }: AlbumPageProps) {
   return (
     <div className="min-h-[600px] bg-gradient-to-br from-cream-50 to-yellow-50 relative">
       {/* Paper Texture Overlay */}
@@ -28,6 +29,7 @@ export function AlbumPage({ records }: AlbumPageProps) {
             key={record.id} 
             record={record} 
             isEven={index % 2 === 0}
+            childInfo={childInfo}
           />
         ))}
         

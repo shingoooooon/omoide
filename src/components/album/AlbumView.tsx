@@ -1,15 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-import { GrowthRecord } from '@/types/models';
+import { GrowthRecord, ChildInfo } from '@/types/models';
 import { AlbumPage } from './AlbumPage';
 import { Button } from '@/components/ui/Button';
 
 interface AlbumViewProps {
   records: GrowthRecord[];
+  childInfo?: ChildInfo;
 }
 
-export function AlbumView({ records }: AlbumViewProps) {
+export function AlbumView({ records, childInfo }: AlbumViewProps) {
   const [currentPage, setCurrentPage] = useState(0);
   
   // Group records into pages (2 records per page for album layout)
@@ -69,7 +70,7 @@ export function AlbumView({ records }: AlbumViewProps) {
 
           {/* Page Content */}
           <div className="ml-8 p-8">
-            <AlbumPage records={getCurrentPageRecords()} />
+            <AlbumPage records={getCurrentPageRecords()} childInfo={childInfo} />
           </div>
         </div>
       </div>

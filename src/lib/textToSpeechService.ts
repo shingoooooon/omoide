@@ -59,7 +59,7 @@ export async function generateSpeech(options: TTSOptions): Promise<TTSResult> {
   // Development fallback: Generate mock audio if TTS is not available
   if (process.env.NODE_ENV === 'development') {
     let ttsAudioBuffer: Buffer | null = null;
-    
+
     try {
       console.log('🎤 TTS Request:', {
         textLength: text.length,
@@ -120,16 +120,16 @@ export async function generateSpeech(options: TTSOptions): Promise<TTSResult> {
       // If we have TTS audio but storage failed, use the TTS audio directly
       if (ttsAudioBuffer) {
         console.log('🎤 Using real TTS audio as data URL (storage failed)');
-        
+
         const timestamp = Date.now();
         const fileName = `audio/tts_${timestamp}.mp3`;
-        
+
         // Return TTS audio as data URL
         const base64Audio = ttsAudioBuffer.toString('base64');
         const dataUrl = `data:audio/mpeg;base64,${base64Audio}`;
-        
+
         console.log('✅ Using real TTS audio as data URL');
-        
+
         return {
           audioUrl: dataUrl,
           audioBuffer: ttsAudioBuffer,
@@ -288,15 +288,15 @@ function generateMockAudio(text: string): Buffer {
   const sampleRate = 22050; // Lower sample rate for smaller files
   const duration = Math.max(2, Math.min(10, Math.floor(text.length / 15))); // 2-10 seconds based on text length
   const numSamples = sampleRate * duration;
-  
+
   // Create WAV header
   const wavHeader = Buffer.alloc(44);
-  
+
   // RIFF header
   wavHeader.write('RIFF', 0);
   wavHeader.writeUInt32LE(36 + numSamples * 2, 4); // File size - 8
   wavHeader.write('WAVE', 8);
-  
+
   // Format chunk
   wavHeader.write('fmt ', 12);
   wavHeader.writeUInt32LE(16, 16); // Format chunk size
@@ -306,11 +306,11 @@ function generateMockAudio(text: string): Buffer {
   wavHeader.writeUInt32LE(sampleRate * 2, 28); // Byte rate
   wavHeader.writeUInt16LE(2, 32); // Block align
   wavHeader.writeUInt16LE(16, 34); // Bits per sample
-  
+
   // Data chunk
   wavHeader.write('data', 36);
   wavHeader.writeUInt32LE(numSamples * 2, 40); // Data size
-  
+
   // Generate audio samples (varying frequency to simulate speech)
   const audioData = Buffer.alloc(numSamples * 2);
   for (let i = 0; i < numSamples; i++) {
@@ -319,19 +319,19 @@ function generateMockAudio(text: string): Buffer {
     const baseFreq = 200 + Math.sin(time * 2) * 50; // 150-250 Hz base
     const modulation = Math.sin(time * 8) * 0.3; // Add some modulation
     const sample = Math.sin(2 * Math.PI * baseFreq * time) * (0.15 + modulation * 0.05);
-    
+
     // Add some envelope to make it sound more natural
     const envelope = Math.min(1, time * 4) * Math.min(1, (duration - time) * 4);
     const finalSample = sample * envelope;
-    
+
     const intSample = Math.round(finalSample * 16383); // Lower volume
     audioData.writeInt16LE(intSample, i * 2);
   }
-  
+
   const wavFile = Buffer.concat([wavHeader, audioData]);
-  
+
   console.log(`🎭 Generated mock WAV audio: ${wavFile.length} bytes, ${duration}s for "${text.substring(0, 30)}..."`);
-  
+
   return wavFile;
 }
 

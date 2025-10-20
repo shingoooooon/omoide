@@ -2,6 +2,12 @@
 
 import { Timestamp } from 'firebase/firestore';
 
+export interface ChildInfo {
+  name: string;
+  birthDate: Date;
+  photoURL?: string;
+}
+
 export interface User {
   id: string;
   email: string;
@@ -9,6 +15,7 @@ export interface User {
   photoURL?: string;
   createdAt: Date;
   lastLoginAt: Date;
+  childInfo?: ChildInfo;
 }
 
 export interface Photo {
@@ -70,6 +77,12 @@ export interface ShareLink {
   expiresAt?: Date;
 }
 
+export interface ChildInfoDoc {
+  name: string;
+  birthDate: Timestamp;
+  photoURL?: string;
+}
+
 // Firestore document data types (without Firestore Timestamp conversion)
 export interface UserDoc {
   email: string;
@@ -77,6 +90,7 @@ export interface UserDoc {
   photoURL?: string;
   createdAt: Timestamp;
   lastLoginAt: Timestamp;
+  childInfo?: ChildInfoDoc;
 }
 
 export interface PhotoDoc {

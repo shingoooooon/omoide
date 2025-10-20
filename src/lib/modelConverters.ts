@@ -36,18 +36,33 @@ export function userDocToUser(id: string, doc: UserDoc): User {
     displayName: doc.displayName,
     photoURL: doc.photoURL,
     createdAt: timestampToDate(doc.createdAt),
-    lastLoginAt: timestampToDate(doc.lastLoginAt)
+    lastLoginAt: timestampToDate(doc.lastLoginAt),
+    childInfo: doc.childInfo ? {
+      name: doc.childInfo.name,
+      birthDate: timestampToDate(doc.childInfo.birthDate),
+      photoURL: doc.childInfo.photoURL
+    } : undefined
   };
 }
 
 export function userToUserDoc(user: User): UserDoc {
-  return {
+  const doc: UserDoc = {
     email: user.email,
     displayName: user.displayName,
     photoURL: user.photoURL,
     createdAt: dateToTimestamp(user.createdAt),
     lastLoginAt: dateToTimestamp(user.lastLoginAt)
   };
+  
+  if (user.childInfo) {
+    doc.childInfo = {
+      name: user.childInfo.name,
+      birthDate: dateToTimestamp(user.childInfo.birthDate),
+      photoURL: user.childInfo.photoURL
+    };
+  }
+  
+  return doc;
 }
 
 // Photo converters

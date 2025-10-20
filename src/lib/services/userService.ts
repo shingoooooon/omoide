@@ -113,6 +113,29 @@ export async function deleteUser(id: string): Promise<void> {
   }
 }
 
+// Update child information
+export async function updateChildInfo(
+  userId: string,
+  childInfo: import('@/types/models').ChildInfo
+): Promise<void> {
+  try {
+    const docRef = doc(db, COLLECTION_NAME, userId);
+    
+    // Use setDoc with merge to create or update the document
+    await setDoc(docRef, {
+      childInfo: {
+        name: childInfo.name,
+        birthDate: childInfo.birthDate,
+        photoURL: childInfo.photoURL || null
+      }
+    }, { merge: true });
+    
+  } catch (error) {
+    console.error('Error updating child info:', error);
+    throw new Error('Failed to update child information');
+  }
+}
+
 // Initialize user from Firebase Auth
 export async function initializeUserFromAuth(
   uid: string,

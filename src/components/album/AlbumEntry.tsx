@@ -2,16 +2,18 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { GrowthRecord } from '@/types/models';
+import { GrowthRecord, ChildInfo } from '@/types/models';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
+import { calculateAge, hasBirthDate } from '@/lib/ageUtils';
 
 interface AlbumEntryProps {
   record: GrowthRecord;
   isEven: boolean;
+  childInfo?: ChildInfo;
 }
 
-export function AlbumEntry({ record, isEven }: AlbumEntryProps) {
+export function AlbumEntry({ record, isEven, childInfo }: AlbumEntryProps) {
   const mainPhoto = record.photos[0];
   const mainComment = record.comments[0];
   
@@ -19,7 +21,13 @@ export function AlbumEntry({ record, isEven }: AlbumEntryProps) {
     return null;
   }
 
-  const formattedDate = format(new Date(record.createdAt), 'yyyy年M月d日', { locale: ja });
+  const recordDate = new Date(record.createdAt);
+  const formattedDate = format(recordDate, 'yyyy年M月d日', { locale: ja });
+  
+  // Calculate age if birth date is available
+  const ageInfo = childInfo && hasBirthDate(childInfo.birthDate) 
+    ? calculateAge(childInfo.birthDate, recordDate)
+    : null;
 
   return (
     <div className={`relative ${isEven ? 'ml-0' : 'ml-8'}`}>
@@ -44,9 +52,14 @@ export function AlbumEntry({ record, isEven }: AlbumEntryProps) {
 
       {/* Handwritten Comment */}
       <div className={`mt-4 ${isEven ? 'ml-4' : 'mr-4'}`}>
-        {/* Date */}
+        {/* Date and Age */}
         <div className="text-sm text-amber-700 font-handwriting mb-2 transform -rotate-1">
-          {formattedDate}
+          <div>{formattedDate}</div>
+          {ageInfo && (
+            <div className="text-xs text-amber-600 mt-1">
+              ({ageInfo.displayText})
+            </div>
+          )}
         </div>
         
         {/* Comment Bubble */}
