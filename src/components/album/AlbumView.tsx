@@ -13,8 +13,8 @@ interface AlbumViewProps {
 export function AlbumView({ records, childInfo }: AlbumViewProps) {
   const [currentPage, setCurrentPage] = useState(0);
   
-  // Group records into pages (2 records per page for album layout)
-  const recordsPerPage = 2;
+  // Group records into pages (4 records per page for individual photo layout)
+  const recordsPerPage = 4;
   const totalPages = Math.ceil(records.length / recordsPerPage);
   
   const getCurrentPageRecords = () => {

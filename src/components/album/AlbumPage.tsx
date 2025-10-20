@@ -23,15 +23,17 @@ export function AlbumPage({ records, childInfo }: AlbumPageProps) {
       </div>
 
       {/* Page Content */}
-      <div className="pl-16 pr-8 py-8 space-y-8">
-        {records.map((record, index) => (
-          <AlbumEntry 
-            key={record.id} 
-            record={record} 
-            isEven={index % 2 === 0}
-            childInfo={childInfo}
-          />
-        ))}
+      <div className="pl-16 pr-8 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {records.map((record, index) => (
+            <AlbumEntry 
+              key={record.id} 
+              record={record} 
+              isEven={index % 2 === 0}
+              childInfo={childInfo}
+            />
+          ))}
+        </div>
         
         {/* Decorative Elements */}
         <div className="absolute top-4 right-4 text-2xl opacity-60 transform rotate-12">

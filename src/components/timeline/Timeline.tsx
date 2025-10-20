@@ -37,12 +37,31 @@ export function Timeline({ onRecordClick }: TimelineProps) {
         pageSize: 10
       });
 
-      setRecords(result.records);
+      // Expand records to individual photo entries
+      const expandedRecords: GrowthRecord[] = [];
+      
+      result.records.forEach(record => {
+        // Create individual records for each photo
+        record.photos.forEach((photo, photoIndex) => {
+          const photoComment = record.comments.find(comment => comment.photoId === photo.id) || record.comments[photoIndex] || record.comments[0];
+          
+          if (photoComment) {
+            expandedRecords.push({
+              ...record,
+              id: `${record.id}_photo_${photoIndex}`, // Unique ID for each photo entry
+              photos: [photo], // Single photo per record
+              comments: [photoComment] // Corresponding comment
+            });
+          }
+        });
+      });
+
+      setRecords(expandedRecords);
       setHasMore(result.hasMore);
       setLastDoc(result.lastDoc);
     } catch (err) {
       console.error('Error loading records:', err);
-      setError(t('timeline.loadError'));
+      setError('データの読み込みに失敗しました');
     } finally {
       setLoading(false);
     }
@@ -59,7 +78,26 @@ export function Timeline({ onRecordClick }: TimelineProps) {
         lastDoc
       });
 
-      setRecords(prev => [...prev, ...result.records]);
+      // Expand records to individual photo entries
+      const expandedRecords: GrowthRecord[] = [];
+      
+      result.records.forEach(record => {
+        // Create individual records for each photo
+        record.photos.forEach((photo, photoIndex) => {
+          const photoComment = record.comments.find(comment => comment.photoId === photo.id) || record.comments[photoIndex] || record.comments[0];
+          
+          if (photoComment) {
+            expandedRecords.push({
+              ...record,
+              id: `${record.id}_photo_${photoIndex}`, // Unique ID for each photo entry
+              photos: [photo], // Single photo per record
+              comments: [photoComment] // Corresponding comment
+            });
+          }
+        });
+      });
+
+      setRecords(prev => [...prev, ...expandedRecords]);
       setHasMore(result.hasMore);
       setLastDoc(result.lastDoc);
     } catch (err) {
@@ -68,7 +106,7 @@ export function Timeline({ onRecordClick }: TimelineProps) {
     } finally {
       setLoadingMore(false);
     }
-  }, [user, lastDoc]);
+  }, [user, lastDoc, t]);
 
   useEffect(() => {
     loadInitialRecords();

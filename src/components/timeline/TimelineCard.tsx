@@ -43,7 +43,6 @@ export function TimelineCard({ record, onClick }: TimelineCardProps) {
   };
 
   const primaryPhoto = record.photos[0];
-  const additionalPhotosCount = record.photos.length - 1;
   const primaryComment = record.comments[0];
 
   return (
@@ -76,11 +75,7 @@ export function TimelineCard({ record, onClick }: TimelineCardProps) {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               />
             </div>
-            {additionalPhotosCount > 0 && (
-              <div className="absolute top-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
-                +{additionalPhotosCount}枚
-              </div>
-            )}
+
           </div>
         )}
 
@@ -92,11 +87,7 @@ export function TimelineCard({ record, onClick }: TimelineCardProps) {
                 ? `${primaryComment.content.substring(0, 120)}...` 
                 : primaryComment.content}
             </p>
-            {record.comments.length > 1 && (
-              <p className="text-primary-600 text-xs mt-2">
-                他 {record.comments.length - 1} 件のコメント
-              </p>
-            )}
+
           </div>
         )}
 

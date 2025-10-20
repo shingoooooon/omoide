@@ -74,25 +74,7 @@ export function AlbumEntry({ record, isEven, childInfo }: AlbumEntryProps) {
         </div>
       </div>
 
-      {/* Additional Photos (if any) */}
-      {record.photos.length > 1 && (
-        <div className={`mt-6 flex space-x-2 ${isEven ? 'justify-start ml-8' : 'justify-end mr-8'}`}>
-          {record.photos.slice(1, 3).map((photo, index) => (
-            <div key={photo.id} className={`relative transform ${index % 2 === 0 ? 'rotate-2' : '-rotate-3'} hover:rotate-0 transition-transform duration-300`}>
-              <div className="bg-white p-2 shadow-md border border-gray-200">
-                <div className="relative w-16 h-12 overflow-hidden">
-                  <Image
-                    src={photo.url}
-                    alt={`追加の写真 ${index + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
+
 
       {/* Decorative Doodles */}
       <div className={`absolute ${isEven ? '-right-8 top-8' : '-left-8 top-12'} text-lg opacity-40 transform ${isEven ? 'rotate-12' : '-rotate-12'}`}>
