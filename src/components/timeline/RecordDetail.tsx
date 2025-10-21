@@ -11,6 +11,7 @@ import { deleteGrowthRecord, removePhotoFromGrowthRecord } from '@/lib/services/
 import Image from 'next/image';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
+import { Icon } from '@/components/ui/Icon';
 
 interface RecordDetailProps {
   record: GrowthRecord;
@@ -269,13 +270,11 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
                   size="sm"
                   className="text-red-600 hover:text-red-700 hover:bg-red-50"
                 >
-                  <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
+                  <Icon name="trash" size="sm" className="mr-1" />
                   削除
                 </Button>
                 <Button variant="ghost" onClick={onClose} size="sm">
-                  ✕
+                  <Icon name="close" size="sm" />
                 </Button>
               </div>
             </div>
@@ -287,7 +286,8 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    📸 写真 ({currentRecord.photos.length}枚)
+                    <Icon name="photo" size="md" className="text-primary-600" />
+                    写真 ({currentRecord.photos.length}枚)
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -341,7 +341,8 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
               <CardHeader>
                 <CardTitle className="flex items-center justify-between">
                   <span className="flex items-center gap-2">
-                    💭 コメント ({currentRecord.comments.length}件)
+                    <Icon name="chat" size="md" className="text-primary-600" />
+                    コメント ({currentRecord.comments.length}件)
                   </span>
                   {!isGenerating && (
                     <Button
@@ -489,7 +490,9 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
                 {/* Empty State */}
                 {!isGenerating && currentRecord.comments.length === 0 && !error && (
                   <div className="text-center py-8">
-                    <div className="text-4xl mb-4">💭</div>
+                    <div className="mb-4 flex justify-center">
+                      <Icon name="chat" className="w-12 h-12 text-neutral-400" />
+                    </div>
                     <h3 className="text-lg font-semibold text-neutral-800 mb-2">
                       まだコメントがありません
                     </h3>
@@ -512,7 +515,7 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
               <Card>
                 <CardContent className="pt-6">
                   <div className="flex items-center gap-2 text-sm text-primary-600">
-                    <span>🔗</span>
+                    <Icon name="link" size="sm" />
                     <span>この記録は共有されています</span>
                   </div>
                 </CardContent>
@@ -522,7 +525,9 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
             {/* Empty State */}
             {currentRecord.photos.length === 0 && currentRecord.comments.length === 0 && (
               <div className="text-center py-12">
-                <div className="text-6xl mb-4">📝</div>
+                <div className="mb-4 flex justify-center">
+                  <Icon name="document" className="w-16 h-16 text-neutral-400" />
+                </div>
                 <h3 className="text-lg font-semibold text-neutral-800 mb-2">
                   記録が空です
                 </h3>

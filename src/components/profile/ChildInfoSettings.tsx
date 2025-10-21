@@ -9,6 +9,7 @@ import { Modal } from '@/components/ui/Modal';
 import { uploadChildIcon } from '@/lib/childIconUpload';
 import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';
+import { Icon } from '@/components/ui/Icon';
 
 interface ChildInfoSettingsProps {
   childInfo?: ChildInfo;
@@ -140,8 +141,8 @@ export function ChildInfoSettings({ childInfo, onSave, isOpen, onClose }: ChildI
                 </button>
               </div>
             ) : (
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 border-4 border-amber-200 flex items-center justify-center text-4xl mx-auto shadow-lg">
-                👶
+              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 border-4 border-amber-200 flex items-center justify-center mx-auto shadow-lg">
+                <Icon name="user" className="w-12 h-12 text-amber-600" solid />
               </div>
             )}
           </div>
@@ -179,7 +180,7 @@ export function ChildInfoSettings({ childInfo, onSave, isOpen, onClose }: ChildI
                   </>
                 ) : (
                   <>
-                    <span>📷</span>
+                    <Icon name="camera" size="sm" className="mr-1" />
                     <span>写真を選択</span>
                   </>
                 )}

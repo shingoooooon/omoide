@@ -3,6 +3,7 @@
 import React from 'react';
 import { GrowthRecord, ChildInfo } from '@/types/models';
 import { AlbumEntry } from './AlbumEntry';
+import { Icon } from '@/components/ui/Icon';
 
 interface AlbumPageProps {
   records: GrowthRecord[];
@@ -36,11 +37,11 @@ export function AlbumPage({ records, childInfo }: AlbumPageProps) {
         </div>
         
         {/* Decorative Elements */}
-        <div className="absolute top-4 right-4 text-2xl opacity-60 transform rotate-12">
-          ✨
+        <div className="absolute top-4 right-4 opacity-60 transform rotate-12">
+          <Icon name="sparkles" size="lg" className="text-amber-400" />
         </div>
-        <div className="absolute bottom-4 left-20 text-xl opacity-40 transform -rotate-6">
-          🌟
+        <div className="absolute bottom-4 left-20 opacity-40 transform -rotate-6">
+          <Icon name="star" className="text-amber-500" />
         </div>
       </div>
     </div>

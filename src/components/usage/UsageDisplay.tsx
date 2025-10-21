@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { getUsageStats, resetUsage } from '@/lib/usageTracker';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
 
 export function UsageDisplay() {
   const [stats, setStats] = useState({
@@ -103,7 +104,8 @@ export function UsageDisplay() {
         {dailyPercentage >= 80 && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
             <p className="text-yellow-800 text-sm">
-              ⚠️ 今日の使用量が制限に近づいています
+              <Icon name="warning" size="sm" className="inline mr-1 text-yellow-600" />
+              今日の使用量が制限に近づいています
             </p>
           </div>
         )}

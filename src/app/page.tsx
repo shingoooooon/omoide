@@ -5,6 +5,7 @@ import { Layout } from '@/components/layout/Layout'
 import { Button, Card, Badge } from '@/components/ui'
 import { useLocale } from '@/contexts/LocaleContext'
 import { useTranslations } from '@/lib/translations'
+import { Icon } from '@/components/ui/Icon'
 
 export default function Home() {
   const router = useRouter()
@@ -16,8 +17,9 @@ export default function Home() {
       <div className="max-w-6xl mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-20 animate-fade-in">
-          <Badge variant="primary" className="mb-6 text-sm font-medium">
-            ✨ {t('home.title')}
+          <Badge variant="primary" className="mb-6 text-sm font-medium flex items-center gap-2 w-fit mx-auto">
+            <Icon name="sparkles" size="sm" />
+            {t('home.title')}
           </Badge>
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-neutral-900 mb-6 leading-tight">
             {t('home.title')}
@@ -31,7 +33,8 @@ export default function Home() {
               className="text-lg px-8 py-4 shadow-medium hover:shadow-large"
               onClick={() => router.push('/upload')}
             >
-              📸 {t('home.uploadPhotos')}
+              <Icon name="camera" size="md" className="mr-2" />
+              {t('home.uploadPhotos')}
             </Button>
             <Button variant="outline" size="lg" className="text-lg px-8 py-4">
               {t('home.viewDemo')}
@@ -43,7 +46,7 @@ export default function Home() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
           <Card variant="elevated" className="text-center p-8 hover:shadow-large transition-all duration-300 group">
             <div className="w-20 h-20 bg-gradient-to-br from-primary-400 to-primary-600 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-105 transition-transform duration-300">
-              <span className="text-3xl">📷</span>
+              <Icon name="photo" className="w-8 h-8 text-white" />
             </div>
             <h3 className="text-xl font-display font-semibold text-neutral-900 mb-3">
               {t('home.features.upload.title')}
@@ -55,7 +58,7 @@ export default function Home() {
 
           <Card variant="elevated" className="text-center p-8 hover:shadow-large transition-all duration-300 group">
             <div className="w-20 h-20 bg-gradient-to-br from-secondary-400 to-secondary-600 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-105 transition-transform duration-300">
-              <span className="text-3xl">🤖</span>
+              <Icon name="sparkles" className="w-8 h-8 text-white" solid />
             </div>
             <h3 className="text-xl font-display font-semibold text-neutral-900 mb-3">
               {t('home.features.ai.title')}
@@ -67,7 +70,7 @@ export default function Home() {
 
           <Card variant="elevated" className="text-center p-8 hover:shadow-large transition-all duration-300 group sm:col-span-2 lg:col-span-1">
             <div className="w-20 h-20 bg-gradient-to-br from-accent-400 to-accent-600 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-105 transition-transform duration-300">
-              <span className="text-3xl">📚</span>
+              <Icon name="book" className="w-8 h-8 text-white" solid />
             </div>
             <h3 className="text-xl font-display font-semibold text-neutral-900 mb-3">
               {t('home.features.storybook.title')}
@@ -95,25 +98,25 @@ export default function Home() {
                 step: '1',
                 title: t('home.howItWorks.steps.upload.title'),
                 description: t('home.howItWorks.steps.upload.description'),
-                icon: '📤'
+                icon: 'camera' as const
               },
               {
                 step: '2',
                 title: t('home.howItWorks.steps.analyze.title'),
                 description: t('home.howItWorks.steps.analyze.description'),
-                icon: '✨'
+                icon: 'sparkles' as const
               },
               {
                 step: '3',
                 title: t('home.howItWorks.steps.create.title'),
                 description: t('home.howItWorks.steps.create.description'),
-                icon: '📖'
+                icon: 'book' as const
               }
             ].map((item, index) => (
               <div key={index} className="relative">
                 <div className="flex flex-col items-center text-center">
                   <div className="w-16 h-16 bg-gradient-to-br from-primary-100 to-secondary-100 rounded-2xl flex items-center justify-center mb-4 relative">
-                    <span className="text-2xl">{item.icon}</span>
+                    <Icon name={item.icon} className="w-6 h-6 text-primary-600" />
                     <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
                       {item.step}
                     </div>

@@ -8,6 +8,7 @@ import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
 import { useLocale } from '@/contexts/LocaleContext'
 import { useTranslations } from '@/lib/translations'
 import { cn } from '@/lib/utils'
+import { Icon } from '@/components/ui/Icon'
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
@@ -16,12 +17,12 @@ const Header: React.FC = () => {
   const { t } = useTranslations(locale)
 
   const navigation = [
-    { name: t('navigation.home'), href: '/', icon: '🏠' },
-    { name: t('navigation.upload'), href: '/upload', icon: '📸' },
-    { name: t('navigation.timeline'), href: '/timeline', icon: '📅' },
-    { name: t('navigation.albums'), href: '/albums', icon: '📖' },
-    { name: t('navigation.storybooks'), href: '/storybooks', icon: '📚' },
-  ]
+    { name: t('navigation.home'), href: '/', icon: 'home' },
+    { name: t('navigation.upload'), href: '/upload', icon: 'camera' },
+    { name: t('navigation.timeline'), href: '/timeline', icon: 'calendar' },
+    { name: t('navigation.albums'), href: '/albums', icon: 'book' },
+    { name: t('navigation.storybooks'), href: '/storybooks', icon: 'bookmark' },
+  ] as const
 
   const isActive = (href: string) => pathname === href
 
@@ -54,7 +55,7 @@ const Header: React.FC = () => {
                     : 'text-neutral-600 hover:text-primary-700 hover:bg-primary-50'
                 )}
               >
-                <span className="text-base">{item.icon}</span>
+                <Icon name={item.icon} size="sm" />
                 <span>{item.name}</span>
               </Link>
             ))}
@@ -103,7 +104,7 @@ const Header: React.FC = () => {
                       : 'text-neutral-600 hover:text-primary-700 hover:bg-primary-50'
                   )}
                 >
-                  <span className="text-lg">{item.icon}</span>
+                  <Icon name={item.icon} size="md" />
                   <span>{item.name}</span>
                 </Link>
               ))}

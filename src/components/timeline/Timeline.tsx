@@ -10,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useTranslations } from '@/lib/translations';
 import { DocumentSnapshot } from 'firebase/firestore';
+import { Icon } from '@/components/ui/Icon';
 
 interface TimelineProps {
   onRecordClick: (record: GrowthRecord) => void;
@@ -148,7 +149,9 @@ export function Timeline({ onRecordClick }: TimelineProps) {
     return (
       <div className="text-center py-12">
         <div className="bg-neutral-50 rounded-lg p-8 max-w-md mx-auto">
-          <div className="text-6xl mb-4">📸</div>
+          <div className="mb-4 flex justify-center">
+            <Icon name="camera" className="w-16 h-16 text-neutral-400" />
+          </div>
           <h3 className="text-lg font-semibold text-neutral-800 mb-2">
             {t('timeline.noRecords')}
           </h3>

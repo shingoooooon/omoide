@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { GrowthRecord, ChildInfo } from '@/types/models';
 import { AlbumPage } from './AlbumPage';
 import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
 
 interface AlbumViewProps {
   records: GrowthRecord[];
@@ -38,7 +39,9 @@ export function AlbumView({ records, childInfo }: AlbumViewProps) {
     return (
       <div className="text-center py-16">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border-2 border-dashed border-amber-300 max-w-md mx-auto">
-          <div className="text-6xl mb-4">📷</div>
+          <div className="mb-4 flex justify-center">
+            <Icon name="photo" className="w-16 h-16 text-amber-500" />
+          </div>
           <h3 className="text-xl font-bold text-amber-800 mb-2 font-handwriting">
             まだ写真がありません
           </h3>

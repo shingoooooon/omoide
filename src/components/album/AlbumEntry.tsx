@@ -6,6 +6,7 @@ import { GrowthRecord, ChildInfo } from '@/types/models';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { calculateAge, hasBirthDate } from '@/lib/ageUtils';
+import { Icon } from '@/components/ui/Icon';
 
 interface AlbumEntryProps {
   record: GrowthRecord;
@@ -77,8 +78,12 @@ export function AlbumEntry({ record, isEven, childInfo }: AlbumEntryProps) {
 
 
       {/* Decorative Doodles */}
-      <div className={`absolute ${isEven ? '-right-8 top-8' : '-left-8 top-12'} text-lg opacity-40 transform ${isEven ? 'rotate-12' : '-rotate-12'}`}>
-        {isEven ? '♡' : '☆'}
+      <div className={`absolute ${isEven ? '-right-8 top-8' : '-left-8 top-12'} opacity-40 transform ${isEven ? 'rotate-12' : '-rotate-12'}`}>
+        {isEven ? (
+          <Icon name="heart" className="text-pink-400" solid />
+        ) : (
+          <Icon name="star" className="text-yellow-400" solid />
+        )}
       </div>
     </div>
   );

@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { Icon } from '@/components/ui/Icon'
 
 export function Footer() {
   const currentYear = new Date().getFullYear()
@@ -80,8 +81,8 @@ export function Footer() {
             <p className="text-xs text-neutral-500">
               © {currentYear} Omoide. All rights reserved.
             </p>
-            <p className="text-xs text-neutral-500">
-              Made with ❤️ for families
+            <p className="text-xs text-neutral-500 flex items-center gap-1">
+              Made with <Icon name="heart" size="sm" className="text-red-500" solid /> for families
             </p>
           </div>
         </div>

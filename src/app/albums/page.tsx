@@ -12,6 +12,7 @@ import { Layout } from '@/components/layout/Layout';
 import { AlbumView } from '@/components/album/AlbumView';
 import { ChildInfoSettings } from '@/components/profile/ChildInfoSettings';
 import { calculateAge, hasBirthDate } from '@/lib/ageUtils';
+import { Icon } from '@/components/ui/Icon';
 
 export default function AlbumsPage() {
   const { user: authUser } = useAuth();
@@ -147,12 +148,16 @@ export default function AlbumsPage() {
                     />
                   </div>
                   {/* Decorative elements around the photo */}
-                  <div className="absolute -top-3 -right-3 text-3xl animate-bounce-gentle">✨</div>
-                  <div className="absolute -bottom-3 -left-3 text-2xl animate-bounce-gentle" style={{ animationDelay: '0.5s' }}>🌟</div>
+                  <div className="absolute -top-3 -right-3 text-amber-400 animate-bounce-gentle">
+                    <Icon name="sparkles" size="xl" solid />
+                  </div>
+                  <div className="absolute -bottom-3 -left-3 text-amber-500 animate-bounce-gentle" style={{ animationDelay: '0.5s' }}>
+                    <Icon name="star" size="lg" solid />
+                  </div>
                 </div>
               ) : (
-                <div className="w-40 h-40 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 border-8 border-white flex items-center justify-center text-7xl mx-auto shadow-2xl">
-                  👶
+                <div className="w-40 h-40 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 border-8 border-white flex items-center justify-center mx-auto shadow-2xl">
+                  <Icon name="user" className="w-20 h-20 text-amber-600" solid />
                 </div>
               )}
             </div>
@@ -183,7 +188,8 @@ export default function AlbumsPage() {
               size="sm"
               className="bg-amber-100 border-amber-300 text-amber-800 hover:bg-amber-200 font-handwriting mb-6"
             >
-              ⚙️ 設定
+              <Icon name="settings" size="sm" className="mr-1" />
+              設定
             </Button>
           </div>
 
