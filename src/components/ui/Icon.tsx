@@ -23,7 +23,9 @@ import {
   XMarkIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  ArrowPathIcon
+  ArrowPathIcon,
+  ShareIcon,
+  ClipboardDocumentIcon
 } from '@heroicons/react/24/outline';
 
 import {
@@ -59,7 +61,9 @@ export type IconName =
   | 'close'
   | 'chevron-left'
   | 'chevron-right'
-  | 'refresh';
+  | 'refresh'
+  | 'share'
+  | 'copy';
 
 interface IconProps {
   name: IconName;
@@ -101,7 +105,9 @@ export function Icon({ name, className = '', solid = false, size = 'md' }: IconP
     close: XMarkIcon,
     'chevron-left': ChevronLeftIcon,
     'chevron-right': ChevronRightIcon,
-    refresh: ArrowPathIcon
+    refresh: ArrowPathIcon,
+    share: ShareIcon,
+    copy: ClipboardDocumentIcon
   };
 
   const IconComponent = iconMap[name];

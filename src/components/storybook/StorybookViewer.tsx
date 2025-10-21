@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/Card';
 import { AudioPlayer } from '@/components/ui/AudioPlayer';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import { ShareButton } from '@/components/sharing';
 import Image from 'next/image';
 
 interface StorybookViewerProps {
@@ -147,18 +148,25 @@ export function StorybookViewer({ storybook, onClose }: StorybookViewerProps) {
               {storybook.month.replace('-', '年')}月の絵本
             </p>
           </div>
-          {onClose && (
-            <Button
-              onClick={onClose}
-              variant="outline"
-              className="border-purple-300 text-purple-700 hover:bg-purple-100"
-            >
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-              閉じる
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            <ShareButton
+              contentId={storybook.id}
+              contentType="storybook"
+              contentTitle={storybook.title}
+            />
+            {onClose && (
+              <Button
+                onClick={onClose}
+                variant="outline"
+                className="border-purple-300 text-purple-700 hover:bg-purple-100"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                閉じる
+              </Button>
+            )}
+          </div>
         </div>
       </div>
 

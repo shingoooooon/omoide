@@ -236,14 +236,20 @@ export function shareLinkDocToShareLink(id: string, doc: ShareLinkDoc): ShareLin
 }
 
 export function shareLinkToShareLinkDoc(shareLink: ShareLink): ShareLinkDoc {
-  return {
+  const doc: any = {
     contentId: shareLink.contentId,
     contentType: shareLink.contentType,
     createdBy: shareLink.createdBy,
     createdAt: dateToTimestamp(shareLink.createdAt),
-    isActive: shareLink.isActive,
-    expiresAt: shareLink.expiresAt ? dateToTimestamp(shareLink.expiresAt) : undefined
+    isActive: shareLink.isActive
   };
+  
+  // Only include expiresAt if it's defined
+  if (shareLink.expiresAt) {
+    doc.expiresAt = dateToTimestamp(shareLink.expiresAt);
+  }
+  
+  return doc as ShareLinkDoc;
 }
 
 // Utility function to generate unique IDs for nested objects

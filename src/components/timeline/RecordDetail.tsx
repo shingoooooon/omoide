@@ -12,6 +12,7 @@ import Image from 'next/image';
 import { format } from 'date-fns';
 import { ja } from 'date-fns/locale';
 import { Icon } from '@/components/ui/Icon';
+import { ShareButton } from '@/components/sharing';
 
 interface RecordDetailProps {
   record: GrowthRecord;
@@ -264,6 +265,11 @@ export function RecordDetail({ record, isOpen, onClose, onRecordUpdate, onRecord
                 </p>
               </div>
               <div className="flex items-center gap-2">
+                <ShareButton
+                  contentId={currentRecord.id.includes('_photo_') ? currentRecord.id.split('_photo_')[0] : currentRecord.id}
+                  contentType="record"
+                  contentTitle={`${formatDate(currentRecord.createdAt)}の記録`}
+                />
                 <Button
                   onClick={handleDeleteClick}
                   variant="ghost"

@@ -18,7 +18,7 @@ export function AlbumEntry({ record, isEven, childInfo }: AlbumEntryProps) {
   const mainPhoto = record.photos[0];
   const mainComment = record.comments[0];
   
-  if (!mainPhoto || !mainComment) {
+  if (!mainPhoto) {
     return null;
   }
 
@@ -70,7 +70,7 @@ export function AlbumEntry({ record, isEven, childInfo }: AlbumEntryProps) {
           
           {/* Comment Text */}
           <p className="text-amber-800 font-handwriting leading-relaxed text-sm">
-            {mainComment.content}
+            {mainComment ? mainComment.content : 'まだコメントがありません。詳細画面でコメントを生成できます。'}
           </p>
         </div>
       </div>

@@ -80,14 +80,19 @@ export function TimelineCard({ record, onClick }: TimelineCardProps) {
         )}
 
         {/* Comment Preview */}
-        {primaryComment && (
+        {primaryComment ? (
           <div className="bg-primary-50 rounded-lg p-4 mb-4">
             <p className="text-neutral-700 text-sm leading-relaxed">
               {primaryComment.content.length > 120 
                 ? `${primaryComment.content.substring(0, 120)}...` 
                 : primaryComment.content}
             </p>
-
+          </div>
+        ) : (
+          <div className="bg-neutral-50 rounded-lg p-4 mb-4">
+            <p className="text-neutral-500 text-sm italic">
+              コメントを生成するには詳細を開いてください
+            </p>
           </div>
         )}
 

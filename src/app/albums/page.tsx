@@ -50,14 +50,13 @@ export default function AlbumsPage() {
         record.photos.forEach((photo, photoIndex) => {
           const photoComment = record.comments.find(comment => comment.photoId === photo.id) || record.comments[photoIndex] || record.comments[0];
 
-          if (photoComment) {
-            expandedRecords.push({
-              ...record,
-              id: `${record.id}_photo_${photoIndex}`, // Unique ID for each photo entry
-              photos: [photo], // Single photo per record
-              comments: [photoComment] // Corresponding comment
-            });
-          }
+          // Always create an entry for each photo, even if there's no comment yet
+          expandedRecords.push({
+            ...record,
+            id: `${record.id}_photo_${photoIndex}`, // Unique ID for each photo entry
+            photos: [photo], // Single photo per record
+            comments: photoComment ? [photoComment] : [] // Empty array if no comment
+          });
         });
       });
 
