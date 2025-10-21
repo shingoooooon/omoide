@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
-import { GrowthRecord, ChildInfo } from '@/types/models';
+import { GrowthRecord, ChildInfo, AlbumLayoutType } from '@/types/models';
 import { AlbumPage } from './AlbumPage';
+import { SimpleAlbumView } from './SimpleAlbumView';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 
@@ -13,6 +14,7 @@ interface AlbumViewProps {
 
 export function AlbumView({ records, childInfo }: AlbumViewProps) {
   const [currentPage, setCurrentPage] = useState(0);
+  const [layoutType, setLayoutType] = useState<AlbumLayoutType>('handwritten');
   
   // Group records into pages (4 records per page for individual photo layout)
   const recordsPerPage = 4;
@@ -53,10 +55,76 @@ export function AlbumView({ records, childInfo }: AlbumViewProps) {
     );
   }
 
+  // If simple layout is selected, use SimpleAlbumView
+  if (layoutType === 'simple') {
+    return (
+      <div>
+        {/* Layout Toggle */}
+        <div className="flex justify-center mb-8">
+          <div className="bg-white rounded-lg p-1 shadow-md border">
+            <button
+              onClick={() => setLayoutType('handwritten')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                layoutType === 'handwritten'
+                  ? 'bg-amber-500 text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <Icon name="edit" className="w-4 h-4 mr-2 inline" />
+              手書き風
+            </button>
+            <button
+              onClick={() => setLayoutType('simple')}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                layoutType === 'simple'
+                  ? 'bg-blue-500 text-white shadow-sm'
+                  : 'text-gray-600 hover:text-gray-800'
+              }`}
+            >
+              <Icon name="photo" className="w-4 h-4 mr-2 inline" />
+              シンプル
+            </button>
+          </div>
+        </div>
+        
+        <SimpleAlbumView records={records} childInfo={childInfo} />
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-6xl mx-auto">
-      {/* Album Book */}
-      <div className="relative">
+    <div>
+      {/* Layout Toggle */}
+      <div className="flex justify-center mb-8">
+        <div className="bg-white rounded-lg p-1 shadow-md border">
+          <button
+            onClick={() => setLayoutType('handwritten')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              layoutType === 'handwritten'
+                ? 'bg-amber-500 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            <Icon name="edit" className="w-4 h-4 mr-2 inline" />
+            手書き風
+          </button>
+          <button
+            onClick={() => setLayoutType('simple')}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
+              layoutType === 'simple'
+                ? 'bg-blue-500 text-white shadow-sm'
+                : 'text-gray-600 hover:text-gray-800'
+            }`}
+          >
+            <Icon name="photo" className="w-4 h-4 mr-2 inline" />
+            シンプル
+          </button>
+        </div>
+      </div>
+
+      {/* Handwritten Album Book */}
+      <div className="max-w-6xl mx-auto">
+        <div className="relative">
         {/* Book Shadow */}
         <div className="absolute inset-0 bg-amber-900/20 rounded-2xl transform rotate-1 translate-x-2 translate-y-2"></div>
         
@@ -118,6 +186,7 @@ export function AlbumView({ records, childInfo }: AlbumViewProps) {
         >
           次のページ →
         </Button>
+      </div>
       </div>
     </div>
   );

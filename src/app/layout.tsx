@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Poppins } from "next/font/google";
+import { Inter, Poppins, Kalam } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LocaleProvider } from "@/contexts/LocaleContext";
@@ -14,6 +14,13 @@ const poppins = Poppins({
   subsets: ["latin"],
   weight: ['400', '500', '600', '700'],
   variable: "--font-poppins",
+  display: 'swap',
+});
+
+const kalam = Kalam({
+  subsets: ["latin"],
+  weight: ['300', '400', '700'],
+  variable: "--font-kalam",
   display: 'swap',
 });
 
@@ -36,7 +43,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja" className={`${inter.variable} ${poppins.variable}`}>
+    <html lang="ja" className={`${inter.variable} ${poppins.variable} ${kalam.variable}`}>
       <body className="font-sans antialiased">
         <LocaleProvider>
           <AuthProvider>

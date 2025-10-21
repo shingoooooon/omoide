@@ -193,7 +193,9 @@ export default function AlbumsPage() {
           </div>
 
           {/* Album Title */}
-
+          <h2 className="text-3xl font-bold text-gray-800 mb-8 font-handwriting">
+            {childName}のアルバム
+          </h2>
 
           {!user?.childInfo && (
             <div className="mt-4 p-4 bg-yellow-100 border border-yellow-300 rounded-lg max-w-md mx-auto">

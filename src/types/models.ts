@@ -2,6 +2,8 @@
 
 import { Timestamp } from 'firebase/firestore';
 
+export type AlbumLayoutType = 'handwritten' | 'simple';
+
 export interface ChildInfo {
   name: string;
   birthDate: Date;
