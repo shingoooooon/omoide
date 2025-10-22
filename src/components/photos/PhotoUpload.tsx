@@ -6,6 +6,9 @@ import { cn } from '@/lib/utils'
 import { uploadPhoto, uploadPhotoSimple, UploadResult, UploadProgress } from '@/lib/storage'
 import { validatePhotoFiles, formatValidationErrors, ValidationOptions } from '@/lib/photoValidation'
 import { useAuth } from '@/contexts/AuthContext'
+import { useToast } from '@/contexts/ToastContext'
+import { OmoideError, ErrorType, createError, parseError } from '@/lib/errors'
+import { useAsyncOperation } from '@/hooks/useAsyncOperation'
 
 export interface Photo {
   id: string
@@ -41,11 +44,23 @@ export function PhotoUpload({
 }: PhotoUploadProps) {
   const [photos, setPhotos] = useState<Photo[]>([])
   const [isDragOver, setIsDragOver] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
   const [errors, setErrors] = useState<string[]>([])
   const [warnings, setWarnings] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { user } = useAuth()
+  const { showError, showSuccess, showWarning } = useToast()
+  
+  const uploadOperation = useAsyncOperation({
+    onSuccess: (result) => {
+      showSuccess('アップロード完了', '写真のアップロードが完了しました')
+    },
+    onError: (error) => {
+      showError('アップロードエラー', error.userMessage)
+    },
+    onProgress: (progress) => {
+      // Progress is handled per photo
+    }
+  })
 
   const processFiles = useCallback(async (files: FileList | File[]) => {
     const fileArray = Array.from(files)
@@ -98,8 +113,10 @@ export function PhotoUpload({
         setTimeout(() => onPhotosUploaded(updatedPhotos), 0)
       }
     } catch (error) {
-      console.error('Validation error:', error)
-      setErrors(['ファイルの検証中にエラーが発生しました。再度お試しください。'])
+      const omoideError = parseError(error)
+      console.error('Validation error:', omoideError)
+      setErrors([omoideError.userMessage])
+      showError('検証エラー', omoideError.userMessage)
     }
   }, [photos, maxPhotos, maxFileSize, acceptedFormats, validationOptions, autoUpload, user, onPhotosUploaded])
 
@@ -150,7 +167,9 @@ export function PhotoUpload({
 
   const uploadPhotosToStorage = async (photosToUpload: Photo[]) => {
     if (!user) {
-      setErrors(['ログインが必要です'])
+      const error = createError(ErrorType.AUTHENTICATION_ERROR, 'User not authenticated')
+      setErrors([error.userMessage])
+      showError('認証エラー', error.userMessage)
       return
     }
 
@@ -161,10 +180,8 @@ export function PhotoUpload({
       emailVerified: user.emailVerified
     })
 
-    setIsUploading(true)
-
-    try {
-      const uploadPromises = photosToUpload.map(async (photo) => {
+    await uploadOperation.execute(async (signal, updateProgress) => {
+      const uploadPromises = photosToUpload.map(async (photo, index) => {
         try {
           // Update progress to show upload starting
           setPhotos(prevPhotos =>
@@ -196,9 +213,17 @@ export function PhotoUpload({
             return updatedPhotos
           })
 
+          // Update overall progress
+          const overallProgress = ((index + 1) / photosToUpload.length) * 100
+          updateProgress?.(overallProgress)
+
         } catch (error) {
-          console.error(`Upload error for ${photo.fileName}:`, error)
-          setErrors(prev => [...prev, `${photo.fileName}: ${error instanceof Error ? error.message : 'アップロードに失敗しました'}`])
+          const omoideError = parseError(error)
+          console.error(`Upload error for ${photo.fileName}:`, omoideError)
+          
+          const errorMessage = `${photo.fileName}: ${omoideError.userMessage}`
+          setErrors(prev => [...prev, errorMessage])
+          showError('アップロードエラー', errorMessage)
           
           // Update photo to show error state
           setPhotos(prevPhotos =>
@@ -208,15 +233,14 @@ export function PhotoUpload({
                 : p
             )
           )
+          
+          throw omoideError
         }
       })
 
       await Promise.all(uploadPromises)
-    } catch (error) {
-      console.error('Upload error:', error)
-    } finally {
-      setIsUploading(false)
-    }
+      return photosToUpload
+    })
   }
 
   const openFileDialog = () => {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { analyzeImages, VisionAnalysisResult } from '@/lib/vision';
+import { OmoideError, ErrorType, createError, logError } from '@/lib/errors';
 
 export interface AnalyzePhotosRequest {
   photoUrls: string[];
@@ -9,6 +10,7 @@ export interface AnalyzePhotosResponse {
   results: VisionAnalysisResult[];
   success: boolean;
   message?: string;
+  error?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -17,10 +19,17 @@ export async function POST(request: NextRequest) {
     
     // Validate request
     if (!body.photoUrls || !Array.isArray(body.photoUrls)) {
+      const error = createError(
+        ErrorType.VALIDATION_ERROR,
+        'photoUrls array is required'
+      );
+      logError(error, 'analyze-photos API');
+      
       return NextResponse.json(
         {
           success: false,
-          message: 'photoUrls array is required',
+          error: error.userMessage,
+          message: error.message,
           results: [],
         } as AnalyzePhotosResponse,
         { status: 400 }
@@ -28,10 +37,17 @@ export async function POST(request: NextRequest) {
     }
 
     if (body.photoUrls.length === 0) {
+      const error = createError(
+        ErrorType.VALIDATION_ERROR,
+        'At least one photo URL is required'
+      );
+      logError(error, 'analyze-photos API');
+      
       return NextResponse.json(
         {
           success: false,
-          message: 'At least one photo URL is required',
+          error: error.userMessage,
+          message: error.message,
           results: [],
         } as AnalyzePhotosResponse,
         { status: 400 }
@@ -40,10 +56,17 @@ export async function POST(request: NextRequest) {
 
     // Limit the number of photos to analyze at once
     if (body.photoUrls.length > 10) {
+      const error = createError(
+        ErrorType.VALIDATION_ERROR,
+        'Maximum 10 photos can be analyzed at once'
+      );
+      logError(error, 'analyze-photos API');
+      
       return NextResponse.json(
         {
           success: false,
-          message: 'Maximum 10 photos can be analyzed at once',
+          error: error.userMessage,
+          message: error.message,
           results: [],
         } as AnalyzePhotosResponse,
         { status: 400 }
@@ -53,10 +76,17 @@ export async function POST(request: NextRequest) {
     // Validate URLs
     for (const url of body.photoUrls) {
       if (!url || typeof url !== 'string') {
+        const error = createError(
+          ErrorType.VALIDATION_ERROR,
+          'All photo URLs must be valid strings'
+        );
+        logError(error, 'analyze-photos API');
+        
         return NextResponse.json(
           {
             success: false,
-            message: 'All photo URLs must be valid strings',
+            error: error.userMessage,
+            message: error.message,
             results: [],
           } as AnalyzePhotosResponse,
           { status: 400 }
@@ -66,10 +96,17 @@ export async function POST(request: NextRequest) {
       try {
         new URL(url);
       } catch {
+        const error = createError(
+          ErrorType.VALIDATION_ERROR,
+          `Invalid URL format: ${url}`
+        );
+        logError(error, 'analyze-photos API');
+        
         return NextResponse.json(
           {
             success: false,
-            message: `Invalid URL format: ${url}`,
+            error: error.userMessage,
+            message: error.message,
             results: [],
           } as AnalyzePhotosResponse,
           { status: 400 }
@@ -86,12 +123,21 @@ export async function POST(request: NextRequest) {
     } as AnalyzePhotosResponse);
 
   } catch (error) {
-    console.error('Photo analysis API error:', error);
+    let omoideError: OmoideError;
+    
+    if (error instanceof OmoideError) {
+      omoideError = error;
+    } else {
+      omoideError = createError(ErrorType.VISION_API_ERROR, error);
+    }
+    
+    logError(omoideError, 'analyze-photos API');
     
     return NextResponse.json(
       {
         success: false,
-        message: error instanceof Error ? error.message : 'Internal server error',
+        error: omoideError.userMessage,
+        message: omoideError.message,
         results: [],
       } as AnalyzePhotosResponse,
       { status: 500 }

@@ -8,6 +8,9 @@ import {
 } from '@/lib/commentGenerationService';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { useToast } from '@/contexts/ToastContext';
+import { useAsyncOperation } from '@/hooks/useAsyncOperation';
+import { parseError } from '@/lib/errors';
 
 interface CommentGeneratorProps {
   photos: Photo[];

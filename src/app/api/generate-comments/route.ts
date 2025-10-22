@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { generateMultipleGrowthComments } from '@/lib/openaiClient';
 import { generateMultipleFreeComments } from '@/lib/freeCommentGenerator';
+import { OmoideError, ErrorType, createError, logError } from '@/lib/errors';
 
 export interface GenerateCommentsRequest {
   analysisDataArray: any[];
@@ -10,6 +11,8 @@ export interface GenerateCommentsResponse {
   comments: string[];
   success: boolean;
   error?: string;
+  source?: string;
+  note?: string;
 }
 
 export async function POST(request: NextRequest) {
@@ -19,10 +22,16 @@ export async function POST(request: NextRequest) {
 
     // 入力データの検証
     if (!analysisDataArray || !Array.isArray(analysisDataArray)) {
+      const error = createError(
+        ErrorType.VALIDATION_ERROR,
+        '解析データが正しく提供されていません'
+      );
+      logError(error, 'generate-comments API');
+      
       return NextResponse.json(
         { 
           success: false, 
-          error: '解析データが正しく提供されていません',
+          error: error.userMessage,
           comments: []
         },
         { status: 400 }
@@ -30,10 +39,16 @@ export async function POST(request: NextRequest) {
     }
 
     if (analysisDataArray.length === 0) {
+      const error = createError(
+        ErrorType.VALIDATION_ERROR,
+        '解析データが空です'
+      );
+      logError(error, 'generate-comments API');
+      
       return NextResponse.json(
         { 
           success: false, 
-          error: '解析データが空です',
+          error: error.userMessage,
           comments: []
         },
         { status: 400 }
@@ -56,7 +71,9 @@ export async function POST(request: NextRequest) {
       
       return NextResponse.json({
         success: true,
-        comments: dummyComments
+        comments: dummyComments,
+        source: 'dummy',
+        note: '開発環境のため、ダミーコメントを使用しています'
       });
     }
 
@@ -71,28 +88,55 @@ export async function POST(request: NextRequest) {
     } catch (openaiError) {
       console.warn('OpenAI API failed, falling back to free comments:', openaiError);
       
+      const fallbackError = createError(
+        ErrorType.OPENAI_API_ERROR,
+        openaiError,
+        { fallbackUsed: true }
+      );
+      logError(fallbackError, 'generate-comments API - fallback');
+      
       // 無料版のコメント生成にフォールバック
-      const freeComments = generateMultipleFreeComments(analysisDataArray);
-      return NextResponse.json({
-        success: true,
-        comments: freeComments,
-        source: 'free',
-        note: 'OpenAI APIが利用できないため、無料版のコメント生成を使用しました'
-      });
+      try {
+        const freeComments = generateMultipleFreeComments(analysisDataArray);
+        return NextResponse.json({
+          success: true,
+          comments: freeComments,
+          source: 'free',
+          note: 'OpenAI APIが利用できないため、無料版のコメント生成を使用しました'
+        });
+      } catch (fallbackError) {
+        const error = createError(
+          ErrorType.COMMENT_GENERATION_FAILED,
+          fallbackError
+        );
+        logError(error, 'generate-comments API - fallback failed');
+        
+        return NextResponse.json(
+          {
+            success: false,
+            error: error.userMessage,
+            comments: []
+          },
+          { status: 500 }
+        );
+      }
     }
 
   } catch (error) {
-    console.error('コメント生成API エラー:', error);
-    console.error('エラーの詳細:', {
-      message: error instanceof Error ? error.message : 'Unknown error',
-      stack: error instanceof Error ? error.stack : undefined,
-      name: error instanceof Error ? error.name : undefined
-    });
+    let omoideError: OmoideError;
+    
+    if (error instanceof OmoideError) {
+      omoideError = error;
+    } else {
+      omoideError = createError(ErrorType.COMMENT_GENERATION_FAILED, error);
+    }
+    
+    logError(omoideError, 'generate-comments API');
     
     return NextResponse.json(
       {
         success: false,
-        error: error instanceof Error ? error.message : 'コメント生成中に予期しないエラーが発生しました',
+        error: omoideError.userMessage,
         comments: []
       },
       { status: 500 }
