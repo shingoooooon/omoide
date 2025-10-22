@@ -3,6 +3,7 @@ import { Inter, Poppins, Kalam } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LocaleProvider } from "@/contexts/LocaleContext";
+import { ToastProvider } from "@/contexts/ToastContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -47,7 +48,9 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <LocaleProvider>
           <AuthProvider>
-            {children}
+            <ToastProvider>
+              {children}
+            </ToastProvider>
           </AuthProvider>
         </LocaleProvider>
       </body>

@@ -5,9 +5,12 @@ import { useStorybookGeneration } from '@/hooks/useStorybookGeneration';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Card } from '@/components/ui/Card';
+import { LoadingCard } from '@/components/ui/FeedbackCard';
+import { ProgressIndicator } from '@/components/ui/ProgressIndicator';
 import { MonthlyStorybookStatus } from '@/lib/storybookUtils';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useTranslations } from '@/lib/translations';
+import { useOperationFeedback } from '@/hooks/useOperationFeedback';
 
 interface StorybookGeneratorProps {
   userId: string;
@@ -25,6 +28,16 @@ export function StorybookGenerator({
   const { state, generateStorybook, reset } = useStorybookGeneration();
   const [status, setStatus] = useState<MonthlyStorybookStatus | null>(null);
   const [isCheckingStatus, setIsCheckingStatus] = useState(true);
+  
+  const feedback = useOperationFeedback({
+    showToasts: true,
+    steps: [
+      { id: 'collect', label: '成長記録を収集中' },
+      { id: 'story', label: '物語を生成中' },
+      { id: 'illustrations', label: '挿絵を生成中' },
+      { id: 'save', label: '絵本を保存中' }
+    ]
+  });
 
   useEffect(() => {
     checkStorybookStatus();
@@ -49,9 +62,34 @@ export function StorybookGenerator({
   };
 
   const handleGenerateStorybook = async () => {
-    await generateStorybook(userId, month);
-    if (state.storybook && onStorybookGenerated) {
-      onStorybookGenerated(state.storybook);
+    feedback.startOperation('絵本の生成を開始します');
+    
+    try {
+      // Simulate step progress for better UX
+      feedback.setCurrentStep('collect', '今月の成長記録を収集しています...');
+      await new Promise(resolve => setTimeout(resolve, 500));
+      feedback.completeStep('collect');
+      
+      feedback.setCurrentStep('story', 'AIが物語を作成しています...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      feedback.completeStep('story');
+      
+      feedback.setCurrentStep('illustrations', '挿絵を生成しています...');
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      feedback.completeStep('illustrations');
+      
+      feedback.setCurrentStep('save', '絵本を保存しています...');
+      
+      await generateStorybook(userId, month);
+      
+      feedback.completeStep('save');
+      feedback.completeOperation('絵本が完成しました！');
+      
+      if (state.storybook && onStorybookGenerated) {
+        onStorybookGenerated(state.storybook);
+      }
+    } catch (error) {
+      feedback.failOperation(error, '絵本の生成に失敗しました');
     }
   };
 
@@ -67,10 +105,11 @@ export function StorybookGenerator({
 
   if (isCheckingStatus) {
     return (
-      <Card className="p-6 text-center">
-        <LoadingSpinner size="md" className="mx-auto mb-4" />
-        <p className="text-gray-600">{t('storybooks.generator.checkingStatus')}</p>
-      </Card>
+      <LoadingCard
+        title="ステータス確認中"
+        message="絵本の作成状況を確認しています..."
+        size="md"
+      />
     );
   }
 
@@ -120,16 +159,66 @@ export function StorybookGenerator({
     );
   }
 
-  if (state.isGenerating) {
+  if (state.isGenerating || feedback.isLoading) {
     return (
-      <Card className="p-6 text-center">
-        <LoadingSpinner size="lg" className="mx-auto mb-4" />
-        <h3 className="text-lg font-semibold mb-2">{t('storybooks.generator.generating')}</h3>
-        <p className="text-gray-600">{state.progress}</p>
-        <div className="mt-4 text-sm text-gray-500">
-          {t('storybooks.generator.generatingNote')}
+      <div className="space-y-4">
+        <LoadingCard
+          title="絵本を生成中"
+          message={feedback.message || state.progress || '処理を開始しています...'}
+          size="lg"
+          showIcon={false}
+        />
+        
+        {feedback.hasSteps && (
+          <Card className="p-4">
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-medium text-neutral-700">
+                  進捗: {feedback.completedSteps} / {feedback.totalSteps}
+                </span>
+                <span className="text-neutral-500">
+                  {Math.round(feedback.progress)}%
+                </span>
+              </div>
+              
+              <ProgressIndicator 
+                progress={feedback.progress} 
+                showPercentage={false}
+                size="sm"
+              />
+              
+              <div className="space-y-2">
+                {feedback.steps.map((step, index) => (
+                  <div key={step.id} className="flex items-center space-x-3">
+                    <div className="flex-shrink-0">
+                      <StepIcon status={step.status} stepNumber={index + 1} />
+                    </div>
+                    <div className="flex-1">
+                      <p className={`text-sm font-medium ${
+                        step.status === 'completed' ? 'text-success-700' :
+                        step.status === 'active' ? 'text-primary-700' :
+                        step.status === 'error' ? 'text-error-700' :
+                        'text-neutral-500'
+                      }`}>
+                        {step.label}
+                      </p>
+                      {step.message && (
+                        <p className="text-xs text-neutral-500 mt-1">{step.message}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </Card>
+        )}
+        
+        <div className="text-center">
+          <p className="text-sm text-neutral-500">
+            絵本の生成には数分かかる場合があります
+          </p>
         </div>
-      </Card>
+      </div>
     );
   }
 
@@ -202,9 +291,56 @@ export function StorybookGenerator({
         onClick={handleGenerateStorybook}
         size="lg"
         className="bg-purple-600 hover:bg-purple-700"
+        disabled={feedback.isLoading}
       >
-        {t('storybooks.createStorybook')}
+        {feedback.isLoading ? (
+          <div className="flex items-center gap-2">
+            <LoadingSpinner size="sm" />
+            <span>生成中...</span>
+          </div>
+        ) : (
+          t('storybooks.createStorybook')
+        )}
       </Button>
     </Card>
   );
+}
+
+// Helper component for step icons
+function StepIcon({ status, stepNumber }: { status: string; stepNumber: number }) {
+  const baseClasses = 'w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium'
+
+  switch (status) {
+    case 'completed':
+      return (
+        <div className={`${baseClasses} bg-success-500 text-white`}>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+      )
+    
+    case 'active':
+      return (
+        <div className={`${baseClasses} bg-primary-500 text-white`}>
+          <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
+        </div>
+      )
+    
+    case 'error':
+      return (
+        <div className={`${baseClasses} bg-error-500 text-white`}>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </div>
+      )
+    
+    default: // pending
+      return (
+        <div className={`${baseClasses} bg-neutral-200 text-neutral-500`}>
+          {stepNumber}
+        </div>
+      )
+  }
 }

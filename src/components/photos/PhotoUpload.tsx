@@ -2,13 +2,15 @@
 
 import { useState, useCallback, useRef } from 'react'
 import { Button, Card } from '@/components/ui'
+import { LoadingOverlay } from '@/components/ui/LoadingOverlay'
 import { cn } from '@/lib/utils'
-import { uploadPhoto, uploadPhotoSimple, UploadResult, UploadProgress } from '@/lib/storage'
+import { uploadPhotoSimple } from '@/lib/storage'
 import { validatePhotoFiles, formatValidationErrors, ValidationOptions } from '@/lib/photoValidation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useToast } from '@/contexts/ToastContext'
-import { OmoideError, ErrorType, createError, parseError } from '@/lib/errors'
+import { ErrorType, createError, parseError } from '@/lib/errors'
 import { useAsyncOperation } from '@/hooks/useAsyncOperation'
+import { useOperationFeedback } from '@/hooks/useOperationFeedback'
 
 export interface Photo {
   id: string
@@ -48,18 +50,24 @@ export function PhotoUpload({
   const [warnings, setWarnings] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { user } = useAuth()
-  const { showError, showSuccess, showWarning } = useToast()
+  const { showError, showSuccess } = useToast()
   
   const uploadOperation = useAsyncOperation({
-    onSuccess: (result) => {
+    onSuccess: () => {
       showSuccess('アップロード完了', '写真のアップロードが完了しました')
     },
     onError: (error) => {
       showError('アップロードエラー', error.userMessage)
-    },
-    onProgress: (progress) => {
-      // Progress is handled per photo
     }
+  })
+
+  const uploadFeedback = useOperationFeedback({
+    showToasts: false, // We handle toasts manually
+    steps: [
+      { id: 'validate', label: '写真を検証中' },
+      { id: 'upload', label: 'アップロード中' },
+      { id: 'process', label: '処理完了' }
+    ]
   })
 
   const processFiles = useCallback(async (files: FileList | File[]) => {
@@ -180,66 +188,84 @@ export function PhotoUpload({
       emailVerified: user.emailVerified
     })
 
+    uploadFeedback.startOperation(`${photosToUpload.length}枚の写真をアップロードします`)
+    uploadFeedback.setCurrentStep('validate', '写真を検証しています...')
+
     await uploadOperation.execute(async (signal, updateProgress) => {
-      const uploadPromises = photosToUpload.map(async (photo, index) => {
-        try {
-          // Update progress to show upload starting
-          setPhotos(prevPhotos =>
-            prevPhotos.map(p =>
-              p.id === photo.id
-                ? { ...p, uploadProgress: 10 }
-                : p
+      try {
+        uploadFeedback.completeStep('validate')
+        uploadFeedback.setCurrentStep('upload', 'Firebase Storageにアップロード中...')
+
+        const uploadPromises = photosToUpload.map(async (photo, index) => {
+          try {
+            // Update progress to show upload starting
+            setPhotos(prevPhotos =>
+              prevPhotos.map(p =>
+                p.id === photo.id
+                  ? { ...p, uploadProgress: 10 }
+                  : p
+              )
             )
-          )
 
-          // Use the working simple upload function
-          const result = await uploadPhotoSimple(photo.file, user.uid)
-          
-          // Update photo with successful upload result
-          setPhotos(prevPhotos => {
-            const updatedPhotos = prevPhotos.map(p =>
-              p.id === photo.id
-                ? {
-                  ...p,
-                  uploadProgress: 100,
-                  storageUrl: result.url,
-                  storagePath: result.path,
-                  isUploaded: true
-                }
-                : p
+            // Use the working simple upload function
+            const result = await uploadPhotoSimple(photo.file, user.uid)
+            
+            // Update photo with successful upload result
+            setPhotos(prevPhotos => {
+              const updatedPhotos = prevPhotos.map(p =>
+                p.id === photo.id
+                  ? {
+                    ...p,
+                    uploadProgress: 100,
+                    storageUrl: result.url,
+                    storagePath: result.path,
+                    isUploaded: true
+                  }
+                  : p
+              )
+              // Use setTimeout to avoid setState during render
+              setTimeout(() => onPhotosUploaded(updatedPhotos), 0)
+              return updatedPhotos
+            })
+
+            // Update overall progress
+            const overallProgress = ((index + 1) / photosToUpload.length) * 100
+            updateProgress?.(overallProgress)
+            uploadFeedback.updateProgress(overallProgress, `${index + 1}/${photosToUpload.length} 枚完了`)
+
+          } catch (error) {
+            const omoideError = parseError(error)
+            console.error(`Upload error for ${photo.fileName}:`, omoideError)
+            
+            const errorMessage = `${photo.fileName}: ${omoideError.userMessage}`
+            setErrors(prev => [...prev, errorMessage])
+            showError('アップロードエラー', errorMessage)
+            
+            // Update photo to show error state
+            setPhotos(prevPhotos =>
+              prevPhotos.map(p =>
+                p.id === photo.id
+                  ? { ...p, uploadProgress: undefined, isUploaded: false }
+                  : p
+              )
             )
-            // Use setTimeout to avoid setState during render
-            setTimeout(() => onPhotosUploaded(updatedPhotos), 0)
-            return updatedPhotos
-          })
+            
+            throw omoideError
+          }
+        })
 
-          // Update overall progress
-          const overallProgress = ((index + 1) / photosToUpload.length) * 100
-          updateProgress?.(overallProgress)
-
-        } catch (error) {
-          const omoideError = parseError(error)
-          console.error(`Upload error for ${photo.fileName}:`, omoideError)
-          
-          const errorMessage = `${photo.fileName}: ${omoideError.userMessage}`
-          setErrors(prev => [...prev, errorMessage])
-          showError('アップロードエラー', errorMessage)
-          
-          // Update photo to show error state
-          setPhotos(prevPhotos =>
-            prevPhotos.map(p =>
-              p.id === photo.id
-                ? { ...p, uploadProgress: undefined, isUploaded: false }
-                : p
-            )
-          )
-          
-          throw omoideError
-        }
-      })
-
-      await Promise.all(uploadPromises)
-      return photosToUpload
+        await Promise.all(uploadPromises)
+        
+        uploadFeedback.completeStep('upload')
+        uploadFeedback.setCurrentStep('process', '処理を完了しています...')
+        uploadFeedback.completeStep('process')
+        uploadFeedback.completeOperation('すべての写真のアップロードが完了しました')
+        
+        return photosToUpload
+      } catch (error) {
+        uploadFeedback.failOperation(error, 'アップロードに失敗しました')
+        throw error
+      }
     })
   }
 
@@ -249,6 +275,17 @@ export function PhotoUpload({
 
   return (
     <div className={cn('space-y-6', className)}>
+      {/* Loading Overlay for Upload Progress */}
+      <LoadingOverlay
+        isVisible={uploadFeedback.isLoading}
+        title="写真をアップロード中"
+        message={uploadFeedback.message}
+        variant="steps"
+        steps={uploadFeedback.steps}
+        backdrop="blur"
+        size="md"
+      />
+
       {/* Upload Area */}
       <Card
         className={cn(
