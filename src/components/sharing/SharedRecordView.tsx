@@ -138,7 +138,7 @@ export function SharedRecordView({ record }: SharedRecordViewProps) {
 
       {/* Record Summary */}
       {record.photos.length > 0 && (
-        <Card className="p-6 bg-gradient-to-r from-pink-50 to-purple-50">
+        <Card className="p-6 bg-gradient-to-r from-blue-50 to-purple-50">
           <div className="text-center">
             <Icon name="heart" className="w-8 h-8 text-pink-500 mx-auto mb-3" solid />
             <h3 className="text-lg font-semibold text-gray-900 mb-2">

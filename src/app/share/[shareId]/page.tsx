@@ -80,7 +80,7 @@ export default function SharedContentPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
         <div className="text-center">
           <LoadingSpinner size="lg" />
           <p className="mt-4 text-gray-600">共有コンテンツを読み込んでいます...</p>
@@ -91,7 +91,7 @@ export default function SharedContentPage() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
         <Card className="max-w-md w-full text-center p-8">
           <Icon name="warning" className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
           <h1 className="text-xl font-bold text-gray-900 mb-2">
@@ -120,7 +120,7 @@ export default function SharedContentPage() {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center">
         <Card className="max-w-md w-full text-center p-8">
           <Icon name="warning" className="w-16 h-16 text-gray-500 mx-auto mb-4" />
           <h1 className="text-xl font-bold text-gray-900 mb-2">
@@ -135,7 +135,7 @@ export default function SharedContentPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50">
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-4xl mx-auto px-4 py-4">

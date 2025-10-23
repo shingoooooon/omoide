@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Layout } from '@/components/layout/Layout'
 import { Button, Card, Badge } from '@/components/ui'
 import { useLocale } from '@/contexts/LocaleContext'
@@ -13,163 +14,140 @@ export default function Home() {
   const { t } = useTranslations(locale)
 
   return (
-    <Layout requireAuth={false}>
-      <div className="max-w-6xl mx-auto">
-        {/* Hero Section */}
-        <div className="text-center mb-20 animate-fade-in">
-          <Badge variant="primary" className="mb-6 text-sm font-medium flex items-center gap-2 w-fit mx-auto">
-            <Icon name="sparkles" size="sm" />
-            {t('home.title')}
-          </Badge>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-display font-bold text-neutral-900 mb-6 leading-tight">
-            {t('home.title')}
-          </h1>
-          <p className="text-lg sm:text-xl text-neutral-600 mb-10 max-w-3xl mx-auto leading-relaxed">
-            {t('home.subtitle')}
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button
-              size="lg"
-              className="text-lg px-8 py-4 shadow-medium hover:shadow-large"
-              onClick={() => router.push('/upload')}
-            >
-              <Icon name="camera" size="md" className="mr-2" />
-              {t('home.uploadPhotos')}
-            </Button>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="text-lg px-8 py-4"
-              onClick={() => router.push('/demo')}
-            >
-              {t('home.viewDemo')}
-            </Button>
+    <Layout requireAuth={false} fullWidth={true}>
+      {/* Hero Section with Background Image */}
+      <div className="relative min-h-screen overflow-hidden">
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/images/bg2.png"
+            alt="background image"
+            fill
+            className="object-cover"
+            priority
+          />
+          {/* Overlay for better text readability */}
+          <div className="absolute inset-0 bg-black/30"></div>
+        </div>
+
+        {/* Content */}
+        <div className="relative z-10 flex items-center min-h-screen">
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-4xl mx-auto text-center">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+                子どもの成長を<br />
+                いつでも、どこでも、<br />
+                いつまでも
+              </h1>
+              <p className="text-lg sm:text-xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
+                写真をアップロードするだけで、AIが自動で成長記録を作成。<br />
+                家族で楽しく会話したり成長を心ゆくまで記録できます。
+              </p>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  size="lg"
+                  className="bg-white text-neutral-900 hover:bg-white/90 px-8 py-4 text-lg font-semibold shadow-lg"
+                  onClick={() => router.push('/upload')}
+                >
+                  <Icon name="camera" className="w-5 h-5 mr-2" />
+                  今すぐ始める
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20 px-8 py-4 text-lg"
+                  onClick={() => router.push('/demo')}
+                >
+                  デモを見る
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Features */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
-          <Card variant="elevated" className="text-center p-8 hover:shadow-large transition-all duration-300 group">
-            <div className="w-20 h-20 bg-gradient-to-br from-primary-400 to-primary-600 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-105 transition-transform duration-300">
-              <Icon name="photo" className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="text-xl font-display font-semibold text-neutral-900 mb-3">
-              {t('home.features.upload.title')}
-            </h3>
-            <p className="text-neutral-600 leading-relaxed">
-              {t('home.features.upload.description')}
-            </p>
-          </Card>
-
-          <Card variant="elevated" className="text-center p-8 hover:shadow-large transition-all duration-300 group">
-            <div className="w-20 h-20 bg-gradient-to-br from-secondary-400 to-secondary-600 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-105 transition-transform duration-300">
-              <Icon name="sparkles" className="w-8 h-8 text-white" solid />
-            </div>
-            <h3 className="text-xl font-display font-semibold text-neutral-900 mb-3">
-              {t('home.features.ai.title')}
-            </h3>
-            <p className="text-neutral-600 leading-relaxed">
-              {t('home.features.ai.description')}
-            </p>
-          </Card>
-
-          <Card variant="elevated" className="text-center p-8 hover:shadow-large transition-all duration-300 group sm:col-span-2 lg:col-span-1">
-            <div className="w-20 h-20 bg-gradient-to-br from-accent-400 to-accent-600 rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-105 transition-transform duration-300">
-              <Icon name="book" className="w-8 h-8 text-white" solid />
-            </div>
-            <h3 className="text-xl font-display font-semibold text-neutral-900 mb-3">
-              {t('home.features.storybook.title')}
-            </h3>
-            <p className="text-neutral-600 leading-relaxed">
-              {t('home.features.storybook.description')}
-            </p>
-          </Card>
-        </div>
-
-        {/* How it works */}
-        <div className="mb-20">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-neutral-900 mb-4">
-              {t('home.howItWorks.title')}
+      {/* Features Section */}
+      <div className="bg-white py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
+              子どもの成長を記録する新しい方法
             </h2>
             <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-              {t('home.howItWorks.subtitle')}
+              AIが写真から自動で成長記録を作成し、家族みんなで思い出を共有できます
             </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                step: '1',
-                title: t('home.howItWorks.steps.upload.title'),
-                description: t('home.howItWorks.steps.upload.description'),
-                icon: 'camera' as const
-              },
-              {
-                step: '2',
-                title: t('home.howItWorks.steps.analyze.title'),
-                description: t('home.howItWorks.steps.analyze.description'),
-                icon: 'sparkles' as const
-              },
-              {
-                step: '3',
-                title: t('home.howItWorks.steps.create.title'),
-                description: t('home.howItWorks.steps.create.description'),
-                icon: 'book' as const
-              }
-            ].map((item, index) => (
-              <div key={index} className="relative">
-                <div className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-primary-100 to-secondary-100 rounded-2xl flex items-center justify-center mb-4 relative">
-                    <Icon name={item.icon} className="w-6 h-6 text-primary-600" />
-                    <div className="absolute -top-2 -right-2 w-8 h-8 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full flex items-center justify-center text-white text-sm font-bold">
-                      {item.step}
-                    </div>
-                  </div>
-                  <h3 className="text-lg font-display font-semibold text-neutral-900 mb-2">
-                    {item.title}
-                  </h3>
-                  <p className="text-neutral-600 text-sm leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
-                {index < 2 && (
-                  <div className="hidden md:block absolute top-8 left-full w-full">
-                    <div className="flex items-center justify-center">
-                      <svg className="w-6 h-6 text-primary-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Icon name="camera" className="w-8 h-8 text-white" />
               </div>
-            ))}
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">
+                かんたんアップロード
+              </h3>
+              <p className="text-neutral-600">
+                スマホで撮った写真をそのままアップロード。面倒な整理は不要です。
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-secondary-400 to-secondary-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Icon name="sparkles" className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">
+                AI自動解析
+              </h3>
+              <p className="text-neutral-600">
+                AIが写真を解析して、成長の瞬間を自動で記録。コメントも自動生成します。
+              </p>
+            </div>
+
+            <div className="text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-accent-400 to-accent-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Icon name="book" className="w-8 h-8 text-white" />
+              </div>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-3">
+                美しい絵本作成
+              </h3>
+              <p className="text-neutral-600">
+                成長記録から自動で絵本を作成。家族の宝物になる思い出の本ができます。
+              </p>
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* CTA Section */}
-        <Card className="bg-gradient-to-r from-primary-50 via-white to-secondary-50 border-primary-100 p-12 text-center relative overflow-hidden">
-          <div className="relative z-10">
-            <h2 className="text-3xl sm:text-4xl font-display font-bold text-neutral-900 mb-4">
-              {t('home.cta.title')}
-            </h2>
-            <p className="text-lg text-neutral-600 mb-8 max-w-md mx-auto leading-relaxed">
-              {t('home.cta.subtitle')}
-            </p>
+      {/* CTA Section */}
+      <div className="bg-gradient-to-r from-primary-50 to-secondary-50 py-20">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
+            今すぐ始めてみませんか？
+          </h2>
+          <p className="text-lg text-neutral-600 mb-8 max-w-2xl mx-auto">
+            無料でアカウントを作成して、お子様の成長記録を美しく残しましょう
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
               size="lg"
-              className="text-lg px-10 py-4 shadow-medium hover:shadow-large"
+              className="px-8 py-4 text-lg"
               onClick={() => router.push('/upload')}
             >
-              {t('home.cta.getStarted')}
+              <Icon name="camera" className="w-5 h-5 mr-2" />
+              今すぐ始める
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="px-8 py-4 text-lg"
+              onClick={() => router.push('/demo')}
+            >
+              デモを見る
             </Button>
           </div>
-
-          {/* Decorative elements */}
-          <div className="absolute top-4 right-4 w-16 h-16 bg-primary-100 rounded-full opacity-50"></div>
-          <div className="absolute bottom-4 left-4 w-12 h-12 bg-secondary-100 rounded-full opacity-50"></div>
-          <div className="absolute top-1/2 left-1/4 w-8 h-8 bg-accent-100 rounded-full opacity-30"></div>
-        </Card>
+        </div>
       </div>
     </Layout>
   )

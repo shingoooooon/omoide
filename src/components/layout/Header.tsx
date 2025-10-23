@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import UserProfile from '@/components/auth/UserProfile'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
@@ -33,9 +34,15 @@ const Header: React.FC = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-xl flex items-center justify-center text-white font-bold text-lg group-hover:scale-105 transition-transform duration-200">
-                思
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="w-8 h-8 group-hover:scale-105 transition-transform duration-200">
+                <Image
+                  src="/omoide-icon.svg"
+                  alt="Omoide"
+                  width={32}
+                  height={32}
+                  className="w-full h-full"
+                />
               </div>
               <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
                 Omoide
