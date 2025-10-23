@@ -41,9 +41,9 @@ const UserProfile: React.FC = () => {
         variant="outline"
         size="sm"
         disabled={loading}
-        className="text-gray-600 hover:text-gray-800"
+        className="text-neutral-600 hover:text-primary-700"
       >
-        {loading ? '...' : 'Sign Out'}
+        {loading ? '...' : 'ログアウト'}
       </Button>
     </div>
   )

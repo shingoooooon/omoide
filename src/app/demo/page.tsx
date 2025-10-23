@@ -170,7 +170,7 @@ export default function DemoPage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
                   size="lg"
-                  onClick={() => router.push('/upload')}
+                  onClick={() => router.push('/auth/login')}
                 >
                   <Icon name="camera" size="sm" className="mr-2" />
                   今すぐ始める

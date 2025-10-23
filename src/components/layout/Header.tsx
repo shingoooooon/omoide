@@ -3,28 +3,39 @@
 import React, { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import UserProfile from '@/components/auth/UserProfile'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher'
 import { useLocale } from '@/contexts/LocaleContext'
 import { useTranslations } from '@/lib/translations'
+import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
 import { Icon } from '@/components/ui/Icon'
+import { Button } from '@/components/ui/Button'
 
 const Header: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const pathname = usePathname()
+  const router = useRouter()
   const { locale } = useLocale()
   const { t } = useTranslations(locale)
+  const { user, loading } = useAuth()
 
-  const navigation = [
+  // ログイン状態に応じてナビゲーションを変更
+  const publicNavigation = [
     { name: t('navigation.home'), href: '/', icon: 'home' },
     { name: 'デモ', href: '/demo', icon: 'sparkles' },
+  ] as const
+
+  const authenticatedNavigation = [
+    { name: t('navigation.home'), href: '/', icon: 'home' },
     { name: t('navigation.upload'), href: '/upload', icon: 'camera' },
     { name: t('navigation.timeline'), href: '/timeline', icon: 'calendar' },
     { name: t('navigation.albums'), href: '/albums', icon: 'book' },
     { name: t('navigation.storybooks'), href: '/storybooks', icon: 'bookmark' },
   ] as const
+
+  const navigation = user ? authenticatedNavigation : publicNavigation
 
   const isActive = (href: string) => pathname === href
 
@@ -72,7 +83,30 @@ const Header: React.FC = () => {
           {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-3">
             <LanguageSwitcher variant="toggle" />
-            <UserProfile />
+            {!loading && (
+              user ? (
+                <UserProfile />
+              ) : (
+                <div className="flex items-center space-x-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => router.push('/auth/login')}
+                    className="text-neutral-600 hover:text-primary-700"
+                  >
+                    <Icon name="user" size="sm" className="mr-1" />
+                    ログイン
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => router.push('/auth/signup')}
+                    className="bg-primary-600 hover:bg-primary-700 text-white"
+                  >
+                    新規登録
+                  </Button>
+                </div>
+              )
+            )}
           </div>
 
           {/* Mobile menu button */}
@@ -120,7 +154,34 @@ const Header: React.FC = () => {
                 <div className="flex justify-center">
                   <LanguageSwitcher variant="dropdown" />
                 </div>
-                <UserProfile />
+                {!loading && (
+                  user ? (
+                    <UserProfile />
+                  ) : (
+                    <div className="flex flex-col space-y-2 px-4">
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setIsMobileMenuOpen(false)
+                          router.push('/auth/login')
+                        }}
+                        className="w-full text-neutral-600 hover:text-primary-700"
+                      >
+                        <Icon name="user" size="sm" className="mr-2" />
+                        ログイン
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setIsMobileMenuOpen(false)
+                          router.push('/auth/signup')
+                        }}
+                        className="w-full bg-primary-600 hover:bg-primary-700 text-white"
+                      >
+                        新規登録
+                      </Button>
+                    </div>
+                  )
+                )}
               </div>
             </div>
           </div>

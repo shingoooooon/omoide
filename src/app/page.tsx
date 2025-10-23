@@ -49,7 +49,7 @@ export default function Home() {
                 <Button
                   size="lg"
                   className="bg-white text-neutral-900 hover:bg-white/90 px-8 py-4 text-lg font-semibold shadow-lg"
-                  onClick={() => router.push('/upload')}
+                  onClick={() => router.push('/auth/login')}
                 >
                   <Icon name="camera" className="w-5 h-5 mr-2" />
                   今すぐ始める
@@ -133,7 +133,7 @@ export default function Home() {
             <Button
               size="lg"
               className="px-8 py-4 text-lg"
-              onClick={() => router.push('/upload')}
+              onClick={() => router.push('/auth/login')}
             >
               <Icon name="camera" className="w-5 h-5 mr-2" />
               今すぐ始める
