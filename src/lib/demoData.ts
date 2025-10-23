@@ -13,7 +13,8 @@ export const demoPhotos = [
         fileName: 'first_smile.jpg',
         uploadedAt: new Date('2024-01-15'),
         faceDetected: true,
-        isUploaded: true
+        isUploaded: true,
+        comment: '今日は初めての笑顔を見せてくれました！とても愛らしい表情で、見ているだけで心が温かくなります。'
     },
     {
         id: 'demo-photo-2',
@@ -21,7 +22,8 @@ export const demoPhotos = [
         fileName: 'crawling.jpg',
         uploadedAt: new Date('2024-02-20'),
         faceDetected: true,
-        isUploaded: true
+        isUploaded: true,
+        comment: 'ハイハイができるようになりました！一生懸命に前に進もうとする姿がとても可愛らしいです。'
     },
     {
         id: 'demo-photo-3',
@@ -29,7 +31,8 @@ export const demoPhotos = [
         fileName: 'first_steps.jpg',
         uploadedAt: new Date('2024-03-10'),
         faceDetected: true,
-        isUploaded: true
+        isUploaded: true,
+        comment: 'ついに初めての一歩を踏み出しました！バランスを取りながら歩く姿は感動的です。'
     },
     {
         id: 'demo-photo-4',
@@ -37,7 +40,8 @@ export const demoPhotos = [
         fileName: 'playing.jpg',
         uploadedAt: new Date('2024-04-05'),
         faceDetected: true,
-        isUploaded: true
+        isUploaded: true,
+        comment: 'おもちゃで遊ぶのがとても上手になりました。集中して遊ぶ姿は成長を感じさせます。'
     }
 ]
 
@@ -224,4 +228,5 @@ const demoDataExport = {
     getDemoAlbums
 }
 
+export { demoPhotos }
 export default demoDataExport

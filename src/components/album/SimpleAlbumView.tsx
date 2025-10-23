@@ -14,6 +14,7 @@ interface SimpleAlbumViewProps {
     url: string;
     fileName?: string;
     uploadedAt?: Date;
+    comment?: string;
   }>;
   isDemo?: boolean;
 }

@@ -54,7 +54,7 @@ export default function UploadPage() {
 
       console.log('Growth record created:', recordId)
       alert('成長記録を保存しました！')
-      
+
       // Redirect to timeline
       router.push('/timeline')
     } catch (error) {
@@ -147,7 +147,7 @@ export default function UploadPage() {
                 </div>
               ))}
             </div>
-            
+
             {/* Save Record Button */}
             {uploadedPhotos.some(photo => photo.isUploaded) && user && (
               <div className="border-t pt-4">

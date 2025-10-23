@@ -11,7 +11,7 @@ import { StorybookViewer } from '@/components/storybook/StorybookViewer'
 import { useLocale } from '@/contexts/LocaleContext'
 import { useTranslations } from '@/lib/translations'
 import { Icon } from '@/components/ui/Icon'
-import { demoGrowthRecords, demoStorybook, getDemoAlbums } from '@/lib/demoData'
+import { demoGrowthRecords, demoStorybook, getDemoAlbums, demoPhotos } from '@/lib/demoData'
 
 type DemoView = 'overview' | 'timeline' | 'albums' | 'storybook'
 
@@ -48,26 +48,14 @@ export default function DemoPage() {
         )
       
       case 'albums':
-        if (selectedAlbum) {
-          return (
-            <div className="space-y-6">
-              <div className="flex items-center gap-4">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setSelectedAlbum(null)}
-                >
-                  <Icon name="arrow-left" size="sm" className="mr-2" />
-                  アルバム一覧に戻る
-                </Button>
-                <h2 className="text-2xl font-bold text-neutral-900">{selectedAlbum.title}</h2>
-              </div>
-              <AlbumView 
-                album={selectedAlbum}
-                isDemo={true}
-              />
-            </div>
-          )
+        // デモ用のアルバムを作成（コメント付きの写真を含む）
+        const demoAlbum = {
+          id: 'demo-album-all',
+          title: 'デモアルバム - 成長の記録',
+          description: '子どもの成長を美しく記録したアルバム',
+          photos: demoPhotos, // コメント付きのdemoPhotosを直接使用
+          createdAt: new Date(),
+          coverPhoto: demoPhotos[0]
         }
         
         return (
@@ -76,36 +64,10 @@ export default function DemoPage() {
               <h2 className="text-2xl font-bold text-neutral-900 mb-2">フォトアルバム</h2>
               <p className="text-neutral-600">思い出を美しく整理したアルバム</p>
             </div>
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {demoAlbums.map((album) => (
-                <Card 
-                  key={album.id}
-                  className="cursor-pointer hover:shadow-lg transition-all duration-200 group"
-                  onClick={() => setSelectedAlbum(album)}
-                >
-                  <div className="aspect-square rounded-t-xl overflow-hidden relative">
-                    <Image
-                      src={album.coverPhoto.url}
-                      alt={album.title}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-200"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-semibold text-neutral-900 mb-1">{album.title}</h3>
-                    <p className="text-sm text-neutral-600 mb-2">{album.description}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs text-neutral-500">
-                        {album.photos.length}枚の写真
-                      </span>
-                      <span className="text-xs text-neutral-500">
-                        {album.createdAt.toLocaleDateString('ja-JP')}
-                      </span>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
+            <AlbumView 
+              album={demoAlbum}
+              isDemo={true}
+            />
           </div>
         )
       

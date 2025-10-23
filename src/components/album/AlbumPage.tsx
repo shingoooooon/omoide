@@ -14,13 +14,14 @@ interface AlbumPageProps {
     url: string;
     fileName?: string;
     uploadedAt?: Date;
+    comment?: string;
   }>;
   isDemo?: boolean;
 }
 
 export function AlbumPage({ records = [], childInfo, photos = [], isDemo = false }: AlbumPageProps) {
   return (
-    <div className="min-h-[600px] bg-gradient-to-br from-cream-50 to-yellow-50 relative">
+    <div className="min-h-[600px] bg-gradient-to-br from-blue-50 to-sky-50 relative">
       {/* Paper Texture Overlay */}
       <div className="absolute inset-0 opacity-30 bg-paper-texture"></div>
       
@@ -37,7 +38,7 @@ export function AlbumPage({ records = [], childInfo, photos = [], isDemo = false
           {isDemo ? (
             photos.map((photo, index) => (
               <div key={photo.id || index} className="relative">
-                <div className="bg-white p-4 rounded-lg shadow-soft border-2 border-amber-200 transform rotate-1 hover:rotate-0 transition-transform duration-300">
+                <div className="bg-white p-4 rounded-lg shadow-soft border-2 border-blue-200 transform rotate-1 hover:rotate-0 transition-transform duration-300">
                   <div className="aspect-square rounded-lg overflow-hidden mb-3 relative">
                     <Image
                       src={photo.url}
@@ -47,10 +48,15 @@ export function AlbumPage({ records = [], childInfo, photos = [], isDemo = false
                     />
                   </div>
                   <div className="text-center">
-                    <p className="text-sm text-amber-800 font-handwriting">
+                    <p className="text-sm text-blue-800 font-handwriting mb-2">
                       {photo.fileName || `思い出 ${index + 1}`}
                     </p>
-                    <p className="text-xs text-amber-600 mt-1">
+                    {(photo as any).comment && (
+                      <p className="text-xs text-blue-700 font-handwriting leading-relaxed mb-2 italic">
+                        "{(photo as any).comment}"
+                      </p>
+                    )}
+                    <p className="text-xs text-blue-600">
                       {photo.uploadedAt ? new Date(photo.uploadedAt).toLocaleDateString('ja-JP') : ''}
                     </p>
                   </div>
@@ -71,10 +77,10 @@ export function AlbumPage({ records = [], childInfo, photos = [], isDemo = false
         
         {/* Decorative Elements */}
         <div className="absolute top-4 right-4 opacity-60 transform rotate-12">
-          <Icon name="sparkles" size="lg" className="text-amber-400" />
+          <Icon name="sparkles" size="lg" className="text-blue-400" />
         </div>
         <div className="absolute bottom-4 left-20 opacity-40 transform -rotate-6">
-          <Icon name="star" className="text-amber-500" />
+          <Icon name="star" className="text-blue-500" />
         </div>
       </div>
     </div>

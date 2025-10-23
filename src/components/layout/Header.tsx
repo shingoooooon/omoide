@@ -41,7 +41,7 @@ const Header: React.FC = () => {
                   alt="Omoide"
                   width={32}
                   height={32}
-                  className="w-full h-full"
+                  className="w-full h-full rounded-md"
                 />
               </div>
               <h1 className="text-2xl font-display font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">

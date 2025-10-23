@@ -13,6 +13,7 @@ interface SimpleAlbumPageProps {
     url: string;
     fileName?: string;
     uploadedAt?: Date;
+    comment?: string;
   }>;
   isDemo?: boolean;
 }
@@ -31,17 +32,17 @@ export function SimpleAlbumPage({ records = [], childInfo, photos = [], isDemo =
       {/* Grid Layout - 4x3 grid with space for comments */}
       <div className="grid grid-cols-4 gap-6 max-w-5xl mx-auto">
         {/* Date header in first cell if we have records */}
-        {shouldShowDateHeader && firstItemDate && (
+        {shouldShowDateHeader && (isDemo || firstItemDate) && (
           <div className="flex flex-col">
             <div className="aspect-square bg-white flex flex-col items-center justify-center text-center border-4 border-white shadow-lg">
               <div className="text-gray-600 text-sm font-medium mb-1">
-                {isDemo ? 'デモ' : new Intl.DateTimeFormat('ja-JP', { month: 'long' }).format(firstItemDate)}
+                {isDemo ? 'デモ' : (firstItemDate ? new Intl.DateTimeFormat('ja-JP', { month: 'long' }).format(firstItemDate) : '')}
               </div>
               <div className="text-4xl font-bold text-gray-800">
-                {isDemo ? '📸' : firstItemDate.getDate()}
+                {isDemo ? '📸' : (firstItemDate ? firstItemDate.getDate() : '')}
               </div>
               <div className="text-gray-600 text-sm">
-                {firstRecordDate.getFullYear()}
+                {isDemo ? '2024' : firstItemDate?.getFullYear()}
               </div>
             </div>
             {/* Empty space for alignment with photo entries that have comments */}
@@ -61,10 +62,16 @@ export function SimpleAlbumPage({ records = [], childInfo, photos = [], isDemo =
                   className="object-cover"
                 />
               </div>
-              <div className="bg-black px-3 py-4 min-h-[4rem]">
-                <p className="text-white text-xs leading-relaxed">
-                  {photo.fileName || `思い出 ${index + 1}`}
-                </p>
+              <div className="bg-black px-3 py-4 min-h-[4rem] flex items-center justify-center">
+                {(photo as any).comment ? (
+                  <p className="text-white text-sm leading-relaxed text-center font-handwriting">
+                    {(photo as any).comment}
+                  </p>
+                ) : (
+                  <p className="text-gray-400 text-xs text-center font-handwriting opacity-60">
+                    コメントなし
+                  </p>
+                )}
               </div>
             </div>
           ))
