@@ -48,6 +48,7 @@ export const translations = {
     },
     home: {
       title: "子どもの成長を美しい物語に",
+      viewDemo: "デモを見る",
       subtitle: "写真をアップロードするだけで、AIが自動的に成長記録とコメントを生成し、かけがえのない思い出を絵本として残すことができます。",
       uploadPhotos: "写真をアップロード",
       viewDemo: "デモを見る",

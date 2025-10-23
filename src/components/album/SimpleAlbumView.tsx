@@ -7,20 +7,30 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 
 interface SimpleAlbumViewProps {
-  records: GrowthRecord[];
+  records?: GrowthRecord[];
   childInfo?: ChildInfo;
+  photos?: Array<{
+    id: string;
+    url: string;
+    fileName?: string;
+    uploadedAt?: Date;
+  }>;
+  isDemo?: boolean;
 }
 
-export function SimpleAlbumView({ records, childInfo }: SimpleAlbumViewProps) {
+export function SimpleAlbumView({ records = [], childInfo, photos = [], isDemo = false }: SimpleAlbumViewProps) {
   const [currentPage, setCurrentPage] = useState(0);
   
-  // Group records into pages (11 records per page + 1 date header = 12 total)
-  const recordsPerPage = 11;
-  const totalPages = Math.ceil(records.length / recordsPerPage);
+  // Use photos for demo mode, records for normal mode
+  const displayItems = isDemo ? photos : records;
   
-  const getCurrentPageRecords = () => {
-    const startIndex = currentPage * recordsPerPage;
-    return records.slice(startIndex, startIndex + recordsPerPage);
+  // Group items into pages (11 items per page + 1 date header = 12 total)
+  const itemsPerPage = 11;
+  const totalPages = Math.ceil(displayItems.length / itemsPerPage);
+  
+  const getCurrentPageItems = () => {
+    const startIndex = currentPage * itemsPerPage;
+    return displayItems.slice(startIndex, startIndex + itemsPerPage);
   };
 
   const goToNextPage = () => {
@@ -35,7 +45,7 @@ export function SimpleAlbumView({ records, childInfo }: SimpleAlbumViewProps) {
     }
   };
 
-  if (records.length === 0) {
+  if (displayItems.length === 0) {
     return (
       <div className="text-center py-16">
         <div className="bg-white rounded-2xl p-8 shadow-lg border max-w-md mx-auto">
@@ -64,10 +74,14 @@ export function SimpleAlbumView({ records, childInfo }: SimpleAlbumViewProps) {
               <Icon name="calendar" className="w-5 h-5 text-gray-500" />
               <span className="text-lg font-semibold text-gray-800">
                 {(() => {
-                  const pageRecords = getCurrentPageRecords();
-                  if (pageRecords.length === 0) return '';
+                  const pageItems = getCurrentPageItems();
+                  if (pageItems.length === 0) return '';
                   
-                  const dates = pageRecords.map(r => new Date(r.createdAt));
+                  if (isDemo) {
+                    return 'デモアルバム';
+                  }
+                  
+                  const dates = pageItems.map(r => new Date(r.createdAt));
                   const minDate = new Date(Math.min(...dates.map(d => d.getTime())));
                   const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
                   
@@ -88,14 +102,19 @@ export function SimpleAlbumView({ records, childInfo }: SimpleAlbumViewProps) {
               </span>
             </div>
             <div className="text-sm text-gray-500">
-              {getCurrentPageRecords().length} 枚の写真
+              {getCurrentPageItems().length} 枚の写真
             </div>
           </div>
         </div>
 
         {/* Page Content */}
         <div className="p-6">
-          <SimpleAlbumPage records={getCurrentPageRecords()} childInfo={childInfo} />
+          <SimpleAlbumPage 
+            records={isDemo ? [] : getCurrentPageItems()} 
+            childInfo={childInfo}
+            photos={isDemo ? getCurrentPageItems() : undefined}
+            isDemo={isDemo}
+          />
         </div>
       </div>
 

@@ -13,7 +13,7 @@ export default function Home() {
   const { t } = useTranslations(locale)
 
   return (
-    <Layout>
+    <Layout requireAuth={false}>
       <div className="max-w-6xl mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-20 animate-fade-in">
@@ -36,7 +36,12 @@ export default function Home() {
               <Icon name="camera" size="md" className="mr-2" />
               {t('home.uploadPhotos')}
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-4">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="text-lg px-8 py-4"
+              onClick={() => router.push('/demo')}
+            >
               {t('home.viewDemo')}
             </Button>
           </div>

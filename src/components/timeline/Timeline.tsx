@@ -13,10 +13,12 @@ import { DocumentSnapshot } from 'firebase/firestore';
 import { Icon } from '@/components/ui/Icon';
 
 interface TimelineProps {
-  onRecordClick: (record: GrowthRecord) => void;
+  onRecordClick?: (record: GrowthRecord) => void;
+  records?: GrowthRecord[];
+  isDemo?: boolean;
 }
 
-export function Timeline({ onRecordClick }: TimelineProps) {
+export function Timeline({ onRecordClick, records: propRecords, isDemo = false }: TimelineProps) {
   const { user } = useAuth();
   const { locale } = useLocale();
   const { t } = useTranslations(locale);
@@ -28,6 +30,13 @@ export function Timeline({ onRecordClick }: TimelineProps) {
   const [error, setError] = useState<string | null>(null);
 
   const loadInitialRecords = useCallback(async () => {
+    if (isDemo && propRecords) {
+      setRecords(propRecords);
+      setLoading(false);
+      setHasMore(false);
+      return;
+    }
+
     if (!user) return;
 
     try {
@@ -65,10 +74,10 @@ export function Timeline({ onRecordClick }: TimelineProps) {
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, [user, isDemo, propRecords]);
 
   const loadMoreRecords = useCallback(async () => {
-    if (!user || !lastDoc) return;
+    if (isDemo || !user || !lastDoc) return;
 
     try {
       setLoadingMore(true);

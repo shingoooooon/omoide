@@ -8,21 +8,30 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 
 interface AlbumViewProps {
-  records: GrowthRecord[];
+  records?: GrowthRecord[];
   childInfo?: ChildInfo;
+  album?: {
+    id: string;
+    title: string;
+    photos: any[];
+  };
+  isDemo?: boolean;
 }
 
-export function AlbumView({ records, childInfo }: AlbumViewProps) {
+export function AlbumView({ records, childInfo, album, isDemo = false }: AlbumViewProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [layoutType, setLayoutType] = useState<AlbumLayoutType>('handwritten');
   
-  // Group records into pages (4 records per page for individual photo layout)
-  const recordsPerPage = 4;
-  const totalPages = Math.ceil(records.length / recordsPerPage);
+  // Use album photos for demo mode, or records for normal mode
+  const displayItems = isDemo && album ? album.photos : records || [];
   
-  const getCurrentPageRecords = () => {
-    const startIndex = currentPage * recordsPerPage;
-    return records.slice(startIndex, startIndex + recordsPerPage);
+  // Group items into pages (4 items per page for individual photo layout)
+  const itemsPerPage = 4;
+  const totalPages = Math.ceil(displayItems.length / itemsPerPage);
+  
+  const getCurrentPageItems = () => {
+    const startIndex = currentPage * itemsPerPage;
+    return displayItems.slice(startIndex, startIndex + itemsPerPage);
   };
 
   const goToNextPage = () => {
@@ -37,7 +46,7 @@ export function AlbumView({ records, childInfo }: AlbumViewProps) {
     }
   };
 
-  if (records.length === 0) {
+  if (displayItems.length === 0) {
     return (
       <div className="text-center py-16">
         <div className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg border-2 border-dashed border-amber-300 max-w-md mx-auto">
@@ -87,7 +96,12 @@ export function AlbumView({ records, childInfo }: AlbumViewProps) {
           </div>
         </div>
         
-        <SimpleAlbumView records={records} childInfo={childInfo} />
+        <SimpleAlbumView 
+          records={isDemo ? [] : records || []} 
+          childInfo={childInfo} 
+          photos={isDemo && album ? album.photos : undefined}
+          isDemo={isDemo}
+        />
       </div>
     );
   }
@@ -141,7 +155,12 @@ export function AlbumView({ records, childInfo }: AlbumViewProps) {
 
           {/* Page Content */}
           <div className="ml-8 p-8">
-            <AlbumPage records={getCurrentPageRecords()} childInfo={childInfo} />
+            <AlbumPage 
+              records={isDemo ? [] : getCurrentPageItems()} 
+              childInfo={childInfo}
+              photos={isDemo && album ? getCurrentPageItems() : undefined}
+              isDemo={isDemo}
+            />
           </div>
         </div>
       </div>

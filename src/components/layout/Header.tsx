@@ -18,6 +18,7 @@ const Header: React.FC = () => {
 
   const navigation = [
     { name: t('navigation.home'), href: '/', icon: 'home' },
+    { name: 'デモ', href: '/demo', icon: 'sparkles' },
     { name: t('navigation.upload'), href: '/upload', icon: 'camera' },
     { name: t('navigation.timeline'), href: '/timeline', icon: 'calendar' },
     { name: t('navigation.albums'), href: '/albums', icon: 'book' },

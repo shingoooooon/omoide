@@ -13,9 +13,10 @@ import Image from 'next/image';
 interface StorybookViewerProps {
   storybook: Storybook;
   onClose?: () => void;
+  isDemo?: boolean;
 }
 
-export function StorybookViewer({ storybook, onClose }: StorybookViewerProps) {
+export function StorybookViewer({ storybook, onClose, isDemo = false }: StorybookViewerProps) {
   const [currentPage, setCurrentPage] = useState(0);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [pageAudioUrls, setPageAudioUrls] = useState<Record<string, string>>({});

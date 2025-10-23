@@ -1,16 +1,24 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { GrowthRecord, ChildInfo } from '@/types/models';
 import { AlbumEntry } from './AlbumEntry';
 import { Icon } from '@/components/ui/Icon';
 
 interface AlbumPageProps {
-  records: GrowthRecord[];
+  records?: GrowthRecord[];
   childInfo?: ChildInfo;
+  photos?: Array<{
+    id: string;
+    url: string;
+    fileName?: string;
+    uploadedAt?: Date;
+  }>;
+  isDemo?: boolean;
 }
 
-export function AlbumPage({ records, childInfo }: AlbumPageProps) {
+export function AlbumPage({ records = [], childInfo, photos = [], isDemo = false }: AlbumPageProps) {
   return (
     <div className="min-h-[600px] bg-gradient-to-br from-cream-50 to-yellow-50 relative">
       {/* Paper Texture Overlay */}
@@ -26,14 +34,39 @@ export function AlbumPage({ records, childInfo }: AlbumPageProps) {
       {/* Page Content */}
       <div className="pl-16 pr-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {records.map((record, index) => (
-            <AlbumEntry 
-              key={record.id} 
-              record={record} 
-              isEven={index % 2 === 0}
-              childInfo={childInfo}
-            />
-          ))}
+          {isDemo ? (
+            photos.map((photo, index) => (
+              <div key={photo.id || index} className="relative">
+                <div className="bg-white p-4 rounded-lg shadow-soft border-2 border-amber-200 transform rotate-1 hover:rotate-0 transition-transform duration-300">
+                  <div className="aspect-square rounded-lg overflow-hidden mb-3 relative">
+                    <Image
+                      src={photo.url}
+                      alt={photo.fileName || `Photo ${index + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-sm text-amber-800 font-handwriting">
+                      {photo.fileName || `思い出 ${index + 1}`}
+                    </p>
+                    <p className="text-xs text-amber-600 mt-1">
+                      {photo.uploadedAt ? new Date(photo.uploadedAt).toLocaleDateString('ja-JP') : ''}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            records.map((record, index) => (
+              <AlbumEntry 
+                key={record.id} 
+                record={record} 
+                isEven={index % 2 === 0}
+                childInfo={childInfo}
+              />
+            ))
+          )}
         </div>
         
         {/* Decorative Elements */}
