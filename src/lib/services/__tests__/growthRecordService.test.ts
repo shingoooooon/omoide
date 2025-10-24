@@ -7,14 +7,6 @@ import {
   GrowthComment 
 } from '@/types/models';
 import { validateGrowthRecord } from '@/lib/validation';
-import { it } from 'date-fns/locale';
-import { describe } from 'node:test';
-import { it } from 'date-fns/locale';
-import { it } from 'date-fns/locale';
-import { it } from 'date-fns/locale';
-import { it } from 'date-fns/locale';
-import { describe } from 'node:test';
-import { describe } from 'node:test';
 
 // Mock Firebase functions for unit testing
 jest.mock('@/lib/firebase', () => ({

@@ -36,10 +36,9 @@ export default function Home() {
         <div className="relative z-10 flex items-center min-h-screen">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
-                子どもの成長を<br />
-                いつでも、どこでも、<br />
-                いつまでも
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
+                いつもの写真が<br></br>
+                はじめての物語になる。
               </h1>
               <p className="text-lg sm:text-xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
                 写真をアップロードするだけで、AIが自動で成長記録を作成。<br />

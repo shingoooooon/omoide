@@ -2,6 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { Timeline } from '../Timeline';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { LocaleProvider } from '@/contexts/LocaleContext';
 import { GrowthRecord } from '@/types/models';
 
 // Mock the auth context
@@ -56,10 +57,12 @@ const mockRecords: GrowthRecord[] = [
   }
 ];
 
-const MockAuthProvider = ({ children }: { children: React.ReactNode }) => {
+const MockProviders = ({ children }: { children: React.ReactNode }) => {
   return (
     <AuthProvider>
-      {children}
+      <LocaleProvider>
+        {children}
+      </LocaleProvider>
     </AuthProvider>
   );
 };
@@ -85,9 +88,9 @@ describe('Timeline', () => {
     getUserGrowthRecords.mockImplementation(() => new Promise(() => {})); // Never resolves
 
     render(
-      <MockAuthProvider>
+      <MockProviders>
         <Timeline onRecordClick={mockOnRecordClick} />
-      </MockAuthProvider>
+      </MockProviders>
     );
 
     expect(screen.getByRole('status')).toBeInTheDocument();
@@ -102,9 +105,9 @@ describe('Timeline', () => {
     });
 
     render(
-      <MockAuthProvider>
+      <MockProviders>
         <Timeline onRecordClick={mockOnRecordClick} />
-      </MockAuthProvider>
+      </MockProviders>
     );
 
     await waitFor(() => {
@@ -121,9 +124,9 @@ describe('Timeline', () => {
     });
 
     render(
-      <MockAuthProvider>
+      <MockProviders>
         <Timeline onRecordClick={mockOnRecordClick} />
-      </MockAuthProvider>
+      </MockProviders>
     );
 
     await waitFor(() => {
@@ -144,9 +147,9 @@ describe('Timeline', () => {
     const user = userEvent.setup();
 
     render(
-      <MockAuthProvider>
+      <MockProviders>
         <Timeline onRecordClick={mockOnRecordClick} />
-      </MockAuthProvider>
+      </MockProviders>
     );
 
     await waitFor(() => {
@@ -167,9 +170,9 @@ describe('Timeline', () => {
     });
 
     render(
-      <MockAuthProvider>
+      <MockProviders>
         <Timeline onRecordClick={mockOnRecordClick} />
-      </MockAuthProvider>
+      </MockProviders>
     );
 
     await waitFor(() => {
@@ -182,9 +185,9 @@ describe('Timeline', () => {
     getUserGrowthRecords.mockRejectedValue(new Error('Network error'));
 
     render(
-      <MockAuthProvider>
+      <MockProviders>
         <Timeline onRecordClick={mockOnRecordClick} />
-      </MockAuthProvider>
+      </MockProviders>
     );
 
     await waitFor(() => {

@@ -2,8 +2,6 @@ import React from 'react'
 import { render, screen } from '@testing-library/react'
 import { AuthProvider } from '@/contexts/AuthContext'
 import ProtectedRoute from '../ProtectedRoute'
-import { it } from 'node:test'
-import { describe } from 'node:test'
 
 // Mock the LoginForm component
 jest.mock('../LoginForm', () => {
