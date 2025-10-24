@@ -5,10 +5,13 @@ import { GrowthRecord } from '@/types/models';
 import { TimelineCard } from './TimelineCard';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { LazyLoad, LazySection } from '@/components/ui/LazyLoad';
 import { getUserGrowthRecords, GrowthRecordListResult } from '@/lib/services/growthRecordService';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useTranslations } from '@/lib/translations';
+import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
+import { cachedApiCall, cacheKeys } from '@/lib/cache';
 import { DocumentSnapshot } from 'firebase/firestore';
 import { Icon } from '@/components/ui/Icon';
 
@@ -28,6 +31,12 @@ export function Timeline({ onRecordClick, records: propRecords, isDemo = false }
   const [hasMore, setHasMore] = useState(false);
   const [lastDoc, setLastDoc] = useState<DocumentSnapshot | undefined>();
   const [error, setError] = useState<string | null>(null);
+  
+  // Performance monitoring
+  const { trackInteraction } = usePerformanceMonitor({
+    componentName: 'Timeline',
+    trackInteractions: true,
+  });
 
   const loadInitialRecords = useCallback(async () => {
     if (isDemo && propRecords) {
@@ -43,9 +52,11 @@ export function Timeline({ onRecordClick, records: propRecords, isDemo = false }
       setLoading(true);
       setError(null);
 
-      const result: GrowthRecordListResult = await getUserGrowthRecords(user.uid, {
-        pageSize: 10
-      });
+      const result: GrowthRecordListResult = await cachedApiCall(
+        cacheKeys.userRecords(user.uid, 0),
+        () => getUserGrowthRecords(user.uid, { pageSize: 10 }),
+        2 * 60 * 1000 // Cache for 2 minutes
+      );
 
       // Expand records to individual photo entries
       const expandedRecords: GrowthRecord[] = [];
@@ -184,12 +195,23 @@ export function Timeline({ onRecordClick, records: propRecords, isDemo = false }
 
       {/* Timeline Cards */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {records.map((record) => (
-          <TimelineCard
+        {records.map((record, index) => (
+          <LazyLoad
             key={record.id}
-            record={record}
-            onClick={onRecordClick}
-          />
+            rootMargin="200px"
+            fallback={
+              <div className="aspect-[4/3] bg-gray-100 rounded-lg animate-pulse" />
+            }
+          >
+            <TimelineCard
+              record={record}
+              onClick={(record) => {
+                const endTracking = trackInteraction('record-click');
+                onRecordClick?.(record);
+                endTracking();
+              }}
+            />
+          </LazyLoad>
         ))}
       </div>
 

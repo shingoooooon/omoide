@@ -18,12 +18,12 @@ export default function Home() {
   return (
     <Layout requireAuth={false} fullWidth={true}>
       {/* Hero Section with Background Image */}
-      <div className="relative min-h-screen overflow-hidden">
+      <main id="main-content" className="relative min-h-screen overflow-hidden">
         {/* Background Image */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0" aria-hidden="true">
           <Image
             src="/images/bg2.png"
-            alt="background image"
+            alt=""
             fill
             className="object-cover"
             priority
@@ -37,7 +37,7 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
-                いつもの写真が<br></br>
+                いつもの写真が<br />
                 はじめての物語になる。
               </h1>
               <p className="text-lg sm:text-xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
@@ -47,7 +47,7 @@ export default function Home() {
 
               {/* Action Buttons - Only show for non-authenticated users */}
               {!loading && !user && (
-                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center" role="group" aria-label="アクションボタン">
                   <Button
                     size="lg"
                     className="bg-white text-neutral-900 hover:bg-white/90 px-8 py-4 text-lg font-semibold shadow-lg"

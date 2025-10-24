@@ -456,6 +456,8 @@ function PhotoPreview({ photo, onRemove }: PhotoPreviewProps) {
           src={photo.url}
           alt={photo.fileName}
           className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105"
+          loading="lazy"
+          decoding="async"
         />
       </div>
 

@@ -5,10 +5,12 @@ import { Storybook, StorybookPage } from '@/types/models';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { AudioPlayer } from '@/components/ui/AudioPlayer';
+import { StorybookImage } from '@/components/ui/OptimizedImage';
 import { useTextToSpeech } from '@/hooks/useTextToSpeech';
 import { useAudioPlayer } from '@/hooks/useAudioPlayer';
+import { usePerformanceMonitor } from '@/hooks/usePerformanceMonitor';
 import { ShareButton } from '@/components/sharing';
-import Image from 'next/image';
+import { preloadImage } from '@/lib/cache';
 
 interface StorybookViewerProps {
   storybook: Storybook;
@@ -23,21 +25,51 @@ export function StorybookViewer({ storybook, onClose, isDemo = false }: Storyboo
   
   const { generateAudio, isGenerating, error: ttsError } = useTextToSpeech();
   const { playAudio, pauseAudio, stopAudio, isPlaying, currentPageId } = useAudioPlayer();
+  
+  // Performance monitoring
+  const { trackInteraction } = usePerformanceMonitor({
+    componentName: 'StorybookViewer',
+    trackInteractions: true,
+  });
 
   // Reset to first page when storybook changes
   useEffect(() => {
     setCurrentPage(0);
-  }, [storybook.id]);
+    
+    // Preload next few images for better performance
+    const preloadNextImages = async () => {
+      const imagesToPreload = storybook.pages
+        .slice(0, 3) // Preload first 3 images
+        .map(page => page.imageUrl);
+      
+      try {
+        await Promise.all(imagesToPreload.map(url => preloadImage(url)));
+      } catch (error) {
+        console.warn('Failed to preload some images:', error);
+      }
+    };
+    
+    preloadNextImages();
+  }, [storybook.id, storybook.pages]);
 
   const totalPages = storybook.pages.length;
   const currentPageData = storybook.pages[currentPage];
 
   const goToNextPage = () => {
     if (currentPage < totalPages - 1) {
+      const endTracking = trackInteraction('next-page');
       setCurrentPage(currentPage + 1);
       setIsImageLoading(true);
       // Stop current audio when changing pages
       stopAudio();
+      
+      // Preload next image
+      const nextPageIndex = currentPage + 2;
+      if (nextPageIndex < totalPages) {
+        preloadImage(storybook.pages[nextPageIndex].imageUrl).catch(() => {});
+      }
+      
+      endTracking();
     }
   };
 
@@ -183,12 +215,10 @@ export function StorybookViewer({ storybook, onClose, isDemo = false }: Storyboo
                   <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
                 </div>
               )}
-              <Image
+              <StorybookImage
                 src={currentPageData.imageUrl}
                 alt={`絵本のページ ${currentPage + 1}`}
-                fill
-                className="object-contain"
-                onLoad={() => setIsImageLoading(false)}
+                onLoadComplete={() => setIsImageLoading(false)}
                 onError={() => setIsImageLoading(false)}
                 priority={currentPage === 0}
               />

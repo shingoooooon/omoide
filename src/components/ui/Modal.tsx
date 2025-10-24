@@ -1,8 +1,9 @@
 'use client'
 
-import { Fragment, ReactNode } from 'react'
+import { Fragment, ReactNode, useEffect } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import { cn } from '@/lib/utils'
+import { liveAnnouncer } from '@/lib/accessibility'
 
 interface ModalProps {
   isOpen: boolean
@@ -12,6 +13,8 @@ interface ModalProps {
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'full'
   showCloseButton?: boolean
   className?: string
+  announceOnOpen?: string
+  announceOnClose?: string
 }
 
 export function Modal({
@@ -21,8 +24,22 @@ export function Modal({
   children,
   size = 'md',
   showCloseButton = true,
-  className
+  className,
+  announceOnOpen,
+  announceOnClose
 }: ModalProps) {
+  // Announce modal state changes
+  useEffect(() => {
+    if (isOpen) {
+      if (announceOnOpen) {
+        liveAnnouncer.announce(announceOnOpen);
+      } else if (title) {
+        liveAnnouncer.announce(`${title}ダイアログが開きました`);
+      }
+    } else if (announceOnClose) {
+      liveAnnouncer.announce(announceOnClose);
+    }
+  }, [isOpen, title, announceOnOpen, announceOnClose]);
   const sizeClasses = {
     sm: 'max-w-md',
     md: 'max-w-lg',
@@ -83,11 +100,11 @@ export function Modal({
                     {showCloseButton && (
                       <button
                         type="button"
-                        className="rounded-xl p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors duration-200"
+                        className="rounded-xl p-2 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-primary-500 focus-visible:ring-2"
                         onClick={onClose}
-                        aria-label="閉じる"
+                        aria-label={title ? `${title}ダイアログを閉じる` : 'ダイアログを閉じる'}
                       >
-                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
