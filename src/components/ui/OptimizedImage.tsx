@@ -86,7 +86,6 @@ export function OptimizedImage({
         alt={alt}
         onLoad={handleLoad}
         onError={handleError}
-        loading={lazy ? 'lazy' : 'eager'}
         quality={quality}
         className={cn(
           'transition-opacity duration-300',
@@ -94,6 +93,7 @@ export function OptimizedImage({
           className
         )}
         {...props}
+        {...(!props.priority && { loading: lazy ? 'lazy' : 'eager' })}
       />
     </div>
   );
@@ -142,7 +142,7 @@ export function StorybookImage({
       fill
       className="object-contain"
       quality={90}
-      priority={false}
+      lazy={true}
       {...props}
     />
   );

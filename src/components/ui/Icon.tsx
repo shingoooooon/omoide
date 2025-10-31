@@ -25,7 +25,9 @@ import {
   ChevronRightIcon,
   ArrowPathIcon,
   ShareIcon,
-  ClipboardDocumentIcon
+  ClipboardDocumentIcon,
+  ClockIcon,
+  ArrowLeftIcon
 } from '@heroicons/react/24/outline';
 
 import {
@@ -63,7 +65,9 @@ export type IconName =
   | 'chevron-right'
   | 'refresh'
   | 'share'
-  | 'copy';
+  | 'copy'
+  | 'clock'
+  | 'arrow-left';
 
 interface IconProps {
   name: IconName;
@@ -107,7 +111,9 @@ export function Icon({ name, className = '', solid = false, size = 'md' }: IconP
     'chevron-right': ChevronRightIcon,
     refresh: ArrowPathIcon,
     share: ShareIcon,
-    copy: ClipboardDocumentIcon
+    copy: ClipboardDocumentIcon,
+    clock: ClockIcon,
+    'arrow-left': ArrowLeftIcon
   };
 
   const IconComponent = iconMap[name];

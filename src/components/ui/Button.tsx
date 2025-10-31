@@ -98,7 +98,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             />
           </svg>
         )}
-        <span className={isLoading ? 'sr-only' : undefined}>
+        <span className={cn('flex items-center', isLoading ? 'sr-only' : undefined)}>
           {buttonText}
         </span>
         {isLoading && (

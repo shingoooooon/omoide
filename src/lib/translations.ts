@@ -85,9 +85,46 @@ export const translations = {
         }
       },
       cta: {
-        title: "今すぐ始めませんか？",
-        subtitle: "無料で始めて、お子さまの大切な瞬間を美しい物語として残しましょう。",
-        getStarted: "無料で始める"
+        title: "今すぐ始めてみませんか？",
+        subtitle: "無料でアカウントを作成して、お子様の成長記録を美しく残しましょう",
+        getStarted: "今すぐ始める"
+      },
+      hero: {
+        title: "いつもの写真が\nはじめての物語になる。",
+        subtitle: "写真をアップロードするだけで、AIが自動で成長記録を作成。\n家族で楽しく会話したり成長を心ゆくまで記録できます。",
+        getStarted: "今すぐ始める",
+        viewDemo: "デモを見る",
+        welcome: "おかえりなさい、{name}さん",
+        uploadPhotos: "写真をアップロード",
+        viewTimeline: "タイムラインを見る"
+      },
+      features: {
+        title: "子どもの成長を記録する新しい方法",
+        subtitle: "AIが写真から自動で成長記録を作成し、家族みんなで思い出を共有できます",
+        upload: {
+          title: "かんたんアップロード",
+          description: "スマホで撮った写真をそのままアップロード。面倒な整理は不要です。"
+        },
+        ai: {
+          title: "AI自動解析",
+          description: "AIが写真を解析して、成長の瞬間を自動で記録。コメントも自動生成します。"
+        },
+        storybook: {
+          title: "美しい絵本作成",
+          description: "成長記録から自動で絵本を作成。家族の宝物になる思い出の本ができます。"
+        }
+      },
+      quickActions: {
+        title: "何をしますか？",
+        subtitle: "お子様の成長記録を作成・管理できます",
+        upload: "写真アップロード",
+        uploadDesc: "新しい写真を追加",
+        timeline: "タイムライン",
+        timelineDesc: "成長記録を確認",
+        albums: "アルバム",
+        albumsDesc: "写真を整理",
+        storybooks: "絵本",
+        storybooksDesc: "AI絵本を作成"
       }
     },
     timeline: {
@@ -140,6 +177,72 @@ export const translations = {
         prompt: "の絵本を作りませんか？",
         promptDescription: "今月の成長記録から、AIが素敵な絵本を作成します"
       }
+    },
+    demo: {
+      title: "Omoideの機能をお試しください",
+      subtitle: "実際のサンプルデータを使って、AIが生成する成長記録、アルバム、絵本をご覧いただけます",
+      experience: "デモ体験",
+      timeline: {
+        title: "成長タイムライン",
+        description: "AIが写真を解析して自動生成した成長記録とコメント",
+        button: "タイムラインを見る"
+      },
+      albums: {
+        title: "フォトアルバム",
+        description: "思い出を美しく整理したデジタルアルバム",
+        button: "アルバムを見る"
+      },
+      storybook: {
+        title: "AI絵本",
+        description: "成長記録から自動生成された美しい絵本",
+        button: "絵本を読む"
+      },
+      cta: {
+        title: "あなたの思い出も美しく残しませんか？",
+        subtitle: "無料でアカウントを作成して、お子様の成長記録を始めましょう",
+        getStarted: "今すぐ始める",
+        backHome: "ホームに戻る"
+      },
+      backToOverview: "デモ概要に戻る"
+    },
+    buttons: {
+      login: "ログイン",
+      signup: "新規登録",
+      switchToJapanese: "日本語に切り替え",
+      switchToEnglish: "Switch to English",
+      readStorybook: "絵本を読む"
+    },
+    upload: {
+      title: "写真をアップロード",
+      subtitle: "お子様の写真をアップロードして、成長記録を作成しましょう",
+      dragDrop: "ファイルをドラッグ&ドロップするか、クリックして選択してください",
+      selectFiles: "ファイルを選択",
+      supportedFormats: "対応形式: JPEG, PNG, WebP",
+      maxFileSize: "最大ファイルサイズ",
+      maxFiles: "最大枚数",
+      uploadError: "アップロードエラー",
+      validationError: "検証エラー",
+      notice: "注意事項",
+      selectedPhotos: "選択された写真",
+      uploading: "写真をアップロード中",
+      uploadComplete: "アップロード完了",
+      uploadFailed: "アップロードに失敗しました",
+      removePhoto: "写真を削除",
+      uploadWaiting: "アップロード待機中"
+    },
+    albums: {
+      title: "フォトアルバム",
+      noAlbums: "まだアルバムがありません",
+      noAlbumsDescription: "写真をアップロードして、最初のアルバムを作成しましょう",
+      createAlbum: "アルバムを作成",
+      viewAlbum: "アルバムを見る",
+      photos: "枚の写真",
+      createdAt: "作成日"
+    },
+    timelineCard: {
+      viewDetails: "詳細を見る",
+      generateComment: "コメントを生成するには詳細を開いてください",
+      ago: "前"
     },
     footer: {
       brand: {
@@ -238,9 +341,46 @@ export const translations = {
         }
       },
       cta: {
-        title: "Ready to Start Your Journey?",
-        subtitle: "Get started for free and preserve your child's precious moments as beautiful stories.",
-        getStarted: "Get Started Free"
+        title: "Ready to Get Started?",
+        subtitle: "Create a free account and beautifully preserve your child's growth records",
+        getStarted: "Get Started Now"
+      },
+      hero: {
+        title: "Turn everyday photos into\nfirst-time stories.",
+        subtitle: "Simply upload photos and AI automatically creates growth records.\nEnjoy family conversations and record growth to your heart's content.",
+        getStarted: "Get Started Now",
+        viewDemo: "View Demo",
+        welcome: "Welcome back, {name}",
+        uploadPhotos: "Upload Photos",
+        viewTimeline: "View Timeline"
+      },
+      features: {
+        title: "A New Way to Record Child Growth",
+        subtitle: "AI automatically creates growth records from photos, allowing the whole family to share memories",
+        upload: {
+          title: "Easy Upload",
+          description: "Upload photos taken with your smartphone directly. No tedious organization required."
+        },
+        ai: {
+          title: "AI Auto-Analysis",
+          description: "AI analyzes photos and automatically records growth moments. Comments are also auto-generated."
+        },
+        storybook: {
+          title: "Beautiful Storybook Creation",
+          description: "Automatically create storybooks from growth records. Create memory books that become family treasures."
+        }
+      },
+      quickActions: {
+        title: "What would you like to do?",
+        subtitle: "Create and manage your child's growth records",
+        upload: "Photo Upload",
+        uploadDesc: "Add new photos",
+        timeline: "Timeline",
+        timelineDesc: "View growth records",
+        albums: "Albums",
+        albumsDesc: "Organize photos",
+        storybooks: "Storybooks",
+        storybooksDesc: "Create AI storybooks"
       }
     },
     timeline: {
@@ -293,6 +433,72 @@ export const translations = {
         prompt: "Create storybook for",
         promptDescription: "AI will create a beautiful storybook from this month's growth records"
       }
+    },
+    demo: {
+      title: "Try Omoide Features",
+      subtitle: "Experience AI-generated growth records, albums, and storybooks with real sample data",
+      experience: "Demo Experience",
+      timeline: {
+        title: "Growth Timeline",
+        description: "AI-analyzed photos with automatically generated growth records and comments",
+        button: "View Timeline"
+      },
+      albums: {
+        title: "Photo Albums",
+        description: "Beautifully organized digital albums of precious memories",
+        button: "View Albums"
+      },
+      storybook: {
+        title: "AI Storybooks",
+        description: "Beautiful storybooks automatically generated from growth records",
+        button: "Read Storybook"
+      },
+      cta: {
+        title: "Ready to Preserve Your Memories?",
+        subtitle: "Create a free account and start recording your child's growth journey",
+        getStarted: "Get Started Now",
+        backHome: "Back to Home"
+      },
+      backToOverview: "Back to Demo Overview"
+    },
+    buttons: {
+      login: "Login",
+      signup: "Sign Up",
+      switchToJapanese: "日本語に切り替え",
+      switchToEnglish: "Switch to English",
+      readStorybook: "Read Storybook"
+    },
+    upload: {
+      title: "Upload Photos",
+      subtitle: "Upload your child's photos to create growth records",
+      dragDrop: "Drag & drop files here or click to select",
+      selectFiles: "Select Files",
+      supportedFormats: "Supported formats: JPEG, PNG, WebP",
+      maxFileSize: "Max file size",
+      maxFiles: "Max files",
+      uploadError: "Upload Error",
+      validationError: "Validation Error",
+      notice: "Notice",
+      selectedPhotos: "Selected Photos",
+      uploading: "Uploading Photos",
+      uploadComplete: "Upload Complete",
+      uploadFailed: "Upload Failed",
+      removePhoto: "Remove Photo",
+      uploadWaiting: "Waiting for Upload"
+    },
+    albums: {
+      title: "Photo Albums",
+      noAlbums: "No albums yet",
+      noAlbumsDescription: "Upload photos to create your first album",
+      createAlbum: "Create Album",
+      viewAlbum: "View Album",
+      photos: "photos",
+      createdAt: "Created"
+    },
+    timelineCard: {
+      viewDetails: "View Details",
+      generateComment: "Open details to generate comment",
+      ago: "ago"
     },
     footer: {
       brand: {

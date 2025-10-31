@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
+import { useLocale } from '@/contexts/LocaleContext'
+import { useTranslations } from '@/lib/translations'
 import { Button } from '@/components/ui/Button'
 import { Icon } from '@/components/ui/Icon'
 import { Card } from '@/components/ui/Card'
@@ -16,12 +18,14 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const { signInWithEmail, signInWithGoogle } = useAuth()
+  const { locale } = useLocale()
+  const { t } = useTranslations(locale)
   const router = useRouter()
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email || !password) {
-      setError('メールアドレスとパスワードを入力してください')
+      setError(t('auth.errors.requiredFields'))
       return
     }
 
@@ -31,7 +35,7 @@ export default function LoginPage() {
       await signInWithEmail(email, password)
       router.push('/')
     } catch (error: any) {
-      setError('ログインに失敗しました。メールアドレスとパスワードを確認してください。')
+      setError(t('auth.errors.authFailed'))
     } finally {
       setLoading(false)
     }
@@ -44,7 +48,7 @@ export default function LoginPage() {
       await signInWithGoogle()
       router.push('/')
     } catch (error: any) {
-      setError('Googleログインに失敗しました。')
+      setError(t('auth.errors.googleSignInFailed'))
     } finally {
       setLoading(false)
     }
@@ -70,7 +74,7 @@ export default function LoginPage() {
             </h1>
           </div>
           <p className="text-lg text-neutral-600">
-            子どもの成長を記録し、美しい絵本を作成しましょう
+            {locale === 'ja' ? '子どもの成長を記録し、美しい絵本を作成しましょう' : 'Record your child\'s growth and create beautiful storybooks'}
           </p>
         </div>
 
@@ -86,7 +90,7 @@ export default function LoginPage() {
           <form onSubmit={handleEmailLogin} className="space-y-6">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
-                メールアドレス
+                {t('auth.email')}
               </label>
               <input
                 id="email"
@@ -101,14 +105,14 @@ export default function LoginPage() {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
-                パスワード
+                {t('auth.password')}
               </label>
               <input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="6文字以上"
+                placeholder={locale === 'ja' ? '6文字以上' : '6+ characters'}
                 className="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                 disabled={loading}
               />
@@ -123,7 +127,7 @@ export default function LoginPage() {
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
               ) : (
-                'サインイン'
+                t('auth.signIn')
               )}
             </Button>
           </form>
@@ -131,7 +135,7 @@ export default function LoginPage() {
           {/* Divider */}
           <div className="my-6 flex items-center">
             <div className="flex-1 border-t border-neutral-300"></div>
-            <span className="px-4 text-neutral-500 text-sm">または</span>
+            <span className="px-4 text-neutral-500 text-sm">{locale === 'ja' ? 'または' : 'or'}</span>
             <div className="flex-1 border-t border-neutral-300"></div>
           </div>
 
@@ -144,15 +148,15 @@ export default function LoginPage() {
             size="lg"
           >
             <Icon name="google" className="w-5 h-5 mr-3" />
-            Googleでサインイン
+            {t('auth.signInWithGoogle')}
           </Button>
 
           {/* Sign Up Link */}
           <div className="mt-6 text-center">
             <p className="text-neutral-600">
-              アカウントをお持ちでない方は{' '}
+              {t('auth.noAccount')}{' '}
               <Link href="/auth/signup" className="text-primary-600 hover:text-primary-700 font-medium">
-                こちら
+                {locale === 'ja' ? 'こちら' : 'here'}
               </Link>
             </p>
           </div>

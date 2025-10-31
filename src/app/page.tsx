@@ -1,5 +1,6 @@
 'use client'
 
+import React from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import { Layout } from '@/components/layout/Layout'
@@ -37,12 +38,20 @@ export default function Home() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
-                いつもの写真が<br />
-                はじめての物語になる。
+                {t('home.hero.title').split('\\n').map((line, index) => (
+                  <React.Fragment key={index}>
+                    {line}
+                    {index === 0 && <br />}
+                  </React.Fragment>
+                ))}
               </h1>
               <p className="text-lg sm:text-xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
-                写真をアップロードするだけで、AIが自動で成長記録を作成。<br />
-                家族で楽しく会話したり成長を心ゆくまで記録できます。
+                {t('home.hero.subtitle').split('\\n').map((line, index) => (
+                  <React.Fragment key={index}>
+                    {line}
+                    {index === 0 && <br />}
+                  </React.Fragment>
+                ))}
               </p>
 
               {/* Action Buttons - Only show for non-authenticated users */}
@@ -54,7 +63,7 @@ export default function Home() {
                     onClick={() => router.push('/auth/login')}
                   >
                     <Icon name="camera" className="w-5 h-5 mr-2" />
-                    今すぐ始める
+                    {t('home.hero.getStarted')}
                   </Button>
                   <Button
                     variant="outline"
@@ -62,7 +71,7 @@ export default function Home() {
                     className="bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20 px-8 py-4 text-lg"
                     onClick={() => router.push('/demo')}
                   >
-                    デモを見る
+                    {t('home.hero.viewDemo')}
                   </Button>
                 </div>
               )}
@@ -71,7 +80,7 @@ export default function Home() {
               {!loading && user && (
                 <div className="text-center">
                   <p className="text-xl text-white/90 mb-6 drop-shadow-md">
-                    おかえりなさい、{user.displayName || user.email}さん
+                    {t('home.hero.welcome').replace('{name}', user.displayName || user.email || '')}
                   </p>
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
                     <Button
@@ -80,7 +89,7 @@ export default function Home() {
                       onClick={() => router.push('/upload')}
                     >
                       <Icon name="camera" className="w-5 h-5 mr-2" />
-                      写真をアップロード
+                      {t('home.hero.uploadPhotos')}
                     </Button>
                     <Button
                       variant="outline"
@@ -89,7 +98,7 @@ export default function Home() {
                       onClick={() => router.push('/timeline')}
                     >
                       <Icon name="calendar" className="w-5 h-5 mr-2" />
-                      タイムラインを見る
+                      {t('home.hero.viewTimeline')}
                     </Button>
                   </div>
                 </div>
@@ -97,17 +106,17 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </div>
+      </main>
 
       {/* Features Section */}
       <div className="bg-white py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
-              子どもの成長を記録する新しい方法
+              {t('home.features.title')}
             </h2>
             <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-              AIが写真から自動で成長記録を作成し、家族みんなで思い出を共有できます
+              {t('home.features.subtitle')}
             </p>
           </div>
 
@@ -117,10 +126,10 @@ export default function Home() {
                 <Icon name="camera" className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                かんたんアップロード
+                {t('home.features.upload.title')}
               </h3>
               <p className="text-neutral-600">
-                スマホで撮った写真をそのままアップロード。面倒な整理は不要です。
+                {t('home.features.upload.description')}
               </p>
             </div>
 
@@ -129,10 +138,10 @@ export default function Home() {
                 <Icon name="sparkles" className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                AI自動解析
+                {t('home.features.ai.title')}
               </h3>
               <p className="text-neutral-600">
-                AIが写真を解析して、成長の瞬間を自動で記録。コメントも自動生成します。
+                {t('home.features.ai.description')}
               </p>
             </div>
 
@@ -141,10 +150,10 @@ export default function Home() {
                 <Icon name="book" className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-neutral-900 mb-3">
-                美しい絵本作成
+                {t('home.features.storybook.title')}
               </h3>
               <p className="text-neutral-600">
-                成長記録から自動で絵本を作成。家族の宝物になる思い出の本ができます。
+                {t('home.features.storybook.description')}
               </p>
             </div>
           </div>
@@ -156,10 +165,10 @@ export default function Home() {
         <div className="bg-gradient-to-r from-primary-50 to-secondary-50 py-20">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
-              今すぐ始めてみませんか？
+              {t('home.cta.title')}
             </h2>
             <p className="text-lg text-neutral-600 mb-8 max-w-2xl mx-auto">
-              無料でアカウントを作成して、お子様の成長記録を美しく残しましょう
+              {t('home.cta.subtitle')}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
@@ -168,7 +177,7 @@ export default function Home() {
                 onClick={() => router.push('/auth/login')}
               >
                 <Icon name="camera" className="w-5 h-5 mr-2" />
-                今すぐ始める
+                {t('home.cta.getStarted')}
               </Button>
               <Button
                 variant="outline"
@@ -176,7 +185,7 @@ export default function Home() {
                 className="px-8 py-4 text-lg"
                 onClick={() => router.push('/demo')}
               >
-                デモを見る
+                {t('home.hero.viewDemo')}
               </Button>
             </div>
           </div>
@@ -189,10 +198,10 @@ export default function Home() {
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
-                何をしますか？
+                {t('home.quickActions.title')}
               </h2>
               <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-                お子様の成長記録を作成・管理できます
+                {t('home.quickActions.subtitle')}
               </p>
             </div>
 
@@ -205,10 +214,10 @@ export default function Home() {
                   <Icon name="camera" className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-                  写真アップロード
+                  {t('home.quickActions.upload')}
                 </h3>
                 <p className="text-neutral-600 text-sm">
-                  新しい写真を追加
+                  {t('home.quickActions.uploadDesc')}
                 </p>
               </Card>
 
@@ -220,10 +229,10 @@ export default function Home() {
                   <Icon name="calendar" className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-                  タイムライン
+                  {t('home.quickActions.timeline')}
                 </h3>
                 <p className="text-neutral-600 text-sm">
-                  成長記録を確認
+                  {t('home.quickActions.timelineDesc')}
                 </p>
               </Card>
 
@@ -235,10 +244,10 @@ export default function Home() {
                   <Icon name="book" className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-                  アルバム
+                  {t('home.quickActions.albums')}
                 </h3>
                 <p className="text-neutral-600 text-sm">
-                  写真を整理
+                  {t('home.quickActions.albumsDesc')}
                 </p>
               </Card>
 
@@ -250,10 +259,10 @@ export default function Home() {
                   <Icon name="bookmark" className="w-6 h-6 text-white" />
                 </div>
                 <h3 className="text-lg font-semibold text-neutral-900 mb-2">
-                  絵本
+                  {t('home.quickActions.storybooks')}
                 </h3>
                 <p className="text-neutral-600 text-sm">
-                  AI絵本を作成
+                  {t('home.quickActions.storybooksDesc')}
                 </p>
               </Card>
             </div>

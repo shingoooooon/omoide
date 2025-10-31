@@ -11,14 +11,14 @@ import { StorybookViewer } from '@/components/storybook/StorybookViewer'
 import { useLocale } from '@/contexts/LocaleContext'
 import { useTranslations } from '@/lib/translations'
 import { Icon } from '@/components/ui/Icon'
-import { demoGrowthRecords, demoStorybook, getDemoAlbums, demoPhotos } from '@/lib/demoData'
+import { getDemoGrowthRecords, getDemoStorybook, getDemoAlbums, getDemoPhotos } from '@/lib/demoData'
 
 type DemoView = 'overview' | 'timeline' | 'albums' | 'storybook'
 
 export default function DemoPage() {
   const router = useRouter()
   const { locale } = useLocale()
-  // const { t } = useTranslations(locale)
+  const { t } = useTranslations(locale)
   const [currentView, setCurrentView] = useState<DemoView>('overview')
   const [selectedAlbum, setSelectedAlbum] = useState<{
     id: string;
@@ -29,7 +29,10 @@ export default function DemoPage() {
     coverPhoto: any;
   } | null>(null)
 
-  const demoAlbums = getDemoAlbums()
+  const demoAlbums = getDemoAlbums(locale)
+  const demoGrowthRecords = getDemoGrowthRecords(locale)
+  const demoStorybook = getDemoStorybook(locale)
+  const demoPhotos = getDemoPhotos(locale)
 
   const renderContent = () => {
     switch (currentView) {
@@ -37,8 +40,8 @@ export default function DemoPage() {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-neutral-900 mb-2">成長タイムライン</h2>
-              <p className="text-neutral-600">AIが自動生成した成長記録とコメント</p>
+              <h2 className="text-2xl font-bold text-neutral-900 mb-2">{t('demo.timeline.title')}</h2>
+              <p className="text-neutral-600">{t('demo.timeline.description')}</p>
             </div>
             <Timeline 
               records={demoGrowthRecords}
@@ -61,8 +64,8 @@ export default function DemoPage() {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-neutral-900 mb-2">フォトアルバム</h2>
-              <p className="text-neutral-600">思い出を美しく整理したアルバム</p>
+              <h2 className="text-2xl font-bold text-neutral-900 mb-2">{t('demo.albums.title')}</h2>
+              <p className="text-neutral-600">{t('demo.albums.description')}</p>
             </div>
             <AlbumView 
               album={demoAlbum}
@@ -75,8 +78,8 @@ export default function DemoPage() {
         return (
           <div className="space-y-6">
             <div className="text-center">
-              <h2 className="text-2xl font-bold text-neutral-900 mb-2">AI絵本</h2>
-              <p className="text-neutral-600">成長記録から自動生成された絵本</p>
+              <h2 className="text-2xl font-bold text-neutral-900 mb-2">{t('demo.storybook.title')}</h2>
+              <p className="text-neutral-600">{t('demo.storybook.description')}</p>
             </div>
             <StorybookViewer 
               storybook={demoStorybook}
@@ -92,13 +95,13 @@ export default function DemoPage() {
             <div className="text-center">
               <Badge variant="primary" className="mb-4">
                 <Icon name="sparkles" size="sm" className="mr-2" />
-                デモ体験
+                {t('demo.experience')}
               </Badge>
               <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 mb-4">
-                Omoideの機能をお試しください
+                {t('demo.title')}
               </h1>
               <p className="text-lg text-neutral-600 max-w-2xl mx-auto">
-                実際のサンプルデータを使って、AIが生成する成長記録、アルバム、絵本をご覧いただけます
+                {t('demo.subtitle')}
               </p>
             </div>
 
@@ -109,16 +112,16 @@ export default function DemoPage() {
                 onClick={() => setCurrentView('timeline')}
               >
                 <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-105 transition-transform duration-200">
-                  <Icon name="clock" className="w-8 h-8 text-white" />
+                  <Icon name="calendar" className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-neutral-900 mb-2">
-                  成長タイムライン
+                  {t('demo.timeline.title')}
                 </h3>
                 <p className="text-neutral-600 mb-4">
-                  AIが写真を解析して自動生成した成長記録とコメント
+                  {t('demo.timeline.description')}
                 </p>
                 <Button variant="outline" size="sm">
-                  タイムラインを見る
+                  {t('demo.timeline.button')}
                 </Button>
               </Card>
 
@@ -130,13 +133,13 @@ export default function DemoPage() {
                   <Icon name="photo" className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-neutral-900 mb-2">
-                  フォトアルバム
+                  {t('demo.albums.title')}
                 </h3>
                 <p className="text-neutral-600 mb-4">
-                  思い出を美しく整理したデジタルアルバム
+                  {t('demo.albums.description')}
                 </p>
                 <Button variant="outline" size="sm">
-                  アルバムを見る
+                  {t('demo.albums.button')}
                 </Button>
               </Card>
 
@@ -148,13 +151,13 @@ export default function DemoPage() {
                   <Icon name="book" className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-xl font-semibold text-neutral-900 mb-2">
-                  AI絵本
+                  {t('demo.storybook.title')}
                 </h3>
                 <p className="text-neutral-600 mb-4">
-                  成長記録から自動生成された美しい絵本
+                  {t('demo.storybook.description')}
                 </p>
                 <Button variant="outline" size="sm">
-                  絵本を読む
+                  {t('buttons.readStorybook')}
                 </Button>
               </Card>
             </div>
@@ -162,10 +165,10 @@ export default function DemoPage() {
             {/* CTA Section */}
             <Card className="bg-gradient-to-r from-primary-50 via-white to-secondary-50 border-primary-100 p-8 text-center">
               <h2 className="text-2xl font-bold text-neutral-900 mb-4">
-                あなたの思い出も美しく残しませんか？
+                {t('demo.cta.title')}
               </h2>
               <p className="text-neutral-600 mb-6 max-w-md mx-auto">
-                無料でアカウントを作成して、お子様の成長記録を始めましょう
+                {t('demo.cta.subtitle')}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
@@ -173,14 +176,14 @@ export default function DemoPage() {
                   onClick={() => router.push('/auth/login')}
                 >
                   <Icon name="camera" size="sm" className="mr-2" />
-                  今すぐ始める
+                  {t('demo.cta.getStarted')}
                 </Button>
                 <Button 
                   variant="outline" 
                   size="lg"
                   onClick={() => router.push('/')}
                 >
-                  ホームに戻る
+                  {t('demo.cta.backHome')}
                 </Button>
               </div>
             </Card>
@@ -201,7 +204,7 @@ export default function DemoPage() {
               className="mb-4"
             >
               <Icon name="arrow-left" size="sm" className="mr-2" />
-              デモ概要に戻る
+              {t('demo.backToOverview')}
             </Button>
           </div>
         )}

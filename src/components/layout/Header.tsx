@@ -24,7 +24,7 @@ const Header: React.FC = () => {
   // ログイン状態に応じてナビゲーションを変更
   const publicNavigation = [
     { name: t('navigation.home'), href: '/', icon: 'home' },
-    { name: 'デモ', href: '/demo', icon: 'sparkles' },
+    { name: locale === 'ja' ? 'デモ' : 'Demo', href: '/demo', icon: 'sparkles' },
   ] as const
 
   const authenticatedNavigation = [
@@ -95,14 +95,14 @@ const Header: React.FC = () => {
                     className="text-neutral-600 hover:text-primary-700"
                   >
                     <Icon name="user" size="sm" className="mr-1" />
-                    ログイン
+                    {t('buttons.login')}
                   </Button>
                   <Button
                     size="sm"
                     onClick={() => router.push('/auth/signup')}
                     className="bg-primary-600 hover:bg-primary-700 text-white"
                   >
-                    新規登録
+                    {t('buttons.signup')}
                   </Button>
                 </div>
               )
@@ -113,7 +113,7 @@ const Header: React.FC = () => {
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="md:hidden p-2 rounded-xl text-neutral-600 hover:text-primary-700 hover:bg-primary-50 transition-colors duration-200"
-            aria-label="メニューを開く"
+            aria-label={locale === 'ja' ? 'メニューを開く' : 'Open menu'}
           >
             <svg
               className="h-6 w-6"
@@ -168,7 +168,7 @@ const Header: React.FC = () => {
                         className="w-full text-neutral-600 hover:text-primary-700"
                       >
                         <Icon name="user" size="sm" className="mr-2" />
-                        ログイン
+                        {t('buttons.login')}
                       </Button>
                       <Button
                         onClick={() => {
@@ -177,7 +177,7 @@ const Header: React.FC = () => {
                         }}
                         className="w-full bg-primary-600 hover:bg-primary-700 text-white"
                       >
-                        新規登録
+                        {t('buttons.signup')}
                       </Button>
                     </div>
                   )

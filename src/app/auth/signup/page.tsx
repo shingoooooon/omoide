@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
+import { useLocale } from '@/contexts/LocaleContext'
+import { useTranslations } from '@/lib/translations'
 import { Button } from '@/components/ui/Button'
 import { Icon } from '@/components/ui/Icon'
 import { Card } from '@/components/ui/Card'
@@ -18,23 +20,25 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const { signUpWithEmail, signInWithGoogle } = useAuth()
+  const { locale } = useLocale()
+  const { t } = useTranslations(locale)
   const router = useRouter()
 
   const handleEmailSignUp = async (e: React.FormEvent) => {
     e.preventDefault()
     
     if (!email || !password || !displayName) {
-      setError('すべての項目を入力してください')
+      setError(t('auth.errors.requiredName'))
       return
     }
 
     if (password !== confirmPassword) {
-      setError('パスワードが一致しません')
+      setError(locale === 'ja' ? 'パスワードが一致しません' : 'Passwords do not match')
       return
     }
 
     if (password.length < 6) {
-      setError('パスワードは6文字以上で入力してください')
+      setError(t('auth.errors.weakPassword'))
       return
     }
 
@@ -45,9 +49,9 @@ export default function SignUpPage() {
       router.push('/')
     } catch (error: any) {
       if (error.code === 'auth/email-already-in-use') {
-        setError('このメールアドレスは既に使用されています')
+        setError(t('auth.errors.emailInUse'))
       } else if (error.code === 'auth/weak-password') {
-        setError('パスワードが弱すぎます')
+        setError(t('auth.errors.weakPassword'))
       } else {
         setError('アカウント作成に失敗しました')
       }
