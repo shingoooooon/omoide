@@ -31,7 +31,7 @@ export function AlbumEntry({ record, isEven, childInfo }: AlbumEntryProps) {
     : null;
 
   return (
-    <div className={`relative ${isEven ? 'ml-0' : 'ml-8'}`}>
+    <div className="relative">
       {/* Photo Frame */}
       <div className={`relative inline-block transform ${isEven ? 'rotate-1' : '-rotate-2'} hover:rotate-0 transition-transform duration-300`}>
         {/* Tape Corners */}
@@ -40,7 +40,7 @@ export function AlbumEntry({ record, isEven, childInfo }: AlbumEntryProps) {
         
         {/* Photo */}
         <div className="bg-white p-3 shadow-lg border border-gray-200">
-          <div className="relative w-64 h-48 overflow-hidden">
+          <div className="relative w-56 h-40 overflow-hidden">
             <Image
               src={mainPhoto.url}
               alt={`思い出の写真 - ${formattedDate}`}
@@ -52,7 +52,7 @@ export function AlbumEntry({ record, isEven, childInfo }: AlbumEntryProps) {
       </div>
 
       {/* Handwritten Comment */}
-      <div className={`mt-4 ${isEven ? 'ml-4' : 'mr-4'}`}>
+      <div className={`mt-4 ${isEven ? 'ml-2' : 'mr-2'}`}>
         {/* Date and Age */}
         <div className="text-sm text-blue-700 font-handwriting mb-2 transform -rotate-1">
           <div>{formattedDate}</div>
@@ -64,9 +64,9 @@ export function AlbumEntry({ record, isEven, childInfo }: AlbumEntryProps) {
         </div>
         
         {/* Comment Bubble */}
-        <div className={`relative bg-blue-50 p-4 rounded-2xl shadow-md border-2 border-blue-200 max-w-xs transform ${isEven ? 'rotate-1' : '-rotate-1'}`}>
+        <div className={`relative bg-blue-50 p-3 rounded-2xl shadow-md border-2 border-blue-200 max-w-xs transform ${isEven ? 'rotate-1' : '-rotate-1'}`}>
           {/* Speech Bubble Tail */}
-          <div className={`absolute top-4 ${isEven ? '-left-2' : '-right-2'} w-4 h-4 bg-blue-50 border-l-2 border-b-2 border-blue-200 transform rotate-45`}></div>
+          <div className={`absolute top-3 ${isEven ? '-left-2' : '-right-2'} w-4 h-4 bg-blue-50 border-l-2 border-b-2 border-blue-200 transform rotate-45`}></div>
           
           {/* Comment Text */}
           <p className="text-blue-800 font-handwriting leading-relaxed text-sm">
@@ -75,12 +75,10 @@ export function AlbumEntry({ record, isEven, childInfo }: AlbumEntryProps) {
         </div>
       </div>
 
-
-
       {/* Decorative Doodles */}
-      <div className={`absolute ${isEven ? '-right-8 top-8' : '-left-8 top-12'} opacity-40 transform ${isEven ? 'rotate-12' : '-rotate-12'}`}>
+      <div className={`absolute ${isEven ? '-right-6 top-6' : '-left-6 top-8'} opacity-40 transform ${isEven ? 'rotate-12' : '-rotate-12'}`}>
         {isEven ? (
-          <Icon name="heart" className="text-blue-400" solid />
+          <Icon name="heart" className="text-pink-400" solid />
         ) : (
           <Icon name="star" className="text-sky-400" solid />
         )}

@@ -55,27 +55,42 @@ export function StorybookViewer({ storybook, onClose, isDemo = false }: Storyboo
   const totalPages = storybook.pages.length;
   const currentPageData = storybook.pages[currentPage];
 
+  // Debug: Log current page data
+  useEffect(() => {
+    if (currentPageData) {
+      console.log('Current page data:', {
+        pageNumber: currentPageData.pageNumber,
+        imageUrl: currentPageData.imageUrl,
+        text: currentPageData.text.substring(0, 50) + '...'
+      });
+    }
+  }, [currentPageData]);
+
   const goToNextPage = () => {
     if (currentPage < totalPages - 1) {
       const endTracking = trackInteraction('next-page');
-      setCurrentPage(currentPage + 1);
+      const newPage = currentPage + 1;
+      console.log(`Going to next page: ${newPage + 1}`);
+      setCurrentPage(newPage);
       setIsImageLoading(true);
       // Stop current audio when changing pages
       stopAudio();
       
       // Preload next image
-      const nextPageIndex = currentPage + 2;
+      const nextPageIndex = newPage + 1;
       if (nextPageIndex < totalPages) {
         preloadImage(storybook.pages[nextPageIndex].imageUrl).catch(() => {});
       }
       
-      endTracking();
+      endTracking?.();
     }
   };
 
   const goToPreviousPage = () => {
     if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
+      const newPage = currentPage - 1;
+      console.log(`Going to previous page: ${newPage + 1}`);
+      setCurrentPage(newPage);
       setIsImageLoading(true);
       // Stop current audio when changing pages
       stopAudio();
@@ -84,6 +99,7 @@ export function StorybookViewer({ storybook, onClose, isDemo = false }: Storyboo
 
   const goToPage = (pageIndex: number) => {
     if (pageIndex >= 0 && pageIndex < totalPages) {
+      console.log(`Going to page: ${pageIndex + 1}`);
       setCurrentPage(pageIndex);
       setIsImageLoading(true);
       // Stop current audio when changing pages
@@ -209,17 +225,18 @@ export function StorybookViewer({ storybook, onClose, isDemo = false }: Storyboo
           {/* Page Content */}
           <div className="relative">
             {/* Image Section */}
-            <div className="relative h-96 bg-gray-100 flex items-center justify-center">
-              {isImageLoading && (
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
-                </div>
-              )}
+            <div className="relative h-96 bg-gray-100">
               <StorybookImage
                 src={currentPageData.imageUrl}
                 alt={`絵本のページ ${currentPage + 1}`}
-                onLoadComplete={() => setIsImageLoading(false)}
-                onError={() => setIsImageLoading(false)}
+                onLoadComplete={() => {
+                  console.log('Image loaded in StorybookViewer');
+                  setIsImageLoading(false);
+                }}
+                onError={(error) => {
+                  console.error('Image error in StorybookViewer:', error);
+                  setIsImageLoading(false);
+                }}
                 priority={currentPage === 0}
               />
             </div>

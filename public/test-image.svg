@@ -1,0 +1,10 @@
+<svg width="800" height="600" viewBox="0 0 800 600" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="600" fill="#E5E7EB"/>
+  <circle cx="400" cy="300" r="100" fill="#8B5CF6"/>
+  <text x="400" y="450" text-anchor="middle" fill="#374151" font-family="system-ui, -apple-system, sans-serif" font-size="24" font-weight="600">
+    テスト画像
+  </text>
+  <text x="400" y="480" text-anchor="middle" fill="#6B7280" font-family="system-ui, -apple-system, sans-serif" font-size="16">
+    この画像が表示されれば正常です
+  </text>
+</svg>

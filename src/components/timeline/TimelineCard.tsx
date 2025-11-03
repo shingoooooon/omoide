@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { GrowthRecord } from '@/types/models';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
-import { Icon } from '@/components/ui/Icon';
 import { useLocale } from '@/contexts/LocaleContext';
 import { useTranslations } from '@/lib/translations';
 import Image from 'next/image';
@@ -51,30 +50,7 @@ export function TimelineCard({ record, onClick }: TimelineCardProps) {
   const primaryPhoto = record.photos[0];
   const primaryComment = record.comments[0];
 
-  // アイコンと色を決定する関数
-  const getRecordIconAndColor = () => {
-    if (primaryComment?.content.includes('笑顔')) {
-      return { icon: 'heart', color: 'from-pink-400 to-pink-600' };
-    }
-    if (primaryComment?.content.includes('ハイハイ')) {
-      return { icon: 'chevron-right', color: 'from-blue-400 to-blue-600' };
-    }
-    if (primaryComment?.content.includes('歩') || primaryComment?.content.includes('一歩')) {
-      return { icon: 'user', color: 'from-green-400 to-green-600' };
-    }
-    if (primaryComment?.content.includes('座') || primaryComment?.content.includes('お座り')) {
-      return { icon: 'user', color: 'from-yellow-400 to-yellow-600' };
-    }
-    if (primaryComment?.content.includes('遊') || primaryComment?.content.includes('おもちゃ')) {
-      return { icon: 'star', color: 'from-purple-400 to-purple-600' };
-    }
-    if (primaryComment?.content.includes('眠') || primaryComment?.content.includes('寝')) {
-      return { icon: 'sparkles', color: 'from-indigo-400 to-indigo-600' };
-    }
-    return { icon: 'camera', color: 'from-primary-400 to-primary-600' }; // デフォルト
-  };
 
-  const { icon, color } = getRecordIconAndColor();
 
   return (
     <Card 
@@ -84,14 +60,9 @@ export function TimelineCard({ record, onClick }: TimelineCardProps) {
     >
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className={`w-10 h-10 bg-gradient-to-br ${color} rounded-full flex items-center justify-center shadow-sm`}>
-              <Icon name={icon} className="w-5 h-5 text-white" />
-            </div>
-            <CardTitle className="text-lg text-neutral-800">
-              {formatDateString(record.createdAt)}
-            </CardTitle>
-          </div>
+          <CardTitle className="text-lg text-neutral-800">
+            {formatDateString(record.createdAt)}
+          </CardTitle>
           <span className="text-sm text-neutral-500">
             {formatDate(record.createdAt)}
           </span>

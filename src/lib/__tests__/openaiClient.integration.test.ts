@@ -67,9 +67,8 @@ describe('OpenAI Client Integration Tests', () => {
         })
       );
     });
-  });
-}); 
-   it('should handle API errors gracefully', async () => {
+
+    it('should handle API errors gracefully', async () => {
       mockOpenAI.chat.completions.create.mockRejectedValue(
         new Error('OpenAI API rate limit exceeded')
       );

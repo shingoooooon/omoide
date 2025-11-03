@@ -20,6 +20,9 @@ interface AlbumPageProps {
 }
 
 export function AlbumPage({ records = [], childInfo, photos = [], isDemo = false }: AlbumPageProps) {
+  // Debug: Log the photos data
+  console.log('AlbumPage - isDemo:', isDemo, 'photos:', photos, 'records:', records);
+  
   return (
     <div className="min-h-[600px] bg-gradient-to-br from-blue-50 to-sky-50 relative">
       {/* Paper Texture Overlay */}
@@ -34,43 +37,83 @@ export function AlbumPage({ records = [], childInfo, photos = [], isDemo = false
 
       {/* Page Content */}
       <div className="pl-16 pr-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 gap-y-12">
           {isDemo ? (
-            photos.map((photo, index) => (
-              <div key={photo.id || index} className="relative">
-                <div className="bg-white p-4 rounded-lg shadow-soft border-2 border-blue-200 transform rotate-1 hover:rotate-0 transition-transform duration-300">
-                  <div className="aspect-square rounded-lg overflow-hidden mb-3 relative">
-                    <Image
-                      src={photo.url}
-                      alt={photo.fileName || `Photo ${index + 1}`}
-                      fill
-                      className="object-cover"
-                    />
+            photos.length > 0 ? photos.map((photo, index) => {
+              const isLeft = index % 2 === 0;
+              return (
+                <div key={photo.id || index} className="relative">
+                  {/* Photo Frame - matching AlbumEntry style */}
+                  <div className={`relative inline-block transform ${isLeft ? 'rotate-1' : '-rotate-2'} hover:rotate-0 transition-transform duration-300`}>
+                    {/* Tape Corners */}
+                    <div className="absolute -top-2 -left-2 w-8 h-6 bg-yellow-200 opacity-80 transform rotate-45 z-10 shadow-sm"></div>
+                    <div className="absolute -top-2 -right-2 w-8 h-6 bg-yellow-200 opacity-80 transform -rotate-45 z-10 shadow-sm"></div>
+                    
+                    {/* Photo */}
+                    <div className="bg-white p-3 shadow-lg border border-gray-200">
+                      <div className="relative w-56 h-40 overflow-hidden">
+                        <Image
+                          src={photo.url}
+                          alt={photo.fileName || `Photo ${index + 1}`}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 50vw"
+                          onLoad={() => console.log('Album image loaded:', photo.url)}
+                          onError={(e) => console.error('Album image failed to load:', photo.url, e)}
+                        />
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    <p className="text-sm text-blue-800 font-handwriting mb-2">
-                      {photo.fileName || `思い出 ${index + 1}`}
-                    </p>
-                    {(photo as any).comment && (
-                      <p className="text-xs text-blue-700 font-handwriting leading-relaxed mb-2 italic">
-                        "{(photo as any).comment}"
+
+                  {/* Handwritten Comment - matching AlbumEntry style */}
+                  <div className={`mt-4 ${isLeft ? 'ml-2' : 'mr-2'}`}>
+                    {/* Date */}
+                    <div className="text-sm text-blue-700 font-handwriting mb-2 transform -rotate-1">
+                      <div>
+                        {photo.uploadedAt ? new Date(photo.uploadedAt).toLocaleDateString('ja-JP', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        }) : ''}
+                      </div>
+                    </div>
+                    
+                    {/* Comment Bubble */}
+                    <div className={`relative bg-blue-50 p-3 rounded-2xl shadow-md border-2 border-blue-200 max-w-xs transform ${isLeft ? 'rotate-1' : '-rotate-1'}`}>
+                      {/* Speech Bubble Tail */}
+                      <div className={`absolute top-3 ${isLeft ? '-left-2' : '-right-2'} w-4 h-4 bg-blue-50 border-l-2 border-b-2 border-blue-200 transform rotate-45`}></div>
+                      
+                      {/* Comment Text */}
+                      <p className="text-blue-800 font-handwriting leading-relaxed text-sm">
+                        {(photo as any).comment || 'まだコメントがありません。'}
                       </p>
+                    </div>
+                  </div>
+
+                  {/* Decorative Doodles */}
+                  <div className={`absolute ${isLeft ? '-right-6 top-6' : '-left-6 top-8'} opacity-40 transform ${isLeft ? 'rotate-12' : '-rotate-12'}`}>
+                    {isLeft ? (
+                      <Icon name="heart" className="text-pink-400" solid />
+                    ) : (
+                      <Icon name="star" className="text-sky-400" solid />
                     )}
-                    <p className="text-xs text-blue-600">
-                      {photo.uploadedAt ? new Date(photo.uploadedAt).toLocaleDateString('ja-JP') : ''}
-                    </p>
                   </div>
                 </div>
+              );
+            }) : (
+              <div className="col-span-2 text-center py-8">
+                <p className="text-blue-700 font-handwriting">写真がありません</p>
               </div>
-            ))
+            )
           ) : (
             records.map((record, index) => (
-              <AlbumEntry 
-                key={record.id} 
-                record={record} 
-                isEven={index % 2 === 0}
-                childInfo={childInfo}
-              />
+              <div key={record.id} className="relative">
+                <AlbumEntry 
+                  record={record} 
+                  isEven={index % 2 === 0}
+                  childInfo={childInfo}
+                />
+              </div>
             ))
           )}
         </div>

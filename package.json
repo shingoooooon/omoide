@@ -5,10 +5,19 @@
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
+    "build:analyze": "ANALYZE=true next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "lint:fix": "eslint --fix",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "test:ci": "jest --ci --coverage --watchAll=false",
+    "type-check": "tsc --noEmit",
+    "deploy": "vercel --prod",
+    "deploy:preview": "vercel",
+    "setup:vercel": "./scripts/setup-vercel-env.sh",
+    "health-check": "node scripts/health-check.js",
+    "postdeploy": "npm run health-check"
   },
   "dependencies": {
     "@google-cloud/text-to-speech": "^6.3.0",

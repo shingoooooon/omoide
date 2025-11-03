@@ -220,43 +220,52 @@ const storybookTexts = {
 
 // Sample storybook pages
 const getDemoStorybookPages = (locale: 'ja' | 'en' = 'ja'): StorybookPage[] => {
-    const photos = getDemoPhotos(locale);
+    // Use more reliable image URLs with proper CORS headers
+    const imageUrls = [
+        'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
+        'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
+        'https://images.unsplash.com/photo-1566004100631-35d015d6a491?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
+        'https://images.unsplash.com/photo-1519689680058-324335c77eba?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
+        'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80',
+        'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80'
+    ];
+
     return [
         {
             id: 'demo-page-1',
             pageNumber: 1,
             text: storybookTexts[locale][0],
-            imageUrl: 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=600&h=400&fit=crop'
+            imageUrl: '/test-image.svg'
         },
         {
             id: 'demo-page-2',
             pageNumber: 2,
             text: storybookTexts[locale][1],
-            imageUrl: 'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=600&h=400&fit=crop'
+            imageUrl: imageUrls[1]
         },
         {
             id: 'demo-page-3',
             pageNumber: 3,
             text: storybookTexts[locale][2],
-            imageUrl: 'https://images.unsplash.com/photo-1566004100631-35d015d6a491?w=600&h=400&fit=crop'
+            imageUrl: imageUrls[2]
         },
         {
             id: 'demo-page-4',
             pageNumber: 4,
             text: storybookTexts[locale][3],
-            imageUrl: 'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=600&h=400&fit=crop'
+            imageUrl: imageUrls[3]
         },
         {
             id: 'demo-page-5',
             pageNumber: 5,
             text: storybookTexts[locale][4],
-            imageUrl: 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&h=400&fit=crop'
+            imageUrl: imageUrls[4]
         },
         {
             id: 'demo-page-6',
             pageNumber: 6,
             text: storybookTexts[locale][5],
-            imageUrl: 'https://images.unsplash.com/photo-1476703993599-0035a21b17a9?w=600&h=400&fit=crop'
+            imageUrl: imageUrls[5]
         }
     ];
 };

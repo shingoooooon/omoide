@@ -40,11 +40,13 @@ export function OptimizedImage({
   }, [onLoadComplete]);
 
   const handleError = useCallback(() => {
+    console.warn(`Failed to load image: ${currentSrc}`);
     setIsLoading(false);
     setHasError(true);
     
     // Try fallback image if available and not already using it
     if (fallbackSrc && currentSrc !== fallbackSrc) {
+      console.log(`Trying fallback image: ${fallbackSrc}`);
       setCurrentSrc(fallbackSrc);
       setHasError(false);
       setIsLoading(true);
@@ -133,18 +135,63 @@ export function PhotoThumbnail({
 export function StorybookImage({
   src,
   alt,
+  onLoadComplete,
+  onError,
   ...props
 }: OptimizedImageProps) {
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+
+  const handleLoad = useCallback(() => {
+    console.log('StorybookImage loaded successfully:', src);
+    setImageLoaded(true);
+    setImageError(false);
+    onLoadComplete?.();
+  }, [src, onLoadComplete]);
+
+  const handleError = useCallback((error: Error) => {
+    console.error('StorybookImage failed to load:', src, error);
+    setImageError(true);
+    setImageLoaded(false);
+    onError?.(error);
+  }, [src, onError]);
+
   return (
-    <OptimizedImage
-      src={src}
-      alt={alt}
-      fill
-      className="object-contain"
-      quality={90}
-      lazy={true}
-      {...props}
-    />
+    <div className="relative w-full h-full">
+      {!imageLoaded && !imageError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 z-10">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+        </div>
+      )}
+      
+      {imageError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400">
+          <div className="text-center">
+            <svg className="w-16 h-16 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+            <p className="text-sm">絵本の画像</p>
+            <p className="text-xs text-gray-500 mt-1">画像を読み込めませんでした</p>
+          </div>
+        </div>
+      )}
+
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className={cn(
+          'object-contain transition-opacity duration-300',
+          imageLoaded ? 'opacity-100' : 'opacity-0'
+        )}
+        quality={90}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 70vw"
+        onLoad={handleLoad}
+        onError={handleError}
+        priority={props.priority}
+        {...props}
+      />
+    </div>
   );
 }
 

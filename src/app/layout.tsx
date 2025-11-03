@@ -5,6 +5,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { LocaleProvider } from "@/contexts/LocaleContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { DefaultSkipLinks } from "@/components/ui/SkipLink";
+import { MonitoringToggle } from "@/components/monitoring/MonitoringDashboard";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -64,6 +65,7 @@ export default function RootLayout({
             <ToastProvider>
               <div id="root" role="application" aria-label="Omoide アプリケーション">
                 {children}
+                <MonitoringToggle />
               </div>
             </ToastProvider>
           </AuthProvider>
