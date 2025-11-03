@@ -12,7 +12,7 @@ interface UserSession {
 interface UserAction {
   type: string
   timestamp: number
-  data?: Record<string, any>
+  data?: Record<string, unknown>
 }
 
 interface DeviceInfo {
@@ -145,7 +145,7 @@ class UserBehaviorAnalytics {
   /**
    * Track a user action
    */
-  trackAction(type: string, data?: Record<string, any>) {
+  trackAction(type: string, data?: Record<string, unknown>) {
     if (!this.isEnabled || !this.currentSession) return
 
     const action: UserAction = {
@@ -173,7 +173,7 @@ class UserBehaviorAnalytics {
   /**
    * Track page view
    */
-  trackPageView(pageName: string, metadata?: Record<string, any>) {
+  trackPageView(pageName: string, metadata?: Record<string, unknown>) {
     if (!this.isEnabled || !this.currentSession) return
 
     this.currentSession.pageViews.push(pageName)
@@ -188,7 +188,7 @@ class UserBehaviorAnalytics {
   /**
    * Track feature usage
    */
-  trackFeatureUsage(feature: string, action: string, metadata?: Record<string, any>) {
+  trackFeatureUsage(feature: string, action: string, metadata?: Record<string, unknown>) {
     this.trackAction('feature_usage', {
       feature,
       feature_action: action,
@@ -199,7 +199,7 @@ class UserBehaviorAnalytics {
   /**
    * Track user engagement events
    */
-  trackEngagement(engagementType: string, duration?: number, metadata?: Record<string, any>) {
+  trackEngagement(engagementType: string, duration?: number, metadata?: Record<string, unknown>) {
     this.trackAction('engagement', {
       engagement_type: engagementType,
       duration,
@@ -216,7 +216,7 @@ class UserBehaviorAnalytics {
   /**
    * Track conversion events
    */
-  trackConversion(conversionType: string, value?: number, metadata?: Record<string, any>) {
+  trackConversion(conversionType: string, value?: number, metadata?: Record<string, unknown>) {
     this.trackAction('conversion', {
       conversion_type: conversionType,
       value,
@@ -234,7 +234,7 @@ class UserBehaviorAnalytics {
   /**
    * Track user flow progression
    */
-  trackFlowStep(flowName: string, stepName: string, stepNumber: number, metadata?: Record<string, any>) {
+  trackFlowStep(flowName: string, stepName: string, stepNumber: number, metadata?: Record<string, unknown>) {
     this.trackAction('flow_step', {
       flow_name: flowName,
       step_name: stepName,
@@ -246,7 +246,7 @@ class UserBehaviorAnalytics {
   /**
    * Track search behavior
    */
-  trackSearch(query: string, resultsCount: number, metadata?: Record<string, any>) {
+  trackSearch(query: string, resultsCount: number, metadata?: Record<string, unknown>) {
     this.trackAction('search', {
       search_query: query,
       results_count: resultsCount,
@@ -257,7 +257,7 @@ class UserBehaviorAnalytics {
   /**
    * Track form interactions
    */
-  trackFormInteraction(formName: string, action: 'start' | 'complete' | 'abandon', metadata?: Record<string, any>) {
+  trackFormInteraction(formName: string, action: 'start' | 'complete' | 'abandon', metadata?: Record<string, unknown>) {
     this.trackAction('form_interaction', {
       form_name: formName,
       form_action: action,
@@ -268,7 +268,7 @@ class UserBehaviorAnalytics {
   /**
    * Track button clicks
    */
-  trackButtonClick(buttonName: string, location: string, metadata?: Record<string, any>) {
+  trackButtonClick(buttonName: string, location: string, metadata?: Record<string, unknown>) {
     this.trackAction('button_click', {
       button_name: buttonName,
       button_location: location,
@@ -279,7 +279,7 @@ class UserBehaviorAnalytics {
   /**
    * Track time spent on page
    */
-  trackTimeOnPage(pageName: string, timeSpent: number, metadata?: Record<string, any>) {
+  trackTimeOnPage(pageName: string, timeSpent: number, metadata?: Record<string, unknown>) {
     this.trackAction('time_on_page', {
       page_name: pageName,
       time_spent: timeSpent,
@@ -290,7 +290,7 @@ class UserBehaviorAnalytics {
   /**
    * Track scroll depth
    */
-  trackScrollDepth(pageName: string, maxScrollPercentage: number, metadata?: Record<string, any>) {
+  trackScrollDepth(pageName: string, maxScrollPercentage: number, metadata?: Record<string, unknown>) {
     this.trackAction('scroll_depth', {
       page_name: pageName,
       max_scroll_percentage: maxScrollPercentage,
@@ -346,7 +346,7 @@ class UserBehaviorAnalytics {
   /**
    * Set user properties
    */
-  setUserProperties(properties: Record<string, any>) {
+  setUserProperties(properties: Record<string, unknown>) {
     analyticsService.setUserProperties(properties)
   }
 }
@@ -355,20 +355,20 @@ class UserBehaviorAnalytics {
 export const userBehaviorAnalytics = new UserBehaviorAnalytics()
 
 // Convenience functions
-export const trackAction = (type: string, data?: Record<string, any>) =>
+export const trackAction = (type: string, data?: Record<string, unknown>) =>
   userBehaviorAnalytics.trackAction(type, data)
 
-export const trackPageView = (pageName: string, metadata?: Record<string, any>) =>
+export const trackPageView = (pageName: string, metadata?: Record<string, unknown>) =>
   userBehaviorAnalytics.trackPageView(pageName, metadata)
 
-export const trackFeatureUsage = (feature: string, action: string, metadata?: Record<string, any>) =>
+export const trackFeatureUsage = (feature: string, action: string, metadata?: Record<string, unknown>) =>
   userBehaviorAnalytics.trackFeatureUsage(feature, action, metadata)
 
-export const trackEngagement = (engagementType: string, duration?: number, metadata?: Record<string, any>) =>
+export const trackEngagement = (engagementType: string, duration?: number, metadata?: Record<string, unknown>) =>
   userBehaviorAnalytics.trackEngagement(engagementType, duration, metadata)
 
-export const trackConversion = (conversionType: string, value?: number, metadata?: Record<string, any>) =>
+export const trackConversion = (conversionType: string, value?: number, metadata?: Record<string, unknown>) =>
   userBehaviorAnalytics.trackConversion(conversionType, value, metadata)
 
-export const trackButtonClick = (buttonName: string, location: string, metadata?: Record<string, any>) =>
+export const trackButtonClick = (buttonName: string, location: string, metadata?: Record<string, unknown>) =>
   userBehaviorAnalytics.trackButtonClick(buttonName, location, metadata)

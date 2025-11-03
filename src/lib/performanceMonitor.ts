@@ -4,7 +4,7 @@ interface PerformanceMetric {
   name: string
   value: number
   timestamp: number
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 class PerformanceMonitor {
@@ -37,7 +37,7 @@ class PerformanceMonitor {
         // First Input Delay (FID)
         const fidObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries()
-          entries.forEach((entry: any) => {
+          entries.forEach((entry: unknown) => {
             this.recordMetric('FID', entry.processingStart - entry.startTime, {
               eventType: entry.name
             })
@@ -50,7 +50,7 @@ class PerformanceMonitor {
         let clsValue = 0
         const clsObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries()
-          entries.forEach((entry: any) => {
+          entries.forEach((entry: unknown) => {
             if (!entry.hadRecentInput) {
               clsValue += entry.value
             }
@@ -63,7 +63,7 @@ class PerformanceMonitor {
         // Navigation timing
         const navigationObserver = new PerformanceObserver((list) => {
           const entries = list.getEntries()
-          entries.forEach((entry: any) => {
+          entries.forEach((entry: unknown) => {
             this.recordMetric('Navigation_Duration', entry.duration)
             this.recordMetric('DOM_Content_Loaded', entry.domContentLoadedEventEnd - entry.domContentLoadedEventStart)
             this.recordMetric('Load_Event', entry.loadEventEnd - entry.loadEventStart)
@@ -81,7 +81,7 @@ class PerformanceMonitor {
   /**
    * Record a custom performance metric
    */
-  recordMetric(name: string, value: number, metadata?: Record<string, any>) {
+  recordMetric(name: string, value: number, metadata?: Record<string, unknown>) {
     const metric: PerformanceMetric = {
       name,
       value,
@@ -108,7 +108,7 @@ class PerformanceMonitor {
   /**
    * Measure function execution time
    */
-  async measureAsync<T>(name: string, fn: () => Promise<T>, metadata?: Record<string, any>): Promise<T> {
+  async measureAsync<T>(name: string, fn: () => Promise<T>, metadata?: Record<string, unknown>): Promise<T> {
     const startTime = performance.now()
     try {
       const result = await fn()
@@ -125,7 +125,7 @@ class PerformanceMonitor {
   /**
    * Measure synchronous function execution time
    */
-  measure<T>(name: string, fn: () => T, metadata?: Record<string, any>): T {
+  measure<T>(name: string, fn: () => T, metadata?: Record<string, unknown>): T {
     const startTime = performance.now()
     try {
       const result = fn()
@@ -142,9 +142,9 @@ class PerformanceMonitor {
   /**
    * Start a performance timer
    */
-  startTimer(name: string): (metadata?: Record<string, any>) => void {
+  startTimer(name: string): (metadata?: Record<string, unknown>) => void {
     const startTime = performance.now()
-    return (metadata?: Record<string, any>) => {
+    return (metadata?: Record<string, unknown>) => {
       const duration = performance.now() - startTime
       this.recordMetric(name, duration, metadata)
     }
@@ -196,7 +196,7 @@ class PerformanceMonitor {
   async monitorApiCall<T>(
     endpoint: string, 
     apiCall: () => Promise<T>,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<T> {
     return this.measureAsync(`API_${endpoint}`, apiCall, {
       endpoint,
@@ -210,7 +210,7 @@ class PerformanceMonitor {
   async monitorImageUpload<T>(
     uploadFn: () => Promise<T>,
     fileSize: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<T> {
     return this.measureAsync('Image_Upload', uploadFn, {
       file_size: fileSize,
@@ -224,7 +224,7 @@ class PerformanceMonitor {
   async monitorAIGeneration<T>(
     type: 'comment' | 'storybook' | 'audio' | 'image',
     generationFn: () => Promise<T>,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<T> {
     return this.measureAsync(`AI_Generation_${type}`, generationFn, {
       generation_type: type,
@@ -237,13 +237,13 @@ class PerformanceMonitor {
 export const performanceMonitor = new PerformanceMonitor()
 
 // Convenience functions
-export const measureAsync = <T>(name: string, fn: () => Promise<T>, metadata?: Record<string, any>) =>
+export const measureAsync = <T>(name: string, fn: () => Promise<T>, metadata?: Record<string, unknown>) =>
   performanceMonitor.measureAsync(name, fn, metadata)
 
-export const measure = <T>(name: string, fn: () => T, metadata?: Record<string, any>) =>
+export const measure = <T>(name: string, fn: () => T, metadata?: Record<string, unknown>) =>
   performanceMonitor.measure(name, fn, metadata)
 
 export const startTimer = (name: string) => performanceMonitor.startTimer(name)
 
-export const monitorApiCall = <T>(endpoint: string, apiCall: () => Promise<T>, metadata?: Record<string, any>) =>
+export const monitorApiCall = <T>(endpoint: string, apiCall: () => Promise<T>, metadata?: Record<string, unknown>) =>
   performanceMonitor.monitorApiCall(endpoint, apiCall, metadata)

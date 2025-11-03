@@ -113,8 +113,8 @@ class MonitoringService {
   /**
    * Track custom business events
    */
-  trackBusinessEvent(eventName: string, data?: Record<string, any>) {
-    analyticsService.trackEvent(eventName as any, data)
+  trackBusinessEvent(eventName: string, data?: Record<string, unknown>) {
+    analyticsService.trackEvent(eventName as never, data)
     userBehaviorAnalytics.trackAction('business_event', {
       event_name: eventName,
       ...data
@@ -124,8 +124,8 @@ class MonitoringService {
   /**
    * Track user journey milestones
    */
-  trackMilestone(milestone: string, data?: Record<string, any>) {
-    analyticsService.trackEvent('milestone_reached' as any, {
+  trackMilestone(milestone: string, data?: Record<string, unknown>) {
+    analyticsService.trackEvent('milestone_reached' as never, {
       milestone,
       ...data
     })
@@ -139,8 +139,8 @@ class MonitoringService {
   /**
    * Track feature adoption
    */
-  trackFeatureAdoption(feature: string, action: 'discovered' | 'first_use' | 'regular_use', data?: Record<string, any>) {
-    analyticsService.trackEvent('feature_adoption' as any, {
+  trackFeatureAdoption(feature: string, action: 'discovered' | 'first_use' | 'regular_use', data?: Record<string, unknown>) {
+    analyticsService.trackEvent('feature_adoption' as never, {
       feature,
       adoption_stage: action,
       ...data
@@ -152,7 +152,7 @@ class MonitoringService {
   /**
    * Set user context for all monitoring services
    */
-  setUserContext(userId: string, userProperties?: Record<string, any>) {
+  setUserContext(userId: string, userProperties?: Record<string, unknown>) {
     analyticsService.setUserId(userId)
     analyticsService.setUserProperties(userProperties || {})
     userBehaviorAnalytics.setUserId(userId)
@@ -166,7 +166,7 @@ class MonitoringService {
   async trackOperation<T>(
     operationName: string,
     operation: () => Promise<T>,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): Promise<T> {
     const timer = performanceMonitor.startTimer(operationName)
     
@@ -242,23 +242,23 @@ if (typeof window !== 'undefined') {
 }
 
 // Convenience exports
-export const trackBusinessEvent = (eventName: string, data?: Record<string, any>) =>
+export const trackBusinessEvent = (eventName: string, data?: Record<string, unknown>) =>
   monitoringService.trackBusinessEvent(eventName, data)
 
-export const trackMilestone = (milestone: string, data?: Record<string, any>) =>
+export const trackMilestone = (milestone: string, data?: Record<string, unknown>) =>
   monitoringService.trackMilestone(milestone, data)
 
 export const trackFeatureAdoption = (
   feature: string, 
   action: 'discovered' | 'first_use' | 'regular_use', 
-  data?: Record<string, any>
+  data?: Record<string, unknown>
 ) => monitoringService.trackFeatureAdoption(feature, action, data)
 
-export const setUserContext = (userId: string, userProperties?: Record<string, any>) =>
+export const setUserContext = (userId: string, userProperties?: Record<string, unknown>) =>
   monitoringService.setUserContext(userId, userProperties)
 
 export const trackOperation = <T>(
   operationName: string,
   operation: () => Promise<T>,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ) => monitoringService.trackOperation(operationName, operation, metadata)

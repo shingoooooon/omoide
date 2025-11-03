@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     if (process.env.NODE_ENV === 'production') {
       const batch = db.batch()
       
-      performanceData.metrics.forEach((metric: any) => {
+      performanceData.metrics.forEach((metric: unknown) => {
         const docRef = db.collection('performance_metrics').doc()
         batch.set(docRef, {
           ...metric,
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-function calculateMetricStats(metrics: any[], metricName?: string) {
+function calculateMetricStats(metrics: unknown[], metricName?: string) {
   if (metrics.length === 0) return null
 
   const values = metrics.map(m => m.value).filter(v => typeof v === 'number')

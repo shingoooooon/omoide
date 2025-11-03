@@ -93,7 +93,7 @@ export function MonitoringDashboard({ isVisible, onClose }: MonitoringDashboardP
   )
 }
 
-function PerformanceTab({ metrics }: { metrics: any[] }) {
+function PerformanceTab({ metrics }: { metrics: unknown[] }) {
   const coreWebVitals = metrics.filter(m => ['LCP', 'FID', 'CLS'].includes(m.name))
   const apiMetrics = metrics.filter(m => m.name.startsWith('API_'))
   const otherMetrics = metrics.filter(m => !['LCP', 'FID', 'CLS'].includes(m.name) && !m.name.startsWith('API_'))
@@ -142,7 +142,7 @@ function PerformanceTab({ metrics }: { metrics: any[] }) {
   )
 }
 
-function ErrorsTab({ stats }: { stats: any }) {
+function ErrorsTab({ stats }: { stats: unknown }) {
   const errors = errorTracker.getErrors()
 
   return (
@@ -192,7 +192,7 @@ function ErrorsTab({ stats }: { stats: any }) {
   )
 }
 
-function AnalyticsTab({ sessionInfo }: { sessionInfo: any }) {
+function AnalyticsTab({ sessionInfo }: { sessionInfo: unknown }) {
   if (!sessionInfo) {
     return (
       <Card className="p-4">
@@ -238,7 +238,7 @@ function AnalyticsTab({ sessionInfo }: { sessionInfo: any }) {
       <Card className="p-4">
         <h3 className="text-lg font-semibold mb-3">Recent Actions</h3>
         <div className="space-y-2 max-h-40 overflow-y-auto">
-          {sessionInfo.actions.slice(-10).map((action: any, index: number) => (
+          {sessionInfo.actions.slice(-10).map((action: unknown, index: number) => (
             <div key={index} className="text-xs border-l-2 border-blue-300 pl-2">
               <div className="font-medium">{action.type}</div>
               <div className="text-gray-500">

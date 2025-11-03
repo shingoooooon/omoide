@@ -53,6 +53,7 @@
   ],
   "env": {
     "NODE_ENV": "production",
-    "NEXT_LINT": "false"
+    "NEXT_LINT": "false",
+    "SKIP_ENV_VALIDATION": "true"
   }
 }

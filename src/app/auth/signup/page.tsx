@@ -47,7 +47,7 @@ export default function SignUpPage() {
       setError('')
       await signUpWithEmail(email, password, displayName)
       router.push('/')
-    } catch (error: any) {
+    } catch (error: unknown) {
       if (error.code === 'auth/email-already-in-use') {
         setError(t('auth.errors.emailInUse'))
       } else if (error.code === 'auth/weak-password') {
@@ -66,7 +66,7 @@ export default function SignUpPage() {
       setError('')
       await signInWithGoogle()
       router.push('/')
-    } catch (error: any) {
+    } catch (error: unknown) {
       setError('Googleアカウントでの登録に失敗しました')
     } finally {
       setLoading(false)

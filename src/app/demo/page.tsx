@@ -24,9 +24,9 @@ export default function DemoPage() {
     id: string;
     title: string;
     description: string;
-    photos: any[];
+    photos: unknown[];
     createdAt: Date;
-    coverPhoto: any;
+    coverPhoto: unknown;
   } | null>(null)
 
   const demoAlbums = getDemoAlbums(locale)

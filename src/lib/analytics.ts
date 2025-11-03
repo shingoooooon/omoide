@@ -4,7 +4,7 @@ import { logEvent, setUserProperties, setUserId } from 'firebase/analytics'
 // Analytics event types
 export interface AnalyticsEvent {
   name: string
-  parameters?: Record<string, any>
+  parameters?: Record<string, unknown>
 }
 
 // Custom events for Omoide app
@@ -62,7 +62,7 @@ class AnalyticsService {
   /**
    * Track custom events
    */
-  trackEvent(eventName: AnalyticsEventName, parameters?: Record<string, any>) {
+  trackEvent(eventName: AnalyticsEventName, parameters?: Record<string, unknown>) {
     if (!this.isEnabled || !analytics) return
 
     try {
@@ -83,7 +83,7 @@ class AnalyticsService {
   /**
    * Track photo upload events
    */
-  trackPhotoUpload(status: 'start' | 'success' | 'error', metadata?: Record<string, any>) {
+  trackPhotoUpload(status: 'start' | 'success' | 'error', metadata?: Record<string, unknown>) {
     const eventMap = {
       start: ANALYTICS_EVENTS.PHOTO_UPLOAD_START,
       success: ANALYTICS_EVENTS.PHOTO_UPLOAD_SUCCESS,
@@ -96,7 +96,7 @@ class AnalyticsService {
   /**
    * Track AI comment generation
    */
-  trackCommentGeneration(status: 'start' | 'success' | 'error', metadata?: Record<string, any>) {
+  trackCommentGeneration(status: 'start' | 'success' | 'error', metadata?: Record<string, unknown>) {
     const eventMap = {
       start: ANALYTICS_EVENTS.COMMENT_GENERATION_START,
       success: ANALYTICS_EVENTS.COMMENT_GENERATION_SUCCESS,
@@ -109,7 +109,7 @@ class AnalyticsService {
   /**
    * Track storybook generation and interaction
    */
-  trackStorybook(action: 'generation_start' | 'generation_success' | 'generation_error' | 'view' | 'page_turn', metadata?: Record<string, any>) {
+  trackStorybook(action: 'generation_start' | 'generation_success' | 'generation_error' | 'view' | 'page_turn', metadata?: Record<string, unknown>) {
     const eventMap = {
       generation_start: ANALYTICS_EVENTS.STORYBOOK_GENERATION_START,
       generation_success: ANALYTICS_EVENTS.STORYBOOK_GENERATION_SUCCESS,
@@ -124,7 +124,7 @@ class AnalyticsService {
   /**
    * Track audio interactions
    */
-  trackAudio(action: 'play' | 'pause' | 'generation_start' | 'generation_success' | 'generation_error', metadata?: Record<string, any>) {
+  trackAudio(action: 'play' | 'pause' | 'generation_start' | 'generation_success' | 'generation_error', metadata?: Record<string, unknown>) {
     const eventMap = {
       play: ANALYTICS_EVENTS.AUDIO_PLAY,
       pause: ANALYTICS_EVENTS.AUDIO_PAUSE,
@@ -139,7 +139,7 @@ class AnalyticsService {
   /**
    * Track sharing events
    */
-  trackSharing(action: 'create' | 'access', metadata?: Record<string, any>) {
+  trackSharing(action: 'create' | 'access', metadata?: Record<string, unknown>) {
     const eventMap = {
       create: ANALYTICS_EVENTS.SHARE_LINK_CREATE,
       access: ANALYTICS_EVENTS.SHARE_LINK_ACCESS,
@@ -151,7 +151,7 @@ class AnalyticsService {
   /**
    * Track page views and navigation
    */
-  trackPageView(pageName: string, metadata?: Record<string, any>) {
+  trackPageView(pageName: string, metadata?: Record<string, unknown>) {
     this.trackEvent('page_view' as AnalyticsEventName, {
       page_name: pageName,
       ...metadata,
@@ -161,7 +161,7 @@ class AnalyticsService {
   /**
    * Track errors
    */
-  trackError(errorType: 'api' | 'network' | 'face_detection' | 'general', error: Error, metadata?: Record<string, any>) {
+  trackError(errorType: 'api' | 'network' | 'face_detection' | 'general', error: Error, metadata?: Record<string, unknown>) {
     const eventMap = {
       api: ANALYTICS_EVENTS.API_ERROR,
       network: ANALYTICS_EVENTS.NETWORK_ERROR,
@@ -179,7 +179,7 @@ class AnalyticsService {
   /**
    * Set user properties
    */
-  setUserProperties(properties: Record<string, any>) {
+  setUserProperties(properties: Record<string, unknown>) {
     if (!this.isEnabled || !analytics) return
 
     try {
@@ -205,7 +205,7 @@ class AnalyticsService {
   /**
    * Track performance metrics
    */
-  trackPerformance(metricName: string, value: number, metadata?: Record<string, any>) {
+  trackPerformance(metricName: string, value: number, metadata?: Record<string, unknown>) {
     this.trackEvent('performance_metric' as AnalyticsEventName, {
       metric_name: metricName,
       metric_value: value,
@@ -216,7 +216,7 @@ class AnalyticsService {
   /**
    * Track user engagement
    */
-  trackEngagement(action: string, metadata?: Record<string, any>) {
+  trackEngagement(action: string, metadata?: Record<string, unknown>) {
     this.trackEvent('user_engagement' as AnalyticsEventName, {
       engagement_action: action,
       ...metadata,
@@ -228,14 +228,14 @@ class AnalyticsService {
 export const analyticsService = new AnalyticsService()
 
 // Convenience functions
-export const trackEvent = (eventName: AnalyticsEventName, parameters?: Record<string, any>) => 
+export const trackEvent = (eventName: AnalyticsEventName, parameters?: Record<string, unknown>) => 
   analyticsService.trackEvent(eventName, parameters)
 
-export const trackError = (errorType: 'api' | 'network' | 'face_detection' | 'general', error: Error, metadata?: Record<string, any>) => 
+export const trackError = (errorType: 'api' | 'network' | 'face_detection' | 'general', error: Error, metadata?: Record<string, unknown>) => 
   analyticsService.trackError(errorType, error, metadata)
 
-export const trackPageView = (pageName: string, metadata?: Record<string, any>) => 
+export const trackPageView = (pageName: string, metadata?: Record<string, unknown>) => 
   analyticsService.trackPageView(pageName, metadata)
 
-export const trackPerformance = (metricName: string, value: number, metadata?: Record<string, any>) => 
+export const trackPerformance = (metricName: string, value: number, metadata?: Record<string, unknown>) => 
   analyticsService.trackPerformance(metricName, value, metadata)

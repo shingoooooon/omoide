@@ -10,7 +10,7 @@ export interface ErrorInfo {
   userId?: string
   severity: 'low' | 'medium' | 'high' | 'critical'
   category: 'api' | 'network' | 'face_detection' | 'ui' | 'auth' | 'storage' | 'general'
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 class ErrorTracker {
@@ -63,7 +63,7 @@ class ErrorTracker {
     error: Error,
     severity: ErrorInfo['severity'] = 'medium',
     category: ErrorInfo['category'] = 'general',
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): string {
     const errorId = this.generateErrorId()
     
@@ -140,7 +140,7 @@ class ErrorTracker {
     endpoint: string,
     error: Error,
     statusCode?: number,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): string {
     return this.captureError(
       error,
@@ -160,7 +160,7 @@ class ErrorTracker {
   captureNetworkError(
     url: string,
     error: Error,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): string {
     return this.captureError(
       error,
@@ -179,7 +179,7 @@ class ErrorTracker {
   captureFaceDetectionError(
     error: Error,
     imageUrl?: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): string {
     return this.captureError(
       error,
@@ -198,7 +198,7 @@ class ErrorTracker {
   captureAuthError(
     error: Error,
     action: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): string {
     return this.captureError(
       error,
@@ -217,7 +217,7 @@ class ErrorTracker {
   captureStorageError(
     error: Error,
     operation: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): string {
     return this.captureError(
       error,
@@ -236,7 +236,7 @@ class ErrorTracker {
   captureUIError(
     error: Error,
     component: string,
-    metadata?: Record<string, any>
+    metadata?: Record<string, unknown>
   ): string {
     return this.captureError(
       error,
@@ -298,7 +298,7 @@ class ErrorTracker {
   /**
    * Set user context for error tracking
    */
-  setUserContext(userId: string, userInfo?: Record<string, any>) {
+  setUserContext(userId: string, userInfo?: Record<string, unknown>) {
     // Store user context for future error reports
     if (typeof window !== 'undefined') {
       (window as any).__errorTrackerUserContext = {
@@ -311,7 +311,7 @@ class ErrorTracker {
   /**
    * Add breadcrumb for debugging
    */
-  addBreadcrumb(message: string, category: string, data?: Record<string, any>) {
+  addBreadcrumb(message: string, category: string, data?: Record<string, unknown>) {
     if (process.env.NODE_ENV === 'development') {
       console.log(`🍞 Breadcrumb [${category}]: ${message}`, data)
     }
@@ -329,45 +329,45 @@ export const captureError = (
   error: Error,
   severity?: ErrorInfo['severity'],
   category?: ErrorInfo['category'],
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ) => errorTracker.captureError(error, severity, category, metadata)
 
 export const captureApiError = (
   endpoint: string,
   error: Error,
   statusCode?: number,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ) => errorTracker.captureApiError(endpoint, error, statusCode, metadata)
 
 export const captureNetworkError = (
   url: string,
   error: Error,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ) => errorTracker.captureNetworkError(url, error, metadata)
 
 export const captureFaceDetectionError = (
   error: Error,
   imageUrl?: string,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ) => errorTracker.captureFaceDetectionError(error, imageUrl, metadata)
 
 export const captureAuthError = (
   error: Error,
   action: string,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ) => errorTracker.captureAuthError(error, action, metadata)
 
 export const captureStorageError = (
   error: Error,
   operation: string,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ) => errorTracker.captureStorageError(error, operation, metadata)
 
 export const captureUIError = (
   error: Error,
   component: string,
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 ) => errorTracker.captureUIError(error, component, metadata)
 
-export const addBreadcrumb = (message: string, category: string, data?: Record<string, any>) =>
+export const addBreadcrumb = (message: string, category: string, data?: Record<string, unknown>) =>
   errorTracker.addBreadcrumb(message, category, data)

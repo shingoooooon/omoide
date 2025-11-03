@@ -34,7 +34,7 @@ export default function LoginPage() {
       setError('')
       await signInWithEmail(email, password)
       router.push('/')
-    } catch (error: any) {
+    } catch (error: unknown) {
       setError(t('auth.errors.authFailed'))
     } finally {
       setLoading(false)
@@ -47,7 +47,7 @@ export default function LoginPage() {
       setError('')
       await signInWithGoogle()
       router.push('/')
-    } catch (error: any) {
+    } catch (error: unknown) {
       setError(t('auth.errors.googleSignInFailed'))
     } finally {
       setLoading(false)
