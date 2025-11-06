@@ -34,7 +34,7 @@ export default function Home() {
         </div>
 
         {/* Content */}
-        <div className="relative z-10 flex items-center min-h-screen">
+        <div className="relative z-10 flex items-start min-h-screen pt-24 sm:pt-32 lg:pt-40">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="max-w-4xl mx-auto text-center">
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight drop-shadow-lg">

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLocale } from '@/contexts/LocaleContext'
 import { useTranslations } from '@/lib/translations'
@@ -72,11 +73,17 @@ const LoginForm: React.FC = () => {
   }
 
   return (
-    <Card variant="elevated" className="w-full max-w-md p-8 bg-white/90 backdrop-blur-sm">
+    <Card className="w-full max-w-md p-8 bg-white/90 backdrop-blur-sm shadow-xl">
       <div className="text-center mb-8">
         <div className="flex items-center justify-center space-x-2 mb-4">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-400 to-secondary-400 rounded-2xl flex items-center justify-center text-white font-bold text-lg">
-            思
+          <div className="w-12 h-12">
+            <Image
+              src="/omoide-icon.svg"
+              alt="Omoide"
+              width={48}
+              height={48}
+              className="w-full h-full"
+            />
           </div>
           <h1 className="text-3xl font-display font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
             Omoide
@@ -147,9 +154,12 @@ const LoginForm: React.FC = () => {
           size="lg"
           className="w-full"
           disabled={loading}
-          isLoading={loading}
         >
-          {isSignUp ? t('auth.createAccount') : t('auth.signIn')}
+          {loading ? (
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+          ) : (
+            isSignUp ? t('auth.createAccount') : t('auth.signIn')
+          )}
         </Button>
       </form>
 
