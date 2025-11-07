@@ -2,12 +2,14 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthContext'
 import { useLocale } from '@/contexts/LocaleContext'
 import { useTranslations } from '@/lib/translations'
 import { Button, Card, Input } from '@/components/ui'
 
 const LoginForm: React.FC = () => {
+  const router = useRouter()
   const { signInWithGoogle, signInWithEmail, signUpWithEmail } = useAuth()
   const { locale } = useLocale()
   const { t } = useTranslations(locale)
@@ -23,6 +25,7 @@ const LoginForm: React.FC = () => {
       setLoading(true)
       setError('')
       await signInWithGoogle()
+      router.push('/')
     } catch {
       setError(t('auth.errors.googleSignInFailed'))
     } finally {
@@ -52,6 +55,7 @@ const LoginForm: React.FC = () => {
       } else {
         await signInWithEmail(email, password)
       }
+      router.push('/')
     } catch (err) {
       const error = err as { code?: string }
       if (error.code === 'auth/user-not-found') {

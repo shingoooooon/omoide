@@ -346,7 +346,7 @@ export const translations = {
         getStarted: "Get Started Now"
       },
       hero: {
-        title: "Turn everyday photos into\nfirst-time stories.",
+        title: "Turn everyday photos into first-time stories.",
         subtitle: "Simply upload photos and AI automatically creates growth records.\nEnjoy family conversations and record growth to your heart's content.",
         getStarted: "Get Started Now",
         viewDemo: "View Demo",

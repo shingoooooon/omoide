@@ -115,7 +115,7 @@ export default function AlbumsPage() {
             <p className="text-red-600 mb-4">{error}</p>
             <button
               onClick={loadData}
-              className="px-4 py-2 bg-amber-500 text-white rounded-lg hover:bg-amber-600 transition-colors"
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
             >
               再試行
             </button>
@@ -128,7 +128,7 @@ export default function AlbumsPage() {
   const childName = user?.childInfo?.name || 'お子さま';
 
   return (
-    <Layout className="bg-gradient-to-br from-amber-50 via-orange-50 to-yellow-50">
+    <Layout className="bg-gradient-to-br from-blue-50 via-cyan-50 to-sky-50">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-8">
           {/* Child Profile Section */}
@@ -147,16 +147,16 @@ export default function AlbumsPage() {
                     />
                   </div>
                   {/* Decorative elements around the photo */}
-                  <div className="absolute -top-3 -right-3 text-amber-400 animate-bounce-gentle">
+                  <div className="absolute -top-3 -right-3 text-blue-400 animate-bounce-gentle">
                     <Icon name="sparkles" size="xl" solid />
                   </div>
-                  <div className="absolute -bottom-3 -left-3 text-amber-500 animate-bounce-gentle" style={{ animationDelay: '0.5s' }}>
+                  <div className="absolute -bottom-3 -left-3 text-cyan-500 animate-bounce-gentle" style={{ animationDelay: '0.5s' }}>
                     <Icon name="star" size="lg" solid />
                   </div>
                 </div>
               ) : (
-                <div className="w-40 h-40 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 border-8 border-white flex items-center justify-center mx-auto shadow-2xl">
-                  <Icon name="user" className="w-20 h-20 text-amber-600" solid />
+                <div className="w-40 h-40 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 border-8 border-white flex items-center justify-center mx-auto shadow-2xl">
+                  <Icon name="user" className="w-20 h-20 text-blue-600" solid />
                 </div>
               )}
             </div>
@@ -185,21 +185,15 @@ export default function AlbumsPage() {
               onClick={() => setShowChildSettings(true)}
               variant="outline"
               size="sm"
-              className="bg-amber-100 border-amber-300 text-amber-800 hover:bg-amber-200 font-handwriting mb-6"
+              className="bg-blue-100 border-blue-300 text-blue-800 hover:bg-blue-200 font-handwriting mb-6"
             >
               <Icon name="settings" size="sm" className="mr-1" />
               設定
             </Button>
           </div>
-
-          {/* Album Title */}
-          <h2 className="text-3xl font-bold text-gray-800 mb-8 font-handwriting">
-            {childName}のアルバム
-          </h2>
-
           {!user?.childInfo && (
-            <div className="mt-4 p-4 bg-yellow-100 border border-yellow-300 rounded-lg max-w-md mx-auto">
-              <p className="text-yellow-800 text-sm font-handwriting">
+            <div className="mt-4 p-4 bg-blue-100 border border-blue-300 rounded-lg max-w-md mx-auto">
+              <p className="text-blue-800 text-sm font-handwriting">
                 お子さまの名前と誕生日、写真を設定すると、年齢と一緒に表示されます
               </p>
             </div>

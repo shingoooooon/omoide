@@ -16,85 +16,96 @@ export default function Home() {
   const { t } = useTranslations(locale)
   const { user, loading } = useAuth()
 
+  // Memoize split text to avoid hydration mismatch
+  const titleLines = React.useMemo(() => t('home.hero.title').split('\n'), [t])
+  const subtitleLines = React.useMemo(() => t('home.hero.subtitle').split('\n'), [t])
+
   return (
     <Layout requireAuth={false} fullWidth={true}>
       {/* Hero Section with Background Image */}
       <main id="main-content" className="relative min-h-screen overflow-hidden">
-        {/* Background Image */}
+        {/* Background Image - Right side safe zone */}
         <div className="absolute inset-0" aria-hidden="true">
           <Image
             src="/images/bg2.png"
             alt=""
             fill
-            className="object-cover"
+            className="object-cover object-right"
             priority
           />
-          {/* Overlay for better text readability */}
-          <div className="absolute inset-0 bg-black/30"></div>
+          {/* Gradient overlay for text readability on left side */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/20 to-transparent"></div>
         </div>
 
-        {/* Content */}
-        <div className="relative z-10 flex items-start min-h-screen pt-24 sm:pt-32 lg:pt-40">
+        {/* Content - Left aligned with safe zone */}
+        <div className="relative z-10 min-h-screen pt-24 sm:pt-32 lg:pt-40 pb-20">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="max-w-4xl mx-auto text-center">
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight drop-shadow-lg">
-                {t('home.hero.title').split('\\n').map((line, index) => (
+            <div className="max-w-2xl">
+              {/* Heading */}
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-white mb-6 leading-tight drop-shadow-2xl">
+                {titleLines.map((line, index) => (
                   <React.Fragment key={index}>
                     {line}
-                    {index === 0 && <br />}
+                    {index < titleLines.length - 1 && <br />}
                   </React.Fragment>
                 ))}
               </h1>
-              <p className="text-lg sm:text-xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed drop-shadow-md">
-                {t('home.hero.subtitle').split('\\n').map((line, index) => (
+
+              {/* Description */}
+              <p className="text-base sm:text-lg lg:text-xl text-white/95 mb-8 leading-relaxed drop-shadow-lg max-w-xl">
+                {subtitleLines.map((line, index) => (
                   <React.Fragment key={index}>
                     {line}
-                    {index === 0 && <br />}
+                    {index < subtitleLines.length - 1 && <br />}
                   </React.Fragment>
                 ))}
               </p>
 
               {/* Action Buttons - Only show for non-authenticated users */}
               {!loading && !user && (
-                <div className="flex flex-col sm:flex-row gap-4 justify-center" role="group" aria-label="アクションボタン">
+                <div className="flex flex-col sm:flex-row gap-4 mb-6" role="group" aria-label="アクションボタン">
+                  {/* Primary CTA */}
                   <Button
                     size="lg"
-                    className="bg-white text-neutral-900 hover:bg-white/90 px-8 py-4 text-lg font-semibold shadow-lg"
+                    className="bg-white text-neutral-900 hover:bg-white/90 hover:scale-105 px-8 py-6 text-lg font-bold shadow-2xl transition-all duration-200 min-h-[44px]"
                     onClick={() => router.push('/auth/login')}
                   >
-                    <Icon name="camera" className="w-5 h-5 mr-2" />
+                    <Icon name="camera" className="w-6 h-6 mr-2" />
                     {t('home.hero.getStarted')}
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20 px-8 py-4 text-lg"
+
+                  {/* Secondary CTA - Text link style */}
+                  <button
+                    className="text-white/90 hover:text-white underline underline-offset-4 text-base font-medium transition-colors duration-200 min-h-[44px] px-4"
                     onClick={() => router.push('/demo')}
                   >
-                    {t('home.hero.viewDemo')}
-                  </Button>
+                    {t('home.hero.viewDemo')} →
+                  </button>
                 </div>
               )}
 
               {/* Welcome message for authenticated users */}
               {!loading && user && (
-                <div className="text-center">
-                  <p className="text-xl text-white/90 mb-6 drop-shadow-md">
+                <div>
+                  <p className="text-xl text-white/95 mb-6 drop-shadow-lg">
                     {t('home.hero.welcome').replace('{name}', user.displayName || user.email || '')}
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <div className="flex flex-col sm:flex-row gap-4">
+                    {/* Primary CTA */}
                     <Button
                       size="lg"
-                      className="bg-white text-neutral-900 hover:bg-white/90 px-8 py-4 text-lg font-semibold shadow-lg"
+                      className="bg-white text-neutral-900 hover:bg-white/90 hover:scale-105 px-8 py-6 text-lg font-bold shadow-2xl transition-all duration-200 min-h-[44px]"
                       onClick={() => router.push('/upload')}
                     >
-                      <Icon name="camera" className="w-5 h-5 mr-2" />
+                      <Icon name="camera" className="w-6 h-6 mr-2" />
                       {t('home.hero.uploadPhotos')}
                     </Button>
+
+                    {/* Secondary CTA */}
                     <Button
                       variant="outline"
                       size="lg"
-                      className="bg-white/10 backdrop-blur-sm text-white border-white/30 hover:bg-white/20 px-8 py-4 text-lg"
+                      className="bg-white/10 backdrop-blur-sm text-white border-2 border-white/50 hover:bg-white/20 px-8 py-6 text-lg font-semibold min-h-[44px]"
                       onClick={() => router.push('/timeline')}
                     >
                       <Icon name="calendar" className="w-5 h-5 mr-2" />
@@ -170,23 +181,21 @@ export default function Home() {
             <p className="text-lg text-neutral-600 mb-8 max-w-2xl mx-auto">
               {t('home.cta.subtitle')}
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
                 size="lg"
-                className="px-8 py-4 text-lg"
+                className="bg-primary-600 hover:bg-primary-700 text-white px-8 py-6 text-lg font-bold shadow-lg hover:scale-105 transition-all duration-200 min-h-[44px]"
                 onClick={() => router.push('/auth/login')}
               >
-                <Icon name="camera" className="w-5 h-5 mr-2" />
+                <Icon name="camera" className="w-6 h-6 mr-2" />
                 {t('home.cta.getStarted')}
               </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="px-8 py-4 text-lg"
+              <button
+                className="text-primary-600 hover:text-primary-700 underline underline-offset-4 text-base font-medium transition-colors duration-200 min-h-[44px] px-4"
                 onClick={() => router.push('/demo')}
               >
-                {t('home.hero.viewDemo')}
-              </Button>
+                {t('home.hero.viewDemo')} →
+              </button>
             </div>
           </div>
         </div>
@@ -206,7 +215,7 @@ export default function Home() {
             </div>
 
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card 
+              <Card
                 className="text-center p-6 cursor-pointer hover:shadow-lg transition-all duration-200 group"
                 onClick={() => router.push('/upload')}
               >
@@ -221,7 +230,7 @@ export default function Home() {
                 </p>
               </Card>
 
-              <Card 
+              <Card
                 className="text-center p-6 cursor-pointer hover:shadow-lg transition-all duration-200 group"
                 onClick={() => router.push('/timeline')}
               >
@@ -236,7 +245,7 @@ export default function Home() {
                 </p>
               </Card>
 
-              <Card 
+              <Card
                 className="text-center p-6 cursor-pointer hover:shadow-lg transition-all duration-200 group"
                 onClick={() => router.push('/albums')}
               >
@@ -251,7 +260,7 @@ export default function Home() {
                 </p>
               </Card>
 
-              <Card 
+              <Card
                 className="text-center p-6 cursor-pointer hover:shadow-lg transition-all duration-200 group"
                 onClick={() => router.push('/storybooks')}
               >
